@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from sqlalchemy import create_engine, event
@@ -69,7 +70,11 @@ def test_seed_gracefully_handles_missing_perspective(
         statements.clear()
         with Session(engine) as session:
             with caplog.at_level(logging.WARNING):
-                seed_fn(session)
+                with patch(
+                    "theo.infrastructure.api.app.db.seeds._recreate_seed_table_if_missing_column",
+                    return_value=(False, False),
+                ):
+                    seed_fn(session)
 
         expected_message = (
             f"Skipping {dataset_label} seeds because 'perspective' column is missing"

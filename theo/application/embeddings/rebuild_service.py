@@ -169,23 +169,44 @@ class EmbeddingRebuildService:
                     metadata=metadata,
                 )
 
-            candidates = repository.iter_candidates(
-                fast=options.fast,
-                changed_since=options.changed_since,
-                ids=ids or None,
-                batch_size=options.batch_size,
-            )
-            stream = iter(candidates)
-            if skip_count:
-                stream = itertools.islice(stream, skip_count, None)
+            last_id: str | None = None
 
-            processed = skip_count
+            # Fast-forward to satisfy skip_count
+            if options.skip_count > 0:
+                remaining_skip = options.skip_count
+                while remaining_skip > 0:
+                    # Use a larger limit for skipping to be faster, or stick to batch_size
+                    batch = repository.fetch_candidates(
+                        fast=options.fast,
+                        changed_since=options.changed_since,
+                        ids=ids or None,
+                        limit=min(options.batch_size, remaining_skip),
+                        after_id=last_id,
+                    )
+                    if not batch:
+                        break
+                    last_id = batch[-1].id
+                    remaining_skip -= len(batch)
+
+            processed = options.skip_count
+
             batch_index = 0
 
-            for batch in _batched(stream, options.batch_size):
+            while True:
+                batch = repository.fetch_candidates(
+                    fast=options.fast,
+                    changed_since=options.changed_since,
+                    ids=ids or None,
+                    limit=options.batch_size,
+                    after_id=last_id,
+                )
+
                 if not batch:
-                    continue
+                    break
+
                 batch_index += 1
+                last_id = batch[-1].id
+
                 sanitized = [
                     self._sanitize_text((passage.text or "").strip()) for passage in batch
                 ]
@@ -290,7 +311,7 @@ class EmbeddingRebuildService:
         """Safely close session with transaction cleanup."""
         # First ensure no pending transactions
         self._safe_rollback(session)
-        
+
         # Then close the session
         close = getattr(session, "close", None)
         if callable(close):
@@ -298,14 +319,6 @@ class EmbeddingRebuildService:
                 close()
             except Exception as exc:
                 _LOGGER.warning("Failed to close session cleanly: %s", exc)
-
-
-def _batched(iterator: Iterable[PassageForEmbedding], size: int) -> Iterable[list[PassageForEmbedding]]:
-    while True:
-        batch = list(itertools.islice(iterator, size))
-        if not batch:
-            break
-        yield batch
 
 
 __all__ = [

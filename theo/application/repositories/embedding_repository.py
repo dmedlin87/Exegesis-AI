@@ -44,15 +44,16 @@ class PassageEmbeddingRepository(ABC):
         """Return the subset of *ids* that exist in persistence."""
 
     @abstractmethod
-    def iter_candidates(
+    def fetch_candidates(
         self,
         *,
         fast: bool,
         changed_since: datetime | None,
         ids: Sequence[str] | None,
-        batch_size: int,
-    ) -> Iterable[PassageForEmbedding]:
-        """Yield passages requiring embedding updates in deterministic order."""
+        limit: int,
+        after_id: str | None = None,
+    ) -> Sequence[PassageForEmbedding]:
+        """Return a batch of passages requiring embedding updates."""
 
     @abstractmethod
     def update_embeddings(self, updates: Sequence[EmbeddingUpdate]) -> None:

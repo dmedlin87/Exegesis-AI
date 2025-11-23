@@ -52,6 +52,50 @@ class SQLAlchemyPassageEmbeddingRepository(
         stmt = select(Passage.id).where(Passage.id.in_(ids))
         return set(self.execute(stmt).scalars())
 
+    def fetch_candidates(
+        self,
+        *,
+        fast: bool,
+        changed_since: datetime | None,
+        ids: Sequence[str] | None,
+        limit: int,
+        after_id: str | None = None,
+    ) -> Sequence[PassageForEmbedding]:
+        stmt = (
+            select(Passage, PassageEmbedding.embedding)
+            .outerjoin(PassageEmbedding)
+            .order_by(Passage.id)
+            .limit(limit)
+        )
+        filters, join_document = self._build_filters(
+            fast=fast, changed_since=changed_since, ids=ids
+        )
+        if join_document:
+            stmt = stmt.join(Document)
+            stmt = stmt.add_columns(Document.updated_at)
+        for criterion in filters:
+            stmt = stmt.where(criterion)
+
+        if after_id is not None:
+            stmt = stmt.where(Passage.id > after_id)
+
+        results = self._session.execute(stmt).all()
+
+        candidates: list[PassageForEmbedding] = []
+        for row in results:
+            passage = row[0]
+            embedding = row[1]
+            document_updated_at = row[2] if join_document else None
+            candidates.append(
+                PassageForEmbedding(
+                    id=passage.id,
+                    text=passage.text,
+                    embedding=embedding,
+                    document_updated_at=document_updated_at,
+                )
+            )
+        return candidates
+
     def iter_candidates(
         self,
         *,

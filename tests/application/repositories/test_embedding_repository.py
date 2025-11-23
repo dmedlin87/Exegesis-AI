@@ -72,7 +72,7 @@ def test_existing_ids_returns_subset(session: Session) -> None:
     assert repo.existing_ids(["p1", "missing"]) == {"p1"}
 
 
-def test_iter_candidates_includes_document_timestamp(session: Session) -> None:
+def test_fetch_candidates_includes_document_timestamp(session: Session) -> None:
     repo = SQLAlchemyPassageEmbeddingRepository(session)
     timestamp = datetime.now(UTC)
     doc = _document("doc-candidates", timestamp=timestamp)
@@ -86,11 +86,11 @@ def test_iter_candidates_includes_document_timestamp(session: Session) -> None:
     session.flush()
 
     candidates = list(
-        repo.iter_candidates(
+        repo.fetch_candidates(
             fast=False,
             changed_since=timestamp - timedelta(minutes=1),
             ids=None,
-            batch_size=1,
+            limit=5,
         )
     )
 
@@ -108,7 +108,7 @@ def test_iter_candidates_includes_document_timestamp(session: Session) -> None:
     assert list(candidates[1].embedding or []) == [0.5, 0.0, 0.5]
 
 
-def test_iter_candidates_respects_ids_and_fast_flag(session: Session) -> None:
+def test_fetch_candidates_respects_ids_and_fast_flag(session: Session) -> None:
     repo = SQLAlchemyPassageEmbeddingRepository(session)
     timestamp = datetime.now(UTC)
     doc = _document("doc-filtered", timestamp=timestamp)
@@ -122,15 +122,35 @@ def test_iter_candidates_respects_ids_and_fast_flag(session: Session) -> None:
     session.flush()
 
     filtered_candidates = list(
-        repo.iter_candidates(
+        repo.fetch_candidates(
             fast=False,
             changed_since=None,
             ids=[needs.id],
-            batch_size=5,
+            limit=5,
         )
     )
 
     assert [candidate.id for candidate in filtered_candidates] == [needs.id]
+
+
+def test_fetch_candidates_supports_keyset_pagination(session: Session) -> None:
+    repo = SQLAlchemyPassageEmbeddingRepository(session)
+    timestamp = datetime.now(UTC)
+    doc = _document("doc-keyset", timestamp=timestamp)
+    session.add(doc)
+    session.flush()
+    session.add_all([
+        _passage("p1", doc.id, text="1"),
+        _passage("p2", doc.id, text="2"),
+        _passage("p3", doc.id, text="3"),
+    ])
+    session.flush()
+
+    page1 = repo.fetch_candidates(fast=False, changed_since=None, ids=None, limit=2)
+    assert [c.id for c in page1] == ["p1", "p2"]
+
+    page2 = repo.fetch_candidates(fast=False, changed_since=None, ids=None, limit=2, after_id="p2")
+    assert [c.id for c in page2] == ["p3"]
 
 
 def test_build_filters_handles_fast_and_changed_since(session: Session) -> None:

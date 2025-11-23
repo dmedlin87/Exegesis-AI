@@ -78,21 +78,35 @@ class FakeRepository(PassageEmbeddingRepository):
         id_set = set(ids)
         return {passage.id for passage in self.passages if passage.id in id_set}
 
-    def iter_candidates(
+    def fetch_candidates(
         self,
         *,
         fast: bool,
         changed_since: datetime | None,
         ids: Sequence[str] | None,
-        batch_size: int,
-    ) -> Iterable[PassageForEmbedding]:
-        for passage in self._filter(passages=self.passages, fast=fast, changed_since=changed_since, ids=ids):
-            yield PassageForEmbedding(
+        limit: int,
+        after_id: str | None = None,
+    ) -> Sequence[PassageForEmbedding]:
+        candidates = sorted(
+            self._filter(passages=self.passages, fast=fast, changed_since=changed_since, ids=ids),
+            key=lambda p: p.id
+        )
+
+        if after_id:
+             candidates = [p for p in candidates if p.id > after_id]
+
+        # Take limit
+        batch = candidates[:limit]
+
+        return [
+            PassageForEmbedding(
                 id=passage.id,
                 text=passage.text,
                 embedding=passage.embedding,
                 document_updated_at=passage.document_updated_at,
             )
+            for passage in batch
+        ]
 
     def update_embeddings(self, updates: Sequence[EmbeddingUpdate]) -> None:
         self.updated.extend(updates)
