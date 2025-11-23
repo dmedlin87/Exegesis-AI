@@ -10,6 +10,7 @@ from typing import Iterator
 import pytest
 from fastapi import Request as FastAPIRequest
 from fastapi.testclient import TestClient
+from sqlalchemy import text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -83,7 +84,13 @@ def _watchlist_test_client(_watchlist_engine: Engine) -> Iterator[TestClient]:
 def watchlist_client(
     _watchlist_test_client: TestClient, _watchlist_engine: Engine
 ) -> Iterator[tuple[TestClient, Engine]]:
-    _reset_watchlist_database(_watchlist_engine)
+    # Optimization: Don't recreate schema; just clear data
+    with Session(_watchlist_engine) as session:
+        # Delete child table first due to foreign keys
+        session.execute(text("DELETE FROM watchlist_events"))
+        session.execute(text("DELETE FROM user_watchlists"))
+        session.commit()
+
     session_factory = sessionmaker(
         bind=_watchlist_engine,
         autoflush=False,
@@ -105,7 +112,12 @@ def watchlist_client(
     finally:
         app.dependency_overrides.pop(get_session, None)
         app.dependency_overrides.pop(require_principal, None)
-        _reset_watchlist_database(_watchlist_engine)
+
+        # Cleanup after test
+        with Session(_watchlist_engine) as session:
+            session.execute(text("DELETE FROM watchlist_events"))
+            session.execute(text("DELETE FROM user_watchlists"))
+            session.commit()
 
 
 def _set_principal(subject: str) -> None:

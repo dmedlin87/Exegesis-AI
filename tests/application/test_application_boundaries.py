@@ -14,7 +14,7 @@ APPLICATION_ROOT = Path(__file__).resolve().parents[2] / "theo" / "application"
     sorted(APPLICATION_ROOT.rglob("*.py")),
 )
 def test_application_layer_does_not_depend_on_services(module_path: Path) -> None:
-    source = module_path.read_text()
+    source = module_path.read_text(encoding="utf-8")
     tree = ast.parse(source, filename=str(module_path))
 
     for node in ast.walk(tree):

@@ -329,6 +329,111 @@ def _compose_cached_completion(
     return f"{base_text}\n\nSources: {sources}"
 
 
+import concurrent.futures
+
+@dataclass
+class _ValidationResult:
+    passed: bool
+    skipped: bool
+    failed: bool
+    discrepancy: dict[str, Any] | None
+    session_id: str
+    question: str
+
+
+def _validate_entry_task(
+    entry: ChatMemoryEntry,
+    session_id: str,
+    engine: Any,
+    deps: _WorkerDependencies,
+) -> _ValidationResult:
+    """Worker function to validate a single chat entry in a separate thread."""
+
+    question = (entry.question or "").strip()
+    if not question:
+        return _ValidationResult(False, True, False, None, session_id, "")
+
+    cached_citations = _normalise_cached_citations(entry.citations)
+    if not cached_citations:
+        return _ValidationResult(False, True, False, None, session_id, question)
+
+    discrepancy: dict[str, Any] | None = None
+    passed = False
+    failed = False
+    skipped = False
+
+    # Create a dedicated session for this thread
+    with Session(engine) as session:
+        try:
+            request = HybridSearchRequest(
+                query=question,
+                osis=None,
+                filters=HybridSearchFilters(),
+                k=_CITATION_VALIDATION_TOP_K,
+            )
+            results = deps.hybrid_search(session, request)
+
+            expected_citations = deps.build_citations(results)
+            if not expected_citations:
+                logger.warning(
+                    "Citation validation missing retrieval citations",
+                    extra={"session_id": session_id, "question": question},
+                )
+                discrepancy = {
+                    "session_id": session_id,
+                    "question": question,
+                    "status": "missing_retrieval",
+                    "error": "no citations returned",
+                }
+                failed = True
+            else:
+                completion = _compose_cached_completion(entry, cached_citations)
+                deps.validate_model_completion(completion, expected_citations)
+                passed = True
+
+        except GuardrailError as exc:
+            error_message = str(exc)
+            logger.warning(
+                "Citation validation mismatch",
+                extra={
+                    "session_id": session_id,
+                    "question": question,
+                    "error": error_message,
+                    "cited_indices": [citation.index for citation in cached_citations],
+                },
+            )
+            log_workflow_event(
+                "workflow.citation_drift",
+                workflow="citation_validation",
+                status="failed",
+                session_id=session_id,
+                question=question,
+                error=error_message,
+            )
+            discrepancy = {
+                "session_id": session_id,
+                "question": question,
+                "status": "failed",
+                "error": error_message,
+            }
+            failed = True
+        except Exception as exc:
+            error_message = str(exc)
+            logger.warning(
+                "Citation validation retrieval error",
+                extra={"session_id": session_id, "error": error_message},
+            )
+            discrepancy = {
+                "session_id": session_id,
+                "question": question,
+                "status": "retrieval_error",
+                "error": error_message,
+            }
+            failed = True
+
+    return _ValidationResult(passed, skipped, failed, discrepancy, session_id, question)
+
+
 @celery.task(name="tasks.validate_citations")
 def validate_citations(
     job_id: str | None = None,
@@ -357,6 +462,8 @@ def validate_citations(
             session.commit()
 
     try:
+        # 1. Fetch all sessions and entries first (fast, IO-bound but efficient enough)
+        work_items: list[tuple[ChatMemoryEntry, str]] = []
         with Session(engine) as session:
             chat_repo = SQLAlchemyChatSessionRepository(session)
             chat_sessions = chat_repo.list_recent(session_limit)
@@ -366,115 +473,40 @@ def validate_citations(
                 if not entries:
                     continue
                 metrics["sessions"] += 1
-
                 for entry in entries:
-                    question = (entry.question or "").strip()
-                    if not question:
-                        metrics["skipped"] += 1
-                        record_counter(
-                            CITATION_DRIFT_EVENTS_METRIC,
-                            labels={"status": "skipped"},
-                        )
-                        continue
+                    work_items.append((entry, record.id))
 
-                    cached_citations = _normalise_cached_citations(entry.citations)
-                    if not cached_citations:
-                        metrics["skipped"] += 1
-                        record_counter(
-                            CITATION_DRIFT_EVENTS_METRIC,
-                            labels={"status": "skipped"},
-                        )
-                        continue
+        metrics["entries"] = len(work_items)
 
-                    metrics["entries"] += 1
+        # 2. Process entries in parallel
+        # We use a ThreadPoolExecutor because the work is largely I/O bound (DB queries)
+        # Adjust max_workers as needed; 4-8 is usually a safe starting point for DB tasks
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+            futures = {
+                executor.submit(_validate_entry_task, entry, sid, engine, deps): (entry, sid)
+                for entry, sid in work_items
+            }
 
-                    try:
-                        request = HybridSearchRequest(
-                            query=question,
-                            osis=None,
-                            filters=HybridSearchFilters(),
-                            k=_CITATION_VALIDATION_TOP_K,
-                        )
-                        results = deps.hybrid_search(session, request)
-                    except Exception as exc:  # pragma: no cover - defensive logging
-                        error_message = str(exc)
-                        logger.warning(
-                            "Citation validation retrieval error",
-                            extra={"session_id": record.id, "error": error_message},
-                        )
-                        discrepancies.append(
-                            {
-                                "session_id": record.id,
-                                "question": question,
-                                "status": "retrieval_error",
-                                "error": error_message,
-                            }
-                        )
-                        metrics["failed"] += 1
-                        CITATION_DRIFT_EVENTS.labels(status="failed").inc()
-                        continue
+            for future in concurrent.futures.as_completed(futures):
+                result = future.result()
 
-                    expected_citations = deps.build_citations(results)
-                    if not expected_citations:
-                        logger.warning(
-                            "Citation validation missing retrieval citations",
-                            extra={"session_id": record.id, "question": question},
-                        )
-                        discrepancies.append(
-                            {
-                                "session_id": record.id,
-                                "question": question,
-                                "status": "missing_retrieval",
-                                "error": "no citations returned",
-                            }
-                        )
-                        metrics["failed"] += 1
-                        CITATION_DRIFT_EVENTS.labels(status="failed").inc()
-                        continue
-
-                    completion = _compose_cached_completion(entry, cached_citations)
-
-                    try:
-                        deps.validate_model_completion(completion, expected_citations)
-                    except GuardrailError as exc:
-                        error_message = str(exc)
-                        logger.warning(
-                            "Citation validation mismatch",
-                            extra={
-                                "session_id": record.id,
-                                "question": question,
-                                "error": error_message,
-                                "cited_indices": [citation.index for citation in cached_citations],
-                            },
-                        )
-                        log_workflow_event(
-                            "workflow.citation_drift",
-                            workflow="citation_validation",
-                            status="failed",
-                            session_id=record.id,
-                            question=question,
-                            error=error_message,
-                        )
-                        discrepancies.append(
-                            {
-                                "session_id": record.id,
-                                "question": question,
-                                "status": "failed",
-                                "error": error_message,
-                            }
-                        )
-                        metrics["failed"] += 1
-                        CITATION_DRIFT_EVENTS.labels(status="failed").inc()
-                        continue
-
+                if result.skipped:
+                    metrics["skipped"] += 1
+                    record_counter(CITATION_DRIFT_EVENTS_METRIC, labels={"status": "skipped"})
+                elif result.failed:
+                    metrics["failed"] += 1
+                    CITATION_DRIFT_EVENTS.labels(status="failed").inc()
+                    if result.discrepancy:
+                        discrepancies.append(result.discrepancy)
+                elif result.passed:
                     metrics["passed"] += 1
                     CITATION_DRIFT_EVENTS.labels(status="passed").inc()
                     log_workflow_event(
                         "workflow.citation_drift",
                         workflow="citation_validation",
                         status="passed",
-                        session_id=record.id,
-                        question=question,
+                        session_id=result.session_id,
+                        question=result.question,
                     )
 
     except Exception as exc:  # pragma: no cover - surfaced via job failure
@@ -830,8 +862,9 @@ def enrich_document(document_id: str, job_id: str | None = None) -> None:
 
 
 def _summarise_document(session: Session, document: Document) -> tuple[str, list[str]]:
-    passages = (
-        session.query(Passage)
+    # Optimize: fetch only the text column to avoid hydrating full Passage objects
+    rows = (
+        session.query(Passage.text)
         .filter(Passage.document_id == document.id)
         .order_by(
             Passage.page_no.asc(), Passage.t_start.asc(), Passage.start_char.asc()
@@ -839,7 +872,7 @@ def _summarise_document(session: Session, document: Document) -> tuple[str, list
         .limit(3)
         .all()
     )
-    combined = " ".join(passage.text for passage in passages if passage.text)
+    combined = " ".join(row[0] for row in rows if row[0])
     if not combined:
         combined = (document.abstract or "").strip()
     text_content = combined.strip()

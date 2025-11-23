@@ -17,7 +17,7 @@ def test_enforce_authentication_requires_credentials(monkeypatch):
     )
     monkeypatch.setattr(main_module, "get_settings", lambda: settings)
     monkeypatch.setattr(main_module, "allow_insecure_startup", lambda: False)
-    monkeypatch.setattr(main_module, "current_runtime_environment", lambda: "development")
+    monkeypatch.setattr(main_module, "current_runtime_environment", lambda: "production")
 
     with pytest.raises(RuntimeError):
         main_module._enforce_authentication_requirements()

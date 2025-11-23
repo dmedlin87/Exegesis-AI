@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Iterator
 
 import pytest
@@ -15,13 +14,10 @@ from theo.infrastructure.api.app.main import app
 from theo.infrastructure.api.app.retriever import documents as documents_retriever
 from theo.infrastructure.api.app.routes import documents as documents_route
 
-from tests.integration._db import configure_temporary_engine
 
-pytestmark = pytest.mark.schema
-
-
+@pytest.mark.integration
 def test_documents_api_with_real_database_transaction(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    sqlite_session: Session, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Ensure document APIs operate against a live transactional database."""
 
@@ -37,7 +33,10 @@ def test_documents_api_with_real_database_transaction(
     )
     monkeypatch.setattr(documents_route, "get_document", _get_document_with_missing)
 
-    engine = configure_temporary_engine(tmp_path / "api.db")
+    # Ensure no auto-generated dev key interferes with our configured test API key
+    from theo.application.facades.runtime import clear_generated_dev_key
+    clear_generated_dev_key()
+
     container, registry = resolve_application()
 
     document = Document(
@@ -53,11 +52,25 @@ def test_documents_api_with_real_database_transaction(
         tags=("creation", "theology"),
         checksum="abc123",
     )
+    # Patch get_session so the service layer uses our transaction-bound session
+    monkeypatch.setattr("theo.application.facades.database.get_session", lambda: sqlite_session)
+
+    # Patch _session_scope to use our session and prevent commits
+    from contextlib import contextmanager
+    from unittest.mock import patch
+
+    @contextmanager
+    def _mock_session_scope(registry):
+        with patch.object(sqlite_session, "commit"):
+            yield sqlite_session
+
+    monkeypatch.setattr("theo.application.services.bootstrap._session_scope", _mock_session_scope)
+
     container.ingest_document(document)
 
     def _override_session() -> Iterator[Session]:
-        with Session(registry.resolve("engine")) as session:
-            yield session
+        # Use the session from the fixture which is wrapped in a transaction
+        yield sqlite_session
 
     app.dependency_overrides[get_session] = _override_session
     try:
@@ -67,10 +80,16 @@ def test_documents_api_with_real_database_transaction(
             assert response.status_code == 200
             payload = response.json()
             assert payload["items"], "Expected document results"
-            first = payload["items"][0]
-            assert first["id"] == str(document.id)
-            assert first["title"] == document.metadata.title
-            assert first["collection"] == document.metadata.source
+            payload = response.json()
+            assert payload["items"], "Expected document results"
+
+            # Find our document in the results (there might be baseline docs)
+            found_doc = next((item for item in payload["items"] if item["id"] == str(document.id)), None)
+            assert found_doc is not None, f"Document {document.id} not found in results"
+
+            assert found_doc["id"] == str(document.id)
+            assert found_doc["title"] == document.metadata.title
+            assert found_doc["collection"] == document.metadata.source
 
             missing = client.get("/documents/missing", headers=headers)
             assert missing.status_code == 404
@@ -79,4 +98,3 @@ def test_documents_api_with_real_database_transaction(
             assert "Document missing" in detail["detail"]
     finally:
         app.dependency_overrides.pop(get_session, None)
-        engine.dispose()

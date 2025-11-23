@@ -286,12 +286,17 @@ def test_loop_control_state_transitions(
             self, session_id: str, action: LoopControlAction, *, step_id: str | None = None
         ) -> ResearchLoopState:
             super().apply_action(session_id, action, step_id=step_id)
-            return ResearchLoopState(
-                session_id=session_id,
-                status=ResearchLoopStatus.PAUSED,
-                partial_answer="Paused for review",
-                last_action=action.value,
-            )
+            return self.get_state(session_id)
+
+        def get_state(self, session_id: str) -> ResearchLoopState:
+            if self.applied:
+                return ResearchLoopState(
+                    session_id=session_id,
+                    status=ResearchLoopStatus.PAUSED,
+                    partial_answer="Paused for review",
+                    last_action=self.applied[-1]["action"].value,
+                )
+            return super().get_state(session_id)
 
     controller = _LoopController()
     monkeypatch.setattr(chat_module, "_get_loop_controller", lambda _session: controller)

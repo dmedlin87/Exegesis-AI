@@ -418,9 +418,15 @@ def test_api_boots_contradiction_seeding_without_migrations(
     app_factory_module = sys.modules[module_name]
 
     from theo.infrastructure.api.app.db import run_sql_migrations as migrations_module
+    from theo.infrastructure.api.app.bootstrap import lifecycle as lifecycle_module
 
     monkeypatch.setattr(
         migrations_module,
+        "run_sql_migrations",
+        lambda *_, **__: [],
+    )
+    monkeypatch.setattr(
+        lifecycle_module,
         "run_sql_migrations",
         lambda *_, **__: [],
     )

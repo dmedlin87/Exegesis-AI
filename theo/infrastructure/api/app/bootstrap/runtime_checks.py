@@ -95,7 +95,9 @@ def enforce_authentication_requirements(
         return
 
     # In development environments, auto-generate an ephemeral API key
-    if allows_anonymous and generate_ephemeral_dev_key is not None:
+    # But skip this if insecure startup is explicitly allowed (e.g. in tests),
+    # so we can rely on the empty key list to bypass auth checks.
+    if allows_anonymous and generate_ephemeral_dev_key is not None and not insecure_ok:
         generated_key = generate_ephemeral_dev_key()
         if generated_key:
             # Update settings with the generated key

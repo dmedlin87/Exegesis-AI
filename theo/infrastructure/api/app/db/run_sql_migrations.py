@@ -581,6 +581,12 @@ def _execute_python_migration(path: Path, *, session: Session, engine: Engine) -
     upgrade(**kwargs)
 
 
+import functools
+
+@functools.lru_cache(maxsize=1)
+def _cached_migration_files(migrations_path: Path) -> list[Path]:
+    return list(_iter_migration_files(migrations_path))
+
 def run_sql_migrations(
     engine: Engine | None = None,
     migrations_path: Path | None = None,
@@ -609,17 +615,26 @@ def run_sql_migrations(
     AppSetting.__table__.create(bind=engine, checkfirst=True)
 
     applied: list[str] = []
-    migration_files = list(_iter_migration_files(migrations_path))
+    # Use cached file listing
+    migration_files = _cached_migration_files(migrations_path)
     if not migration_files:
         _log_created_indexes(_ensure_performance_indexes(engine))
         return applied
 
     with Session(engine) as session:
+        # Optimization: Fetch all applied migrations at once
+        applied_keys = {
+            row[0]
+            for row in session.query(AppSetting.key).filter(
+                AppSetting.key.startswith(_MIGRATION_KEY_PREFIX)
+            ).all()
+        }
+
         for path in migration_files:
             migration_name = path.name
             key = _migration_key(migration_name)
 
-            existing_entry = session.get(AppSetting, key)
+            is_applied = key in applied_keys
 
             is_sqlite_perspective_migration = (
                 dialect_name == "sqlite"
@@ -650,14 +665,15 @@ def run_sql_migrations(
                         "SQLite perspective column missing prior to migration; enforcing recreation"
                     )
 
-            if existing_entry:
+            if is_applied:
                 if is_sqlite_perspective_migration and sqlite_missing_perspective:
                     logger.info(
                         "Reapplying SQLite perspective migration; removing existing ledger entry"
                     )
-                    session.delete(existing_entry)
+                    # We must delete the record so it can be re-applied
+                    session.query(AppSetting).filter(AppSetting.key == key).delete()
                     session.commit()
-                    existing_entry = None
+                    is_applied = False
                 else:
                     continue
 
@@ -699,7 +715,7 @@ def run_sql_migrations(
             if (
                 is_sqlite_perspective_migration
                 and not sqlite_missing_perspective
-                and existing_entry is None
+                and not is_applied
             ):
                 logger.debug(
                     "Skipping SQLite perspective migration; column already exists"

@@ -127,6 +127,8 @@ def realtime_app() -> FastAPI:
     finally:
         app.dependency_overrides.pop(get_session, None)
         settings_module.get_settings.cache_clear()
+        if "THEO_API_KEYS" in os.environ and os.environ["THEO_API_KEYS"] == '["pytest-default-key"]':
+             del os.environ["THEO_API_KEYS"]
 
 
 @pytest.fixture()

@@ -1,0 +1,47 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-8.4.2, pluggy-1.5.0
+rootdir: C:\Users\dmedl\Projects\Theoria
+configfile: pyproject.toml
+plugins: anyio-4.11.0, Faker-25.9.2, hypothesis-6.124.6, cov-5.0.0, flask-1.3.0, subtests-0.14.2, timeout-2.3.1, schemathesis-3.39.16
+collected 1 item
+
+tests\integration\test_documents_api.py F                                [100%]
+
+================================== FAILURES ===================================
+______________ test_documents_api_with_real_database_transaction ______________
+tests\integration\test_documents_api.py:67: in test_documents_api_with_real_database_transaction
+    assert response.status_code == 200
+E   assert 403 == 200
+E    +  where 403 = <Response [403 Forbidden]>.status_code
+------------------------------ Captured log call ------------------------------
+WARNING  theo.application.services.geo.seed_openbible_geo:seed_openbible_geo.py:594 OpenBible geo dataset not available at C:\Users\dmedl\Projects\Theoria\theo\data\providers\openbible-geo\data
+WARNING  theo.application.facades.settings:settings.py:791 SETTINGS_SECRET_KEY not configured; using insecure fallback for tests
+============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+..\..\AppData\Roaming\Python\Python312\site-packages\google\protobuf\internal\well_known_types.py:91
+  C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\google\protobuf\internal\well_known_types.py:91: DeprecationWarning: datetime.datetime.utcfromtimestamp() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.fromtimestamp(timestamp, datetime.UTC).
+    _EPOCH_DATETIME_NAIVE = datetime.datetime.utcfromtimestamp(0)
+
+..\..\AppData\Roaming\Python\Python312\site-packages\testcontainers\core\waiting_utils.py:215
+  C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\testcontainers\core\waiting_utils.py:215: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready()
+
+..\..\AppData\Roaming\Python\Python312\site-packages\testcontainers\postgres\__init__.py:90
+  C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\testcontainers\postgres\__init__.py:90: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================ slowest 50 durations =============================
+2.39s call     tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction
+1.16s setup    tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction
+
+(1 durations < 0.05s hidden.)
+=========================== short test summary info ===========================
+FAILED tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction
+======================== 1 failed, 5 warnings in 5.26s ========================
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

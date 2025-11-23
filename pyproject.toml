@@ -167,6 +167,7 @@ norecursedirs = [
 markers = [
     "redteam: OWASP LLM red-team regression suite",
     "no_auth_override: disable authentication override fixture for security assertions",
+    "integration: integration tests",
     "slow: long-running tests that require opt-in",
     "enable_migrations: allow database migrations to execute in tests",
     "pgvector: tests that require the pgvector/Postgres testcontainer",

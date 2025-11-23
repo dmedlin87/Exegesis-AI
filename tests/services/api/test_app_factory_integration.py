@@ -53,8 +53,8 @@ def patched_app_environment(monkeypatch: pytest.MonkeyPatch):
 
     stub_container = StubContainer()
 
-    def fake_principal(config: str | None, key: str):
-        principal_calls.append((config, key))
+    def fake_principal():
+        principal_calls.append((None, "configured"))
         principal_configured.append(True)
 
     monkeypatch.setattr(
@@ -222,7 +222,7 @@ def test_create_app_with_components(
     body = response.json()
     assert body == {"ok": True, "principal": {"method": "api_key", "subject": "test-key"}}
     assert response.headers["x-trace-id"] == "trace-123"
-    assert patched_app_environment.principal_calls == [(None, "test-key")]
+    assert patched_app_environment.principal_calls == [(None, "configured")]
 
     error_response = client.get("/demo/boom", headers={"X-API-Key": "test-key"})
     assert error_response.status_code == 418
@@ -232,7 +232,7 @@ def test_create_app_with_components(
     assert payload["trace_id"] == "trace-123"
     assert error_response.headers["x-trace-id"] == "trace-123"
 
-    assert patched_app_environment.principal_calls == [(None, "test-key"), (None, "test-key")]
+    assert patched_app_environment.principal_calls == [(None, "configured"), (None, "configured")]
 
     middleware_names = {middleware.cls.__name__ for middleware in app.user_middleware}
     assert "ErrorReportingMiddleware" in middleware_names

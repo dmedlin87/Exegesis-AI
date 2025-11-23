@@ -1,0 +1,436 @@
+2025-11-22 12:10:02.500098: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-11-22 12:10:03.563917: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-8.4.2, pluggy-1.5.0 -- C:\Python312\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default' -> database=DirectoryBasedExampleDatabase(WindowsPath('C:/Users/dmedl/Projects/Theoria/.hypothesis/examples'))
+rootdir: C:\Users\dmedl\Projects\Theoria
+configfile: pyproject.toml
+plugins: anyio-4.11.0, Faker-25.9.2, hypothesis-6.124.6, cov-5.0.0, flask-1.3.0, subtests-0.14.2, timeout-2.3.1, schemathesis-3.39.16
+collecting ... 
+----------------------------- live log collection -----------------------------
+DEBUG    theo.infrastructure.api.app.bootstrap.app_factory:runtime_checks.py:74 ENFORCE_AUTH: api_keys=[], env THEO_API_KEYS=None
+DEBUG    theo.infrastructure.api.app.bootstrap.app_factory:runtime_checks.py:109 Dev key check: api_keys=[], env THEO_API_KEYS=None
+WARNING  theo.application.facades.runtime:runtime.py:95 \n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n  AUTO-GENERATED DEVELOPMENT API KEY\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n  No API keys configured. Generated ephemeral key for this session:\n\n  dev-Pu6RTFiJqKdOEpCOhz6eqjtzmAkCnrOW1_tGqYv1L4o\n\n  Use this key in your requests:\n    Authorization: Bearer dev-Pu6RTFiJqKdOEpCOhz6eqjtzmAkCnrOW1_tGqYv1L4o\n\n  This key is valid only for this process lifetime.\n  Configure THEO_API_KEYS for persistent authentication.\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nDEBUG    theo.infrastructure.api.app.bootstrap.app_factory:runtime_checks.py:120 Generated and added dev key: dev-Pu6RTFiJqKdOEpCOhz6eqjtzmAkCnrOW1_tGqYv1L4o
+WARNING  theo.infrastructure.api.app.bootstrap.app_factory:runtime_checks.py:151 Starting without SETTINGS_SECRET_KEY because THEO_ALLOW_INSECURE_STARTUP is enabled. Secrets will not be persisted securely.
+INFO     theo.infrastructure.api.app.error_handlers:error_handlers.py:145 Installed standardized domain error handlers
+INFO     theo.infrastructure.api.app.bootstrap.app_factory:app_factory.py:378 Registered API version 1.0 as default
+collected 1 item
+
+tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction 
+------------------------------- live log setup --------------------------------
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240601_vector_lexeme.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240701_research_contradictions_geo.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240820_agent_trails.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240901_creator_verse_rollups.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241010_openbible_geo.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20241102_ingestion_job_args_hash_unique.sql
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241205_chat_sessions.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241220_trail_retrieval_snapshots.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250115_watchlist_timestamp_indexes.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:704 Skipping SQLite perspective migration; column already exists
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:813 SQLite perspective column present after migration execution
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250223_chat_goals.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:744 Applied SQLite fallback handler for chat goals migration
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250226_feedback_events.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250301_mcp_research_updates.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250305_case_builder_tables.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250310_case_builder_tables.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250312_transcript_verse_indexes.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250315_add_seed_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250315_backfill_seed_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250315_seed_verse_ranges.sql
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN start_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN end_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN start_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN end_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE commentary_excerpt_seeds
+    ADD COLUMN start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE commentary_excerpt_seeds
+    ADD COLUMN end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250320_geo_location_similarity.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250325_backfill_seed_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250325_passage_verses.sql
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250326_seed_verse_range_indexes.sql
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250327_rename_seed_verse_range_indexes.sql
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250328_backfill_passage_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250328_passage_verse_ranges.sql
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE passages
+    ADD COLUMN osis_start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE passages
+    ADD COLUMN osis_end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250330_chat_memory_metadata.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250405_discoveries_tables.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250420_audit_logs.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250424_audit_claim_cards.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250430_ensure_contradiction_perspective.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250510_remove_case_builder.py
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240601_vector_lexeme.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240701_research_contradictions_geo.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240820_agent_trails.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240901_creator_verse_rollups.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241010_openbible_geo.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20241102_ingestion_job_args_hash_unique.sql
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241205_chat_sessions.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241220_trail_retrieval_snapshots.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250115_watchlist_timestamp_indexes.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:704 Skipping SQLite perspective migration; column already exists
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:813 SQLite perspective column present after migration execution
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250223_chat_goals.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:744 Applied SQLite fallback handler for chat goals migration
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250226_feedback_events.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250301_mcp_research_updates.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250305_case_builder_tables.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250310_case_builder_tables.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250312_transcript_verse_indexes.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250315_add_seed_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250315_backfill_seed_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250315_seed_verse_ranges.sql
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN start_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN end_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN start_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN end_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE commentary_excerpt_seeds
+    ADD COLUMN start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE commentary_excerpt_seeds
+    ADD COLUMN end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250320_geo_location_similarity.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250325_backfill_seed_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250325_passage_verses.sql
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250326_seed_verse_range_indexes.sql
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250327_rename_seed_verse_range_indexes.sql
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250328_backfill_passage_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250328_passage_verse_ranges.sql
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE passages
+    ADD COLUMN osis_start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE passages
+    ADD COLUMN osis_end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250330_chat_memory_metadata.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250405_discoveries_tables.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250420_audit_logs.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250424_audit_claim_cards.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250430_ensure_contradiction_perspective.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250510_remove_case_builder.py
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:144 Skipping index idx_passages_embedding_null; column embedding missing on passages
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:144 Skipping index idx_passages_document_id; column embedding missing on passages
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:182 Ensured database indexes: idx_documents_updated_at
+-------------------------------- live log call --------------------------------
+DEBUG    asyncio:proactor_events.py:634 Using proactor: IocpProactor
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240601_vector_lexeme.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240701_research_contradictions_geo.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240820_agent_trails.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240901_creator_verse_rollups.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241010_openbible_geo.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241205_chat_sessions.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241220_trail_retrieval_snapshots.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250115_watchlist_timestamp_indexes.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250226_feedback_events.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250301_mcp_research_updates.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250305_case_builder_tables.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250310_case_builder_tables.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250312_transcript_verse_indexes.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250320_geo_location_similarity.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250330_chat_memory_metadata.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:144 Skipping index idx_passages_embedding_null; column embedding missing on passages
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:144 Skipping index idx_passages_document_id; column embedding missing on passages
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:182 Ensured database indexes: idx_documents_updated_at
+INFO     theo.infrastructure.api.app.db.seeds:seeds.py:1430 Seeding reference datasets during application startup
+INFO     theo.infrastructure.api.app.db.seeds:seeds.py:1015 Ensured 6 contradiction seeds are present
+WARNING  theo.application.services.geo.seed_openbible_geo:seed_openbible_geo.py:594 OpenBible geo dataset not available at C:\Users\dmedl\Projects\Theoria\theo\data\providers\openbible-geo\data
+INFO     theo.application.services.geo.seed_openbible_geo:seed_openbible_geo.py:263 Seeding fallback OpenBible geo sample dataset
+WARNING  theo.application.facades.settings:settings.py:791 SETTINGS_SECRET_KEY not configured; using insecure fallback for tests
+INFO     theo.application.services.geo.seed_openbible_geo:seed_openbible_geo.py:300 Successfully seeded sample dataset
+DEBUG    tzlocal:win32.py:55 Looking up time zone info from registry
+INFO     apscheduler.scheduler:base.py:507 Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO     apscheduler.scheduler:base.py:1090 Added job "Refresh discoveries for all users" to job store "default"
+INFO     apscheduler.scheduler:base.py:214 Scheduler started
+DEBUG    apscheduler.scheduler:base.py:1151 Looking for jobs to run
+INFO     theo.infrastructure.api.app.workers.discovery_scheduler:discovery_scheduler.py:67 Discovery scheduler started
+DEBUG    apscheduler.scheduler:base.py:1258 Next wakeup is due at 2025-11-22 18:40:12.495976+00:00 (in 1800.000000 seconds)
+INFO     theo.infrastructure.api.app.bootstrap.lifecycle:lifecycle.py:83 Discovery scheduler started successfully
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/documents "HTTP/1.1 307 Temporary Redirect"
+DEBUG    theo.infrastructure.api.app.adapters.security:security.py:99 AUTH: Checking key='pytest-default-key' against allowed={'dev-Pu6RTFiJqKdOEpCOhz6eqjtzmAkCnrOW1_tGqYv1L4o'}
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/documents/ "HTTP/1.1 403 Forbidden"
+INFO     apscheduler.scheduler:base.py:245 Scheduler has been shut down
+DEBUG    apscheduler.scheduler:base.py:1151 Looking for jobs to run
+DEBUG    apscheduler.scheduler:base.py:1252 No jobs; waiting until a job is added
+INFO     theo.infrastructure.api.app.workers.discovery_scheduler:discovery_scheduler.py:76 Discovery scheduler stopped
+INFO     theo.infrastructure.api.app.bootstrap.lifecycle:lifecycle.py:95 Discovery scheduler stopped
+FAILED
+
+================================== FAILURES ===================================
+______________ test_documents_api_with_real_database_transaction ______________
+
+sqlite_session = <sqlalchemy.orm.session.Session object at 0x000001DA0E0FC500>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001DA0E054D40>
+
+    @pytest.mark.integration
+    def test_documents_api_with_real_database_transaction(
+        sqlite_session: Session, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Ensure document APIs operate against a live transactional database."""
+    
+        real_get_document = documents_retriever.get_document
+    
+        def _get_document_with_missing(session: Session, document_id: str):
+            if document_id == "missing":
+                raise KeyError("Document missing")
+            return real_get_document(session, document_id)
+    
+        monkeypatch.setattr(
+            documents_retriever, "get_document", _get_document_with_missing
+        )
+        monkeypatch.setattr(documents_route, "get_document", _get_document_with_missing)
+    
+        # Ensure no auto-generated dev key interferes with our configured test API key
+        from theo.application.facades.runtime import clear_generated_dev_key
+        clear_generated_dev_key()
+    
+        container, registry = resolve_application()
+    
+        document = Document(
+            id=DocumentId("doc-biblical"),
+            metadata=DocumentMetadata(
+                title="Genesis Commentary",
+                source="manuscript",
+                language="hebrew",
+                created_at=datetime(2024, 1, 1, tzinfo=timezone.utc),
+                updated_at=datetime(2024, 1, 1, tzinfo=timezone.utc),
+            ),
+            scripture_refs=("Gen.1.1",),
+            tags=("creation", "theology"),
+            checksum="abc123",
+        )
+        # Ingest into the shared session
+        container.ingest_document(document)
+    
+        # Override the dependency to use our test session
+        def _override_session() -> Iterator[Session]:
+            yield sqlite_session
+    
+        app.dependency_overrides[get_session] = _override_session
+        try:
+            with TestClient(app) as client:
+                headers = {"X-API-Key": "pytest-default-key"}
+                response = client.get("/documents", headers=headers)
+>               assert response.status_code == 200
+E               assert 403 == 200
+E                +  where 403 = <Response [403 Forbidden]>.status_code
+
+tests\integration\test_documents_api.py:67: AssertionError
+----------------------------- Captured log setup ------------------------------
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240601_vector_lexeme.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240701_research_contradictions_geo.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240820_agent_trails.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240901_creator_verse_rollups.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241010_openbible_geo.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20241102_ingestion_job_args_hash_unique.sql
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241205_chat_sessions.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241220_trail_retrieval_snapshots.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250115_watchlist_timestamp_indexes.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:704 Skipping SQLite perspective migration; column already exists
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:813 SQLite perspective column present after migration execution
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250223_chat_goals.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:744 Applied SQLite fallback handler for chat goals migration
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250226_feedback_events.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250301_mcp_research_updates.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250305_case_builder_tables.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250310_case_builder_tables.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250312_transcript_verse_indexes.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250315_add_seed_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250315_backfill_seed_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250315_seed_verse_ranges.sql
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN start_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN end_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN start_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN end_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE commentary_excerpt_seeds
+    ADD COLUMN start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE commentary_excerpt_seeds
+    ADD COLUMN end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250320_geo_location_similarity.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250325_backfill_seed_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250325_passage_verses.sql
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250326_seed_verse_range_indexes.sql
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250327_rename_seed_verse_range_indexes.sql
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250328_backfill_passage_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250328_passage_verse_ranges.sql
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE passages
+    ADD COLUMN osis_start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE passages
+    ADD COLUMN osis_end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250330_chat_memory_metadata.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250405_discoveries_tables.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250420_audit_logs.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250424_audit_claim_cards.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250430_ensure_contradiction_perspective.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250510_remove_case_builder.py
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240601_vector_lexeme.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240701_research_contradictions_geo.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240820_agent_trails.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240901_creator_verse_rollups.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241010_openbible_geo.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20241102_ingestion_job_args_hash_unique.sql
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241205_chat_sessions.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241220_trail_retrieval_snapshots.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250115_watchlist_timestamp_indexes.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:704 Skipping SQLite perspective migration; column already exists
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:813 SQLite perspective column present after migration execution
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250223_chat_goals.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:744 Applied SQLite fallback handler for chat goals migration
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250226_feedback_events.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250301_mcp_research_updates.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250305_case_builder_tables.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250310_case_builder_tables.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250312_transcript_verse_indexes.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250315_add_seed_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250315_backfill_seed_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250315_seed_verse_ranges.sql
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN start_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE contradiction_seeds
+    ADD COLUMN end_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN start_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE harmony_seeds
+    ADD COLUMN end_verse_id_b INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE commentary_excerpt_seeds
+    ADD COLUMN start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE commentary_excerpt_seeds
+    ADD COLUMN end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250320_geo_location_similarity.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250325_backfill_seed_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250325_passage_verses.sql
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250326_seed_verse_range_indexes.sql
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250327_rename_seed_verse_range_indexes.sql
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250328_backfill_passage_verse_ranges.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:750 Applying SQL migration: 20250328_passage_verse_ranges.sql
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE passages
+    ADD COLUMN osis_start_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:793 Skipping SQLite migration statement; column already exists: ALTER TABLE passages
+    ADD COLUMN osis_end_verse_id INTEGER
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250330_chat_memory_metadata.sql for SQLite (Postgres-only constructs detected)
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250405_discoveries_tables.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250420_audit_logs.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250424_audit_claim_cards.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250430_ensure_contradiction_perspective.py
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:666 Applying Python migration: 20250510_remove_case_builder.py
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:144 Skipping index idx_passages_embedding_null; column embedding missing on passages
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:144 Skipping index idx_passages_document_id; column embedding missing on passages
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:182 Ensured database indexes: idx_documents_updated_at
+------------------------------ Captured log call ------------------------------
+DEBUG    asyncio:proactor_events.py:634 Using proactor: IocpProactor
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240601_vector_lexeme.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240701_research_contradictions_geo.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240820_agent_trails.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20240901_creator_verse_rollups.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241010_openbible_geo.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241205_chat_sessions.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20241220_trail_retrieval_snapshots.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250115_watchlist_timestamp_indexes.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250226_feedback_events.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250301_mcp_research_updates.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250305_case_builder_tables.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250310_case_builder_tables.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250312_transcript_verse_indexes.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250320_geo_location_similarity.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:731 Skipping migration 20250330_chat_memory_metadata.sql for SQLite (Postgres-only constructs detected)
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:144 Skipping index idx_passages_embedding_null; column embedding missing on passages
+DEBUG    theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:144 Skipping index idx_passages_document_id; column embedding missing on passages
+INFO     theo.infrastructure.api.app.db.run_sql_migrations:run_sql_migrations.py:182 Ensured database indexes: idx_documents_updated_at
+INFO     theo.infrastructure.api.app.db.seeds:seeds.py:1430 Seeding reference datasets during application startup
+INFO     theo.infrastructure.api.app.db.seeds:seeds.py:1015 Ensured 6 contradiction seeds are present
+WARNING  theo.application.services.geo.seed_openbible_geo:seed_openbible_geo.py:594 OpenBible geo dataset not available at C:\Users\dmedl\Projects\Theoria\theo\data\providers\openbible-geo\data
+INFO     theo.application.services.geo.seed_openbible_geo:seed_openbible_geo.py:263 Seeding fallback OpenBible geo sample dataset
+WARNING  theo.application.facades.settings:settings.py:791 SETTINGS_SECRET_KEY not configured; using insecure fallback for tests
+INFO     theo.application.services.geo.seed_openbible_geo:seed_openbible_geo.py:300 Successfully seeded sample dataset
+DEBUG    tzlocal:win32.py:55 Looking up time zone info from registry
+INFO     apscheduler.scheduler:base.py:507 Adding job tentatively -- it will be properly scheduled when the scheduler starts
+INFO     apscheduler.scheduler:base.py:1090 Added job "Refresh discoveries for all users" to job store "default"
+INFO     apscheduler.scheduler:base.py:214 Scheduler started
+DEBUG    apscheduler.scheduler:base.py:1151 Looking for jobs to run
+INFO     theo.infrastructure.api.app.workers.discovery_scheduler:discovery_scheduler.py:67 Discovery scheduler started
+DEBUG    apscheduler.scheduler:base.py:1258 Next wakeup is due at 2025-11-22 18:40:12.495976+00:00 (in 1800.000000 seconds)
+INFO     theo.infrastructure.api.app.bootstrap.lifecycle:lifecycle.py:83 Discovery scheduler started successfully
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/documents "HTTP/1.1 307 Temporary Redirect"
+DEBUG    theo.infrastructure.api.app.adapters.security:security.py:99 AUTH: Checking key='pytest-default-key' against allowed={'dev-Pu6RTFiJqKdOEpCOhz6eqjtzmAkCnrOW1_tGqYv1L4o'}
+INFO     httpx:_client.py:1025 HTTP Request: GET http://testserver/documents/ "HTTP/1.1 403 Forbidden"
+INFO     apscheduler.scheduler:base.py:245 Scheduler has been shut down
+DEBUG    apscheduler.scheduler:base.py:1151 Looking for jobs to run
+DEBUG    apscheduler.scheduler:base.py:1252 No jobs; waiting until a job is added
+INFO     theo.infrastructure.api.app.workers.discovery_scheduler:discovery_scheduler.py:76 Discovery scheduler stopped
+INFO     theo.infrastructure.api.app.bootstrap.lifecycle:lifecycle.py:95 Discovery scheduler stopped
+============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+..\..\AppData\Roaming\Python\Python312\site-packages\google\protobuf\internal\well_known_types.py:91
+  C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\google\protobuf\internal\well_known_types.py:91: DeprecationWarning: datetime.datetime.utcfromtimestamp() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.fromtimestamp(timestamp, datetime.UTC).
+    _EPOCH_DATETIME_NAIVE = datetime.datetime.utcfromtimestamp(0)
+
+..\..\AppData\Roaming\Python\Python312\site-packages\testcontainers\core\waiting_utils.py:215
+  C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\testcontainers\core\waiting_utils.py:215: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready()
+
+..\..\AppData\Roaming\Python\Python312\site-packages\testcontainers\postgres\__init__.py:90
+  C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\testcontainers\postgres\__init__.py:90: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================ slowest 50 durations =============================
+2.64s call     tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction
+1.36s setup    tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction
+
+(1 durations < 0.05s hidden.)
+=========================== short test summary info ===========================
+FAILED tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+======================== 1 failed, 5 warnings in 6.27s ========================
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

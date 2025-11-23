@@ -1,37 +1,15 @@
 from __future__ import annotations
 
-import os
-
-# Set test environment defaults immediately to ensure they are present
-# before any application modules are imported (which might happen at collection time).
-os.environ.setdefault("THEORIA_ENVIRONMENT", "test")
-os.environ.setdefault("THEO_ALLOW_INSECURE_STARTUP", "1")
-
-# Force use of real FastAPI and Celery packages during testing
-# This prevents import errors when shims don't expose all required submodules
-os.environ["THEORIA_ALLOW_REAL_FASTAPI"] = "1"
-os.environ["THEORIA_ALLOW_REAL_CELERY"] = "1"
-
 import importlib
 import importlib.util
 import sys
 import types
-import warnings
+from collections.abc import Iterable
 from dataclasses import dataclass
-from collections.abc import Iterable, Iterator
-from contextlib import contextmanager
 from typing import Any, Callable
 
-import pytest
 
-
-pytest_plugins = [
-    "tests.fixtures.research",
-    "tests.fixtures.verses",
-]
-
-
-def _build_sqlalchemy_stub_modules() -> dict[str, types.ModuleType]:
+def build_sqlalchemy_stub_modules() -> dict[str, types.ModuleType]:
     sqlalchemy_stub = types.ModuleType("sqlalchemy")
 
     class _Placeholder:
@@ -197,7 +175,7 @@ def _build_sqlalchemy_stub_modules() -> dict[str, types.ModuleType]:
     }
 
 
-def _build_pythonbible_stub_module() -> types.ModuleType:
+def build_pythonbible_stub_module() -> types.ModuleType:
     module = types.ModuleType("pythonbible")
 
     class _BookEntry:
@@ -320,7 +298,7 @@ def _build_pythonbible_stub_module() -> types.ModuleType:
     return module
 
 
-def _build_cryptography_stub_modules() -> dict[str, types.ModuleType]:
+def build_cryptography_stub_modules() -> dict[str, types.ModuleType]:
     module = types.ModuleType("cryptography")
     fernet_module = types.ModuleType("cryptography.fernet")
 
@@ -341,7 +319,7 @@ def _build_cryptography_stub_modules() -> dict[str, types.ModuleType]:
     }
 
 
-def _build_httpx_stub_module() -> types.ModuleType:
+def build_httpx_stub_module() -> types.ModuleType:
     module = types.ModuleType("httpx")
 
     class HTTPStatusError(Exception):
@@ -399,7 +377,7 @@ def _build_httpx_stub_module() -> types.ModuleType:
     return module
 
 
-def _build_cachetools_stub_module() -> types.ModuleType:
+def build_cachetools_stub_module() -> types.ModuleType:
     module = types.ModuleType("cachetools")
 
     class LRUCache(dict):  # pragma: no cover - placeholder
@@ -421,7 +399,7 @@ def _build_cachetools_stub_module() -> types.ModuleType:
     return module
 
 
-def _build_settings_stub_module() -> types.ModuleType:
+def build_settings_stub_module() -> types.ModuleType:
     module_name = "theo.application.facades.settings"
     settings_module = types.ModuleType(module_name)
 
@@ -445,7 +423,7 @@ def _build_settings_stub_module() -> types.ModuleType:
     return settings_module
 
 
-def _build_pydantic_stub_module() -> types.ModuleType:
+def build_pydantic_stub_module() -> types.ModuleType:
     module = types.ModuleType("pydantic")
 
     class BaseModel:  # pragma: no cover - lightweight substitute
@@ -482,15 +460,15 @@ def _build_pydantic_stub_module() -> types.ModuleType:
     return module
 
 
-def _install_optional_dependency_stubs() -> None:
+def install_optional_dependency_stubs() -> None:
     """Install stub modules for optional dependencies that are missing."""
 
     optional_modules: dict[str, Callable[[], dict[str, types.ModuleType]]] = {
-        "sqlalchemy": _build_sqlalchemy_stub_modules,
-        "pythonbible": lambda: {"pythonbible": _build_pythonbible_stub_module()},
-        "httpx": lambda: {"httpx": _build_httpx_stub_module()},
-        "cachetools": lambda: {"cachetools": _build_cachetools_stub_module()},
-        "pydantic": lambda: {"pydantic": _build_pydantic_stub_module()},
+        "sqlalchemy": build_sqlalchemy_stub_modules,
+        "pythonbible": lambda: {"pythonbible": build_pythonbible_stub_module()},
+        "httpx": lambda: {"httpx": build_httpx_stub_module()},
+        "cachetools": lambda: {"cachetools": build_cachetools_stub_module()},
+        "pydantic": lambda: {"pydantic": build_pydantic_stub_module()},
     }
 
     for module_name, builder in optional_modules.items():
@@ -500,98 +478,3 @@ def _install_optional_dependency_stubs() -> None:
             continue
         for name, module in builder().items():
             sys.modules.setdefault(name, module)
-
-
-if os.environ.get("THEORIA_LIGHTWEIGHT_TESTS") == "1":
-    _install_optional_dependency_stubs()
-
-
-@contextmanager
-def _override_modules(
-    modules: dict[str, types.ModuleType]
-) -> Iterator[dict[str, types.ModuleType]]:
-    """Temporarily replace entries in :mod:`sys.modules` with test doubles."""
-
-    sentinel = object()
-    originals: dict[str, object] = {}
-    for name, module in modules.items():
-        originals[name] = sys.modules.get(name, sentinel)
-        sys.modules[name] = module
-    try:
-        yield modules
-    finally:
-        for name, original in originals.items():
-            if original is sentinel:
-                sys.modules.pop(name, None)
-            else:
-                sys.modules[name] = original  # type: ignore[assignment]
-
-
-@pytest.fixture
-def stub_sqlalchemy() -> Iterator[types.ModuleType]:
-    """Provide a lightweight SQLAlchemy shim for dependency-light tests."""
-
-    with _override_modules(_build_sqlalchemy_stub_modules()) as installed:
-        yield installed["sqlalchemy"]
-
-
-@pytest.fixture
-def stub_pythonbible() -> Iterator[types.ModuleType]:
-    """Expose a minimal pythonbible replacement for tests that avoid the real package."""
-
-    with _override_modules({"pythonbible": _build_pythonbible_stub_module()}) as installed:
-        yield installed["pythonbible"]
-
-
-@pytest.fixture
-def stub_cryptography() -> Iterator[dict[str, types.ModuleType]]:
-    """Install the cryptography.Fernet stub during the test body."""
-
-    modules = _build_cryptography_stub_modules()
-    with _override_modules(modules) as installed:
-        yield installed
-
-
-@pytest.fixture
-def stub_httpx() -> Iterator[types.ModuleType]:
-    """Yield a simple httpx module that mirrors the interface used in tests."""
-
-    with _override_modules({"httpx": _build_httpx_stub_module()}) as installed:
-        yield installed["httpx"]
-
-
-@pytest.fixture
-def stub_cachetools() -> Iterator[types.ModuleType]:
-    """Expose a deterministic cachetools stub with :class:`LRUCache`."""
-
-    with _override_modules({"cachetools": _build_cachetools_stub_module()}) as installed:
-        yield installed["cachetools"]
-
-
-@pytest.fixture
-def stub_settings_facade() -> Iterator[types.ModuleType]:
-    """Provide a pared-down settings facade for tests lacking secrets backends."""
-
-    module_name = "theo.application.facades.settings"
-    with _override_modules({module_name: _build_settings_stub_module()}) as installed:
-        yield installed[module_name]
-
-_HAS_PYTEST_TIMEOUT = importlib.util.find_spec("pytest_timeout") is not None
-
-
-def pytest_addoption(parser):
-    """Register custom options expected by the test configuration."""
-    if not _HAS_PYTEST_TIMEOUT:
-        parser.addoption(
-            "--timeout",
-            action="store",
-            default=None,
-            help=(
-                "Ignored. Allows running the test suite without the pytest-timeout "
-                "plugin installed."
-            ),
-        )
-        warnings.filterwarnings(
-            "ignore",
-            message="pytest.PytestConfigWarning: Unknown config option: timeout",
-        )

@@ -1,0 +1,148 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-8.4.2, pluggy-1.5.0 -- C:\Python312\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default' -> database=DirectoryBasedExampleDatabase(WindowsPath('C:/Users/dmedl/Projects/Theoria/.hypothesis/examples'))
+rootdir: C:\Users\dmedl\Projects\Theoria
+configfile: pyproject.toml
+plugins: anyio-4.11.0, Faker-25.9.2, hypothesis-6.124.6, cov-5.0.0, flask-1.3.0, subtests-0.14.2, timeout-2.3.1, schemathesis-3.39.16
+collecting ... collected 1 item
+
+tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction FAILED [100%]
+
+================================== FAILURES ===================================
+______________ test_documents_api_with_real_database_transaction ______________
+
+sqlite_session = <sqlalchemy.orm.session.Session object at 0x000002040E3BA060>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002040E08EA80>
+
+    @pytest.mark.integration
+    def test_documents_api_with_real_database_transaction(
+        sqlite_session: Session, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Ensure document APIs operate against a live transactional database."""
+    
+        real_get_document = documents_retriever.get_document
+    
+        def _get_document_with_missing(session: Session, document_id: str):
+            if document_id == "missing":
+                raise KeyError("Document missing")
+            return real_get_document(session, document_id)
+    
+        monkeypatch.setattr(
+            documents_retriever, "get_document", _get_document_with_missing
+        )
+        monkeypatch.setattr(documents_route, "get_document", _get_document_with_missing)
+    
+        container, registry = resolve_application()
+    
+        document = Document(
+            id=DocumentId("doc-biblical"),
+            metadata=DocumentMetadata(
+                title="Genesis Commentary",
+                source="manuscript",
+                language="hebrew",
+                created_at=datetime(2024, 1, 1, tzinfo=timezone.utc),
+                updated_at=datetime(2024, 1, 1, tzinfo=timezone.utc),
+            ),
+            scripture_refs=("Gen.1.1",),
+            tags=("creation", "theology"),
+            checksum="abc123",
+        )
+        # Ingest into the shared session
+        container.ingest_document(document)
+    
+        # Override the dependency to use our test session
+        def _override_session() -> Iterator[Session]:
+            yield sqlite_session
+    
+        app.dependency_overrides[get_session] = _override_session
+        try:
+            with TestClient(app) as client:
+                headers = {"X-API-Key": "pytest-default-key"}
+                response = client.get("/documents", headers=headers)
+>               assert response.status_code == 200
+E               assert 403 == 200
+E                +  where 403 = <Response [403 Forbidden]>.status_code
+
+tests\integration\test_documents_api.py:65: AssertionError
+------------------------------ Captured log call ------------------------------
+WARNING  theo.infrastructure.api.app.bootstrap.lifecycle:lifecycle.py:67 Failed to run SQL migrations during startup
+Traceback (most recent call last):
+  File "C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.OperationalError: error in table document_annotations after drop column: unknown column "case_object_id" in foreign key definition
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\dmedl\Projects\Theoria\theo\infrastructure\api\app\bootstrap\lifecycle.py", line 65, in lifespan
+    run_sql_migrations(engine)
+  File "C:\Users\dmedl\Projects\Theoria\theo\infrastructure\api\app\db\run_sql_migrations.py", line 667, in run_sql_migrations
+    _execute_python_migration(path, session=session, engine=engine)
+  File "C:\Users\dmedl\Projects\Theoria\theo\infrastructure\api\app\db\run_sql_migrations.py", line 581, in _execute_python_migration
+    upgrade(**kwargs)
+  File "C:\Users\dmedl\Projects\Theoria\theo\infrastructure\api\app\db\migrations\20250510_remove_case_builder.py", line 36, in upgrade
+    session.execute(text("ALTER TABLE document_annotations DROP COLUMN case_object_id"))
+  File "C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\sqlalchemy\orm\session.py", line 2351, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\sqlalchemy\orm\session.py", line 2258, in _execute_internal
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\sqlalchemy\engine\default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) error in table document_annotations after drop column: unknown column "case_object_id" in foreign key definition
+[SQL: ALTER TABLE document_annotations DROP COLUMN case_object_id]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+WARNING  theo.application.services.geo.seed_openbible_geo:seed_openbible_geo.py:594 OpenBible geo dataset not available at C:\Users\dmedl\Projects\Theoria\theo\data\providers\openbible-geo\data
+WARNING  theo.application.facades.settings:settings.py:791 SETTINGS_SECRET_KEY not configured; using insecure fallback for tests
+============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+..\..\AppData\Roaming\Python\Python312\site-packages\google\protobuf\internal\well_known_types.py:91
+  C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\google\protobuf\internal\well_known_types.py:91: DeprecationWarning: datetime.datetime.utcfromtimestamp() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.fromtimestamp(timestamp, datetime.UTC).
+    _EPOCH_DATETIME_NAIVE = datetime.datetime.utcfromtimestamp(0)
+
+..\..\AppData\Roaming\Python\Python312\site-packages\testcontainers\core\waiting_utils.py:215
+  C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\testcontainers\core\waiting_utils.py:215: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready()
+
+..\..\AppData\Roaming\Python\Python312\site-packages\testcontainers\postgres\__init__.py:90
+  C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\testcontainers\postgres\__init__.py:90: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================== slowest durations ==============================
+2.26s call     tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction
+1.16s setup    tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction
+
+(1 durations < 0.05s hidden.)
+=========================== short test summary info ===========================
+FAILED tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction - assert 403 == 200
+ +  where 403 = <Response [403 Forbidden]>.status_code
+======================== 1 failed, 5 warnings in 5.24s ========================
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

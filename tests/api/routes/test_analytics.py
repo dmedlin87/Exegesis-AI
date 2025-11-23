@@ -14,18 +14,17 @@ class TestTelemetryIngestion:
     ) -> None:
         """Test accepting valid telemetry batch."""
         payload = {
-            "session_id": "test-session-123",
-            "user_id": "test-user",
+            "page": "/search",
             "events": [
                 {
-                    "event_type": "page_view",
-                    "timestamp": "2025-01-15T12:00:00Z",
-                    "properties": {"page": "/search"},
+                    "event": "page_view",
+                    "duration_ms": 0.0,
+                    "metadata": {"page": "/search"},
                 },
                 {
-                    "event_type": "search_query",
-                    "timestamp": "2025-01-15T12:01:00Z",
-                    "properties": {"query": "faith", "results_count": 10},
+                    "event": "search_query",
+                    "duration_ms": 150.0,
+                    "metadata": {"query": "faith", "results_count": 10},
                 },
             ],
         }
@@ -39,8 +38,7 @@ class TestTelemetryIngestion:
     def test_ingest_telemetry_empty_events(self, api_test_client: TestClient) -> None:
         """Test ingesting telemetry with empty events array."""
         payload = {
-            "session_id": "test-session",
-            "user_id": "test-user",
+            "page": "home",
             "events": [],
         }
 
@@ -53,8 +51,8 @@ class TestTelemetryIngestion:
     ) -> None:
         """Test that missing required fields are rejected."""
         payload = {
-            "session_id": "test-session",
-            # Missing user_id and events
+            "page": "test-session",
+            "events": "not-a-list",  # Invalid type for events
         }
 
         response = api_test_client.post("/analytics/telemetry", json=payload)
@@ -76,23 +74,22 @@ class TestTelemetryIngestion:
     ) -> None:
         """Test ingesting various event types in one batch."""
         payload = {
-            "session_id": "test-session",
-            "user_id": "test-user",
+            "page": "dashboard",
             "events": [
                 {
-                    "event_type": "page_view",
-                    "timestamp": "2025-01-15T12:00:00Z",
-                    "properties": {},
+                    "event": "page_view",
+                    "duration_ms": 0.0,
+                    "metadata": {},
                 },
                 {
-                    "event_type": "button_click",
-                    "timestamp": "2025-01-15T12:00:01Z",
-                    "properties": {"button_id": "search"},
+                    "event": "button_click",
+                    "duration_ms": 50.0,
+                    "metadata": {"button_id": "search"},
                 },
                 {
-                    "event_type": "api_call",
-                    "timestamp": "2025-01-15T12:00:02Z",
-                    "properties": {"endpoint": "/search", "duration_ms": 150},
+                    "event": "api_call",
+                    "duration_ms": 150.0,
+                    "metadata": {"endpoint": "/search"},
                 },
             ],
         }
@@ -106,24 +103,21 @@ class TestTelemetryIngestion:
     ) -> None:
         """Test ingesting telemetry with additional metadata."""
         payload = {
-            "session_id": "test-session",
-            "user_id": "test-user",
+            "page": "error-page",
             "events": [
                 {
-                    "event_type": "error",
-                    "timestamp": "2025-01-15T12:00:00Z",
-                    "properties": {
+                    "event": "error",
+                    "duration_ms": 0.0,
+                    "metadata": {
                         "error_type": "NetworkError",
                         "message": "Connection timeout",
                         "stack_trace": "Error at line 42...",
+                        "user_agent": "Mozilla/5.0...",
+                        "screen_width": 1920,
+                        "screen_height": 1080,
                     },
                 }
             ],
-            "client_info": {
-                "user_agent": "Mozilla/5.0...",
-                "screen_width": 1920,
-                "screen_height": 1080,
-            },
         }
 
         response = api_test_client.post("/analytics/telemetry", json=payload)
@@ -137,15 +131,11 @@ class TestFeedbackIngestion:
     def test_ingest_feedback_positive(self, api_test_client: TestClient) -> None:
         """Test ingesting positive feedback."""
         payload = {
-            "event_type": "thumbs_up",
-            "target_type": "search_result",
-            "target_id": "result-123",
+            "action": "like",
             "user_id": "test-user",
-            "timestamp": "2025-01-15T12:00:00Z",
-            "context": {
-                "query": "faith",
-                "position": 1,
-            },
+            "query": "faith",
+            "rank": 1,
+            "document_id": "result-123",
         }
 
         response = api_test_client.post("/analytics/feedback", json=payload)
@@ -157,13 +147,10 @@ class TestFeedbackIngestion:
     def test_ingest_feedback_negative(self, api_test_client: TestClient) -> None:
         """Test ingesting negative feedback."""
         payload = {
-            "event_type": "thumbs_down",
-            "target_type": "ai_response",
-            "target_id": "response-456",
+            "action": "dislike",
             "user_id": "test-user",
-            "timestamp": "2025-01-15T12:00:00Z",
-            "reason": "inaccurate",
-            "comment": "The response contained factual errors",
+            "document_id": "response-456",
+            "confidence": 0.1,
         }
 
         response = api_test_client.post("/analytics/feedback", json=payload)
@@ -175,17 +162,10 @@ class TestFeedbackIngestion:
     ) -> None:
         """Test feedback with rich contextual information."""
         payload = {
-            "event_type": "report_issue",
-            "target_type": "document",
-            "target_id": "doc-789",
+            "action": "dislike",
             "user_id": "test-user",
-            "timestamp": "2025-01-15T12:00:00Z",
-            "issue_type": "broken_link",
-            "context": {
-                "page_url": "/documents/doc-789",
-                "user_agent": "Mozilla/5.0...",
-                "reported_url": "https://example.com/broken",
-            },
+            "document_id": "doc-789",
+            "query": "broken link",
         }
 
         response = api_test_client.post("/analytics/feedback", json=payload)
@@ -197,8 +177,8 @@ class TestFeedbackIngestion:
     ) -> None:
         """Test that missing required fields are rejected."""
         payload = {
-            "event_type": "thumbs_up",
-            # Missing target_type, target_id, user_id, timestamp
+            "user_id": "test-user",
+            # Missing action
         }
 
         response = api_test_client.post("/analytics/feedback", json=payload)
@@ -210,11 +190,8 @@ class TestFeedbackIngestion:
     ) -> None:
         """Test that invalid event types are handled appropriately."""
         payload = {
-            "event_type": "invalid_event_type",
-            "target_type": "result",
-            "target_id": "123",
+            "action": "",  # Empty action
             "user_id": "test-user",
-            "timestamp": "2025-01-15T12:00:00Z",
         }
 
         response = api_test_client.post("/analytics/feedback", json=payload)
@@ -231,16 +208,14 @@ class TestFeedbackIngestion:
             raise ValueError("Database constraint violation")
 
         monkeypatch.setattr(
-            "theo.infrastructure.api.app.analytics.telemetry.record_feedback_from_payload",
+            "theo.infrastructure.api.app.routes.analytics.record_feedback_from_payload",
             _raise_value_error,
         )
 
         payload = {
-            "event_type": "thumbs_up",
-            "target_type": "result",
-            "target_id": "123",
+            "action": "like",
             "user_id": "test-user",
-            "timestamp": "2025-01-15T12:00:00Z",
+            "document_id": "123",
         }
 
         response = api_test_client.post("/analytics/feedback", json=payload)
@@ -252,13 +227,9 @@ class TestFeedbackIngestion:
     def test_ingest_feedback_with_tags(self, api_test_client: TestClient) -> None:
         """Test feedback with categorization tags."""
         payload = {
-            "event_type": "feature_request",
-            "target_type": "application",
-            "target_id": "theoria",
+            "action": "like",
             "user_id": "test-user",
-            "timestamp": "2025-01-15T12:00:00Z",
-            "tags": ["search", "ux-improvement", "high-priority"],
-            "description": "Add faceted search filters",
+            "query": "Add faceted search filters",
         }
 
         response = api_test_client.post("/analytics/feedback", json=payload)
@@ -272,9 +243,8 @@ class TestAnalyticsAuthentication:
     def test_telemetry_ingestion_anonymous(self, api_test_client: TestClient) -> None:
         """Test that telemetry can be ingested without authentication."""
         payload = {
-            "session_id": "anon-session",
-            "user_id": "anonymous",
-            "events": [{"event_type": "page_view", "timestamp": "2025-01-15T12:00:00Z"}],
+            "page": "anon-session",
+            "events": [{"event": "page_view", "duration_ms": 100.0}],
         }
 
         response = api_test_client.post("/analytics/telemetry", json=payload)
@@ -282,19 +252,16 @@ class TestAnalyticsAuthentication:
         # Analytics endpoints typically allow anonymous telemetry
         assert response.status_code == 202
 
-    def test_feedback_requires_user_id(self, api_test_client: TestClient) -> None:
-        """Test that feedback requires a user_id."""
+    def test_feedback_optional_user_id(self, api_test_client: TestClient) -> None:
+        """Test that feedback does not require a user_id."""
         payload = {
-            "event_type": "thumbs_up",
-            "target_type": "result",
-            "target_id": "123",
-            # Missing user_id
-            "timestamp": "2025-01-15T12:00:00Z",
+            "action": "like",
+            "document_id": "123",
         }
 
         response = api_test_client.post("/analytics/feedback", json=payload)
 
-        assert response.status_code == 422
+        assert response.status_code == 202
 
 
 class TestAnalyticsPerformance:
@@ -307,16 +274,15 @@ class TestAnalyticsPerformance:
         # Generate a batch of 100 events
         events = [
             {
-                "event_type": "metric",
-                "timestamp": f"2025-01-15T12:00:{i:02d}Z",
-                "properties": {"metric_name": f"test_{i}", "value": i},
+                "event": "metric",
+                "duration_ms": float(i),
+                "metadata": {"metric_name": f"test_{i}", "value": i},
             }
             for i in range(100)
         ]
 
         payload = {
-            "session_id": "test-session",
-            "user_id": "test-user",
+            "page": "test-session",
             "events": events,
         }
 
@@ -327,9 +293,8 @@ class TestAnalyticsPerformance:
     def test_telemetry_idempotent(self, api_test_client: TestClient) -> None:
         """Test that submitting same telemetry batch multiple times is safe."""
         payload = {
-            "session_id": "idempotent-test",
-            "user_id": "test-user",
-            "events": [{"event_type": "test", "timestamp": "2025-01-15T12:00:00Z"}],
+            "page": "idempotent-test",
+            "events": [{"event": "test", "duration_ms": 10.0}],
         }
 
         # Submit twice
@@ -348,12 +313,11 @@ class TestAnalyticsDataValidation:
     ) -> None:
         """Test that invalid timestamp formats are handled."""
         payload = {
-            "session_id": "test",
-            "user_id": "test-user",
+            "page": "test",
             "events": [
                 {
-                    "event_type": "test",
-                    "timestamp": "not-a-valid-timestamp",
+                    "event": "test",
+                    "duration_ms": -1.0, # Invalid duration (must be >= 0)
                 }
             ],
         }
@@ -368,11 +332,8 @@ class TestAnalyticsDataValidation:
     ) -> None:
         """Test validation of target type and ID combinations."""
         payload = {
-            "event_type": "thumbs_up",
-            "target_type": "",  # Empty target type
-            "target_id": "123",
+            "action": "",  # Empty action
             "user_id": "test-user",
-            "timestamp": "2025-01-15T12:00:00Z",
         }
 
         response = api_test_client.post("/analytics/feedback", json=payload)

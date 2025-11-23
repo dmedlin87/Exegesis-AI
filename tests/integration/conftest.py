@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Generator, Iterator
 
+import os
+from unittest.mock import patch
 import pytest
 
 from tests.integration._db import ensure_duplicate_detection_baseline
@@ -82,32 +84,41 @@ def sqlite_session(sqlite_memory_engine: Engine) -> Generator[Session, None, Non
         connection.close()
 
 
-@pytest.fixture(autouse=True)
-def baseline_environment(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
-    """Provide consistent configuration for integration scenarios."""
+@pytest.fixture(scope="session", autouse=True)
+def integration_session_environment() -> Iterator[None]:
+    """Provide consistent configuration for integration scenarios (session-scoped)."""
 
-    from theo.application.facades import database as database_module
-    from theo.application.facades.settings import get_settings
-    from theo.application.services.bootstrap import resolve_application
     from theo.infrastructure.api.app.db import query_optimizations
-    from theo.infrastructure.api.app.routes import documents as documents_route
+    from theo.application.facades.settings import get_settings
+    from theo.application.facades.runtime import clear_generated_dev_key
 
-    monkeypatch.setenv("SETTINGS_SECRET_KEY", "integration-secret")
-    monkeypatch.setenv("THEO_API_KEYS", '["pytest-default-key"]')
-    monkeypatch.setenv("THEO_ALLOW_INSECURE_STARTUP", "1")
-    monkeypatch.setenv("THEORIA_ENVIRONMENT", "test")
-    monkeypatch.setenv("THEO_FORCE_EMBEDDING_FALLBACK", "1")
-    monkeypatch.setenv("CREATOR_VERSE_ROLLUPS_ASYNC_REFRESH", "0")
+    # Manually update os.environ to ensure global visibility
+    old_environ = dict(os.environ)
+    updates = {
+        "SETTINGS_SECRET_KEY": "integration-secret",
+        "THEO_API_KEYS": '["pytest-default-key"]',
+        "THEO_ALLOW_INSECURE_STARTUP": "1",
+        "THEORIA_ENVIRONMENT": "test",
+        "THEO_FORCE_EMBEDDING_FALLBACK": "1",
+        "CREATOR_VERSE_ROLLUPS_ASYNC_REFRESH": "0",
+    }
+    os.environ.update(updates)
+
+    # Clear any previously generated dev key to ensure we use the configured API keys
+    clear_generated_dev_key()
+
+    # Clear cache once to ensure these settings take effect
     get_settings.cache_clear()
-    monkeypatch.setattr(query_optimizations, "record_histogram", lambda *_, **__: None)
-    monkeypatch.setattr(query_optimizations, "record_counter", lambda *_, **__: None)
+
     try:
-        yield
+        # Mock out query optimizations to avoid side effects
+        with patch.object(query_optimizations, "record_histogram"), patch.object(
+            query_optimizations, "record_counter"
+        ):
+            yield
     finally:
+        # Restore environment
+        os.environ.clear()
+        os.environ.update(old_environ)
         get_settings.cache_clear()
-        reset_reranker = getattr(documents_route, "reset_reranker_cache", None)
-        if callable(reset_reranker):
-            reset_reranker()
-        resolve_application.cache_clear()
-        database_module._engine = None  # type: ignore[attr-defined]
-        database_module._SessionLocal = None  # type: ignore[attr-defined]
+        clear_generated_dev_key()

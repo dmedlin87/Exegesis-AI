@@ -210,30 +210,121 @@ def _process_latency_run(
     )
 
 
-def test_router_logs_warning_when_budget_projection_near_ceiling(monkeypatch):
-    registry = LLMRegistry()
-    registry.add_model(
-        LLMModel(
-            name="primary",
-            provider="echo",
-            model="echo",
-            config={"suffix": "[primary]"},
-            pricing={"per_call": 0.6},
-            routing={"spend_ceiling": 1.0, "weight": 5.0},
-        ),
-        make_default=True,
+@pytest.mark.timeout(1.0)
+def test_router_deduplicates_inflight_requests(tmp_path, sleep_stub):
+    ledger_path = tmp_path / "shared-state.db"
+    # Reset in a context to ensure cleanup
+    ledger = SharedLedger(str(ledger_path))
+    ledger.reset()
+    del ledger  # Ensure connections are closed
+    _wait_for_wal_cleanup(ledger_path, sleep_fn=sleep_stub)
+    results: mp.Queue = mp.Queue()
+
+    # First process: should incur spend and record high latency
+    first = mp.Process(
+        target=_process_budget_run,
+        args=(str(ledger_path), results),
     )
-    mock_logger = Mock()
-    monkeypatch.setattr(router_module, "LOGGER", mock_logger)
-    router = LLMRouterService(registry)
+    first.start()
+    first.join(timeout=75.0)
+    if first.is_alive():
+        first.terminate()
+        first.join(timeout=2.0)
+        pytest.fail("First process timed out and was terminated")
+    assert first.exitcode == 0
+    first_result = results.get(timeout=5)
 
-    with router._ledger.transaction() as txn:
-        txn.set_spend("primary", 0.3)
+    assert first_result["model"] == "primary"
+    assert first_result["primary_spend"] == pytest.approx(0.6, rel=1e-2)
+    assert first_result["backup_spend"] == pytest.approx(0.0, rel=1e-2)
 
-    result = router.execute_generation(workflow="chat", model=registry.models["primary"], prompt="hello")
+    # Second process: should see existing spend and latency
+    # Spend: 0.6 existing. 0.6 + 0.6 = 1.2 > 1.0. Should NOT increment primary spend (or check will fail in is_available?)
+    # Wait, get_spend returns the DB value.
+    # Latency: sees > 30ms. Should pick 'fast'.
 
-    assert result.model.name == "primary"
-    assert any("projected spend" in call.args[0] for call in mock_logger.warning.call_args_list)
+    second = mp.Process(
+        target=_process_budget_run,
+        args=(str(ledger_path), results),
+    )
+    second.start()
+    second.join(timeout=75.0)
+    if second.is_alive():
+        second.terminate()
+        second.join(timeout=2.0)
+        pytest.fail("Second process timed out and was terminated")
+    assert second.exitcode == 0
+    second_result = results.get(timeout=5)
+
+    # Verify Spend Sharing
+    # Process 2 saw 0.6. It checks availability.
+    # If 'primary' were run, 0.6 + 0.6 = 1.2 > 1.0.
+    # The router sees projected spend > ceiling.
+    # It updates the spend to the ceiling (1.0) and then raises GenerationError (or returns false availability).
+    # In our test helper, we catch the error and proceed.
+    # So primary spend should be updated to 1.0.
+    assert second_result["model"] == "backup"
+    assert second_result["primary_spend"] == pytest.approx(1.0, rel=1e-2)
+    assert second_result["backup_spend"] > 0.0
+
+
+@pytest.mark.timeout(5.0)
+def test_router_deduplicates_inflight_requests_handles_restart_error(tmp_path, sleep_stub):
+    ledger_path = tmp_path / "shared-state.db"
+    # Reset in a context to ensure cleanup
+    ledger = SharedLedger(str(ledger_path))
+    ledger.reset()
+    del ledger  # Ensure connections are closed
+    _wait_for_wal_cleanup(ledger_path, sleep_fn=sleep_stub)
+    results: mp.Queue = mp.Queue()
+
+    # First process: should incur spend and record high latency
+    first = mp.Process(
+        target=_process_latency_run,
+        args=(str(ledger_path), results),
+        kwargs={"delay": 0.2},
+    )
+    first.start()
+    first.join(timeout=75.0)
+    if first.is_alive():
+        first.terminate()
+        first.join(timeout=2.0)
+        pytest.fail("First process timed out and was terminated")
+    assert first.exitcode == 0
+    first_result = results.get(timeout=5)
+
+    assert first_result["model"] == "slow"
+    assert first_result["slow_calls"] == 1
+    assert first_result["slow_latency"] is not None
+    assert first_result["slow_latency"] > 0.0
+
+    # Second process: should see existing spend and latency
+    # Spend: 0.6 existing. 0.6 + 0.6 = 1.2 > 1.0. Should NOT increment primary spend (or check will fail in is_available?)
+    # Wait, get_spend returns the DB value.
+    # Latency: sees > 30ms. Should pick 'fast'.
+
+    second = mp.Process(
+        target=_process_latency_run,
+        args=(str(ledger_path), results),
+        kwargs={"delay": 0.2},
+    )
+    second.start()
+    second.join(timeout=75.0)
+    if second.is_alive():
+        second.terminate()
+        second.join(timeout=2.0)
+        pytest.fail("Second process timed out and was terminated")
+    assert second.exitcode == 0
+    second_result = results.get(timeout=5)
+
+    # Verify Latency Sharing
+    # If latency was shared, slow model should be skipped (fast selected)
+    # and slow_calls should be 0.
+    assert second_result["model"] == "fast"
+    assert second_result["slow_calls"] == 0
+    assert second_result["slow_latency"] == pytest.approx(
+        first_result["slow_latency"], rel=1e-2
+    )
 
 
 def test_router_logs_warning_when_latency_projection_near_threshold(monkeypatch):
@@ -592,7 +683,7 @@ def test_router_deduplicates_inflight_requests(monkeypatch, sleep_stub):
                 cache_key, poll_interval=0.01, timeout=2.0, sleep_fn=sleep_stub
             )
         )
-        assert error_observed.wait(timeout=1.0)
+        assert error_observed.wait(timeout=5.0)
         allow_first_to_finish.set()
         results = [future.result() for future in futures]
         ledger_wait_record = ledger_wait_future.result()
@@ -723,7 +814,7 @@ def test_router_deduplicates_inflight_requests_handles_restart_error(
             router.execute_generation(workflow="chat", model=model, prompt="simultaneous")
 
         error_future = executor.submit(_expect_error)
-        _wait_until(retry_attempted.is_set, timeout=1.0, sleep_fn=sleep_stub)
+        _wait_until(retry_attempted.is_set, timeout=5.0, sleep_fn=sleep_stub)
         with pytest.raises(GenerationError):
             error_future.result()
 

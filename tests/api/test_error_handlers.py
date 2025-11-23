@@ -366,32 +366,35 @@ class TestUnhandledExceptions:
         self, api_test_client: TestClient, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test that unhandled exceptions return 500."""
+        from theo.infrastructure.api.app.main import app
 
         def _raise_error(*args, **kwargs):
             raise RuntimeError("Unexpected error")
 
         # Patch a retrieval function to raise
         monkeypatch.setattr(
-            "theo.infrastructure.api.app.retriever.documents.list_documents",
+            "theo.infrastructure.api.app.routes.documents.list_documents",
             _raise_error,
         )
 
-        response = api_test_client.get("/documents/")
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.get("/documents/")
 
-        assert response.status_code == 500
-        data = response.json()
-        assert "detail" in data or "error" in data
+            assert response.status_code == 500
+            data = response.json()
+            assert "detail" in data or "error" in data
 
     def test_unhandled_exception_includes_trace_id(
         self, api_test_client: TestClient, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test that unhandled exceptions include trace ID for debugging."""
+        from theo.infrastructure.api.app.main import app
 
         def _raise_error(*args, **kwargs):
             raise ValueError("Unexpected value error")
 
         monkeypatch.setattr(
-            "theo.infrastructure.api.app.retriever.documents.get_document",
+            "theo.infrastructure.api.app.routes.documents.get_document",
             _raise_error,
         )
         monkeypatch.setattr(
@@ -399,9 +402,10 @@ class TestUnhandledExceptions:
             lambda: {TRACE_ID_HEADER_NAME: "trace-500"},
         )
 
-        response = api_test_client.get("/documents/test-doc")
+        with TestClient(app, raise_server_exceptions=False) as client:
+            response = client.get("/documents/test-doc")
 
-        assert response.status_code == 500
-        # Should include trace ID for debugging
-        has_trace = TRACE_ID_HEADER_NAME in response.headers or "trace_id" in response.json()
-        assert has_trace
+            assert response.status_code == 500
+            # Should include trace ID for debugging
+            has_trace = TRACE_ID_HEADER_NAME in response.headers or "trace_id" in response.json()
+            assert has_trace

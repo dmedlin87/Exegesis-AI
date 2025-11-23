@@ -120,6 +120,11 @@ async def domain_error_handler(request: Request, exc: DomainError) -> JSONRespon
     for key, value in trace_headers.items():
         response.headers[key] = value
 
+    # Ensure trace ID header is present if we resolved a trace ID
+    # (Even if trace_headers context was empty, e.g. in unit tests)
+    if trace_id and TRACE_ID_HEADER_NAME not in response.headers:
+        response.headers[TRACE_ID_HEADER_NAME] = trace_id
+
     # Add Retry-After header for rate limiting
     if isinstance(exc, RateLimitError) and exc.retry_after:
         response.headers["Retry-After"] = str(exc.retry_after)

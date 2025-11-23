@@ -115,9 +115,15 @@ def register_trace_handlers(app: FastAPI) -> None:
         del exc
         trace_headers = get_current_trace_headers()
         body: dict[str, str] = {"detail": "Internal Server Error"}
-        trace_id = trace_headers.get(TRACE_ID_HEADER_NAME)
+
+        # Fallback to request header if context is empty
+        trace_id = trace_headers.get(TRACE_ID_HEADER_NAME) or request.headers.get(TRACE_ID_HEADER_NAME)
+
         if trace_id:
             body["trace_id"] = trace_id
+            if TRACE_ID_HEADER_NAME not in trace_headers:
+                trace_headers[TRACE_ID_HEADER_NAME] = trace_id
+
         response = JSONResponse(body, status_code=500)
         return _attach_trace_headers(response, trace_headers)
 

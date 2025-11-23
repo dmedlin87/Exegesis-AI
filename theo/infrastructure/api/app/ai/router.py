@@ -320,44 +320,6 @@ class LLMRouterService:
                     wait_observed_updated_at = refreshed.updated_at
 
             if stale_status is not None:
-                _record_router_ledger_event(
-                    "stale_row_wait",
-                    cache_key=cache_key,
-                    status=stale_status,
-                    model=model.name,
-                    workflow=workflow,
-                )
-                try:
-                    record = self._ledger.wait_for_inflight(
-                        cache_key, observed_updated_at=wait_observed_updated_at, timeout=self._inflight_timeout
-                    )
-                except GenerationError:
-                    _record_router_ledger_event(
-                        "stale_row_wait_error",
-                        cache_key=cache_key,
-                        status=stale_status,
-                        model=model.name,
-                        workflow=workflow,
-                    )
-                    pass
-                else:
-                    if stale_status == "error":
-                        _record_router_ledger_event(
-                            "stale_row_wait_complete",
-                            cache_key=cache_key,
-                            status=stale_status,
-                            model=model.name,
-                            workflow=workflow,
-                        )
-                        span.set_attribute("llm.cache_status", "wait")
-                        return self._record_to_generation(record)
-                    _record_router_ledger_event(
-                        "stale_row_wait_complete",
-                        cache_key=cache_key,
-                        status=stale_status,
-                        model=model.name,
-                        workflow=workflow,
-                    )
                 with self._ledger.transaction() as txn:
                     txn.create_inflight(
                         cache_key, model_name=model.name, workflow=workflow
@@ -616,6 +578,8 @@ class LLMRouterService:
                 with self._ledger.transaction() as txn:
                     txn.mark_inflight_error(cache_key, str(exc))
                 raise
+            finally:
+                self._flush_ledger()
 
     # ------------------------------------------------------------------
     # Introspection utilities
@@ -631,6 +595,15 @@ class LLMRouterService:
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
+    def _flush_ledger(self) -> None:
+        """Ensure ledger writes are visible across processes quickly."""
+        try:
+            flush = getattr(self._ledger, "_checkpoint_and_cleanup", None)
+            if callable(flush):
+                flush()
+        except Exception:  # pragma: no cover - defensive guard
+            LOGGER.debug("Failed to flush router ledger state", exc_info=True)
+
     def _workflow_config(self, model: LLMModel, workflow: str) -> dict[str, Any]:
         routing = dict(model.routing)
         overrides = routing.get("workflows")

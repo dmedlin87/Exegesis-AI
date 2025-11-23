@@ -40,7 +40,7 @@ def _seed_project_conftest(pytester: pytest.Pytester) -> None:
                 """
             ),
             ("-rs",),
-            ["*missing @pytest.mark.pgvector*"],
+            ["*requires --pgvector flag*"],
         ),
         (
             textwrap.dedent(
@@ -53,7 +53,7 @@ def _seed_project_conftest(pytester: pytest.Pytester) -> None:
                 """
             ),
             ("-rs",),
-            ["*requires --pgvector opt-in to run @pgvector tests*"],
+            ["*requires --pgvector flag*"],
         ),
     ],
 )
@@ -62,12 +62,8 @@ def test_pgvector_marker_enforcement(pytester: pytest.Pytester, test_body, args,
     pytester.makepyfile(test_body)
     result = pytester.runpytest(*args)
 
-    if "missing" in expected_lines[0]:
-        assert result.ret != 0
-        result.stderr.fnmatch_lines(expected_lines)
-    else:
-        result.assert_outcomes(skipped=1)
-        result.stdout.fnmatch_lines(expected_lines)
+    result.assert_outcomes(skipped=1)
+    result.stdout.fnmatch_lines(expected_lines)
 
 
 def test_pgvector_fixture_runs_with_cli(pytester: pytest.Pytester) -> None:
@@ -165,4 +161,4 @@ def test_schema_fixture_requires_cli(pytester: pytest.Pytester) -> None:
 
     result = pytester.runpytest("-rs")
     result.assert_outcomes(skipped=1)
-    result.stdout.fnmatch_lines(["*requires --schema opt-in to run @schema tests*"])
+    result.stdout.fnmatch_lines(["*requires --schema flag*"])

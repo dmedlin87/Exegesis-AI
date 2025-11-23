@@ -65,13 +65,15 @@ def _override_session(engine: Engine, *, create_schema: bool) -> Iterator[None]:
 
 
 @pytest.fixture
-def sqlite_client() -> Iterator[TestClient]:
-    """Provide a test client backed by an isolated SQLite database."""
+def sqlite_client(api_engine) -> Iterator[TestClient]:
+    """Provide a test client backed by the shared transaction DB.
 
-    engine = create_engine("sqlite:///:memory:", future=True)
-    with _override_session(engine, create_schema=True):
-        with TestClient(app, raise_server_exceptions=False) as client:
-            yield client
+    Reuses the efficient api_engine fixture but configures the client
+    to suppress server exceptions, allowing 500 responses to be asserted.
+    """
+    # api_engine fixture handles the session override and transaction rollback
+    with TestClient(app, raise_server_exceptions=False) as client:
+        yield client
 
 
 @pytest.mark.no_auth_override

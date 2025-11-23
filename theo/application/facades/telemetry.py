@@ -10,8 +10,22 @@ from ..telemetry import TelemetryProvider, WorkflowSpan
 _provider: TelemetryProvider | None = None
 
 
+def _current_provider() -> TelemetryProvider | None:
+    """Return the configured provider if it implements the expected interface."""
+
+    provider = _provider
+    if provider is None:
+        return None
+    if not isinstance(provider, TelemetryProvider):  # pragma: no cover - defensive
+        return None
+    return provider
+
+
 def set_telemetry_provider(provider: TelemetryProvider) -> None:
     """Register the active telemetry provider."""
+
+    if not isinstance(provider, TelemetryProvider):  # pragma: no cover - defensive
+        raise TypeError("Telemetry provider must implement the TelemetryProvider protocol")
 
     global _provider
     _provider = provider
@@ -20,9 +34,10 @@ def set_telemetry_provider(provider: TelemetryProvider) -> None:
 def get_telemetry_provider() -> TelemetryProvider:
     """Return the currently registered telemetry provider."""
 
-    if _provider is None:
+    provider = _current_provider()
+    if provider is None:
         raise RuntimeError("Telemetry provider has not been configured")
-    return _provider
+    return provider
 
 
 class _NoOpSpan:
@@ -36,7 +51,7 @@ class _NoOpSpan:
 def instrument_workflow(workflow: str, **attributes: Any) -> AbstractContextManager[WorkflowSpan]:
     """Proxy to :meth:`TelemetryProvider.instrument_workflow`."""
 
-    provider = _provider
+    provider = _current_provider()
     if provider is None:
         yield _NoOpSpan()
         return
@@ -48,7 +63,7 @@ def instrument_workflow(workflow: str, **attributes: Any) -> AbstractContextMana
 def set_span_attribute(span: WorkflowSpan | None, key: str, value: Any) -> None:
     """Safely attach an attribute to a workflow span."""
 
-    provider = _provider
+    provider = _current_provider()
     if provider is None:
         target = span or _NoOpSpan()
         if hasattr(target, "set_attribute"):
@@ -61,7 +76,7 @@ def set_span_attribute(span: WorkflowSpan | None, key: str, value: Any) -> None:
 def log_workflow_event(event: str, *, workflow: str, **context: Any) -> None:
     """Emit a structured telemetry event."""
 
-    provider = _provider
+    provider = _current_provider()
     if provider is None:
         return
 
@@ -71,7 +86,7 @@ def log_workflow_event(event: str, *, workflow: str, **context: Any) -> None:
 def record_counter(metric_name: str, *, amount: float = 1.0, labels: Optional[Mapping[str, Any]] = None) -> None:
     """Increment a counter metric."""
 
-    provider = _provider
+    provider = _current_provider()
     if provider is None:
         return
 
@@ -81,7 +96,7 @@ def record_counter(metric_name: str, *, amount: float = 1.0, labels: Optional[Ma
 def record_histogram(metric_name: str, *, value: float, labels: Optional[Mapping[str, Any]] = None) -> None:
     """Record a histogram observation."""
 
-    provider = _provider
+    provider = _current_provider()
     if provider is None:
         return
 

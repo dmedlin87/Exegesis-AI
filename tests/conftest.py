@@ -28,8 +28,121 @@ if TYPE_CHECKING:  # pragma: no cover - imported only for type checking
 
 import pytest
 
-def _prepare_celery_pytest_plugin() -> None:
-    """Ensure the Celery pytest plugin can be imported by pytest."""
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+
+def _install_optional_dependency_stubs() -> None:
+    """Install stubs for optional dependencies to allow collection without them."""
+
+    # 1. Ensure Celery is available (either real or stubbed)
+    try:
+        import celery
+    except ImportError:
+        # Create a minimal Celery stub package
+        celery = types.ModuleType("celery")
+        celery.__path__ = []  # Mark as package
+
+        # Stub main Celery class
+        class CeleryStub:
+            def __init__(self, *args, **kwargs):
+                self.conf = types.SimpleNamespace(
+                    task_always_eager=True,
+                    task_eager_propagates=True,
+                    broker_url="memory://",
+                    result_backend="memory://",
+                    beat_schedule={},
+                )
+
+            def task(self, *args, **kwargs):
+                def decorator(func):
+                    func.delay = lambda *a, **k: func(*a, **k)
+                    return func
+                return decorator
+
+        celery.Celery = CeleryStub  # type: ignore
+
+        # Stub exceptions
+        celery.exceptions = types.ModuleType("celery.exceptions")
+        class Retry(Exception):
+            pass
+        celery.exceptions.Retry = Retry  # type: ignore
+
+        # Stub schedules
+        celery.schedules = types.ModuleType("celery.schedules")
+        celery.schedules.crontab = lambda **k: k
+
+        # Stub utils.log
+        celery.utils = types.ModuleType("celery.utils")
+        celery.utils.log = types.ModuleType("celery.utils.log")
+        celery.utils.log.get_task_logger = lambda name: logging.getLogger(name)
+
+        sys.modules["celery"] = celery
+        sys.modules["celery.exceptions"] = celery.exceptions
+        sys.modules["celery.schedules"] = celery.schedules
+        sys.modules["celery.utils"] = celery.utils
+        sys.modules["celery.utils.log"] = celery.utils.log
+
+    # 2. Ensure celery.contrib.pytest is available
+    try:
+        import celery.contrib.pytest
+    except ImportError:
+        # Try to load from local repo if possible
+        local_plugin = PROJECT_ROOT / "celery" / "contrib" / "pytest.py"
+        if local_plugin.exists():
+            spec = importlib.util.spec_from_file_location("celery.contrib.pytest", str(local_plugin))
+            if spec and spec.loader:
+                module = importlib.util.module_from_spec(spec)
+                sys.modules["celery.contrib.pytest"] = module
+                spec.loader.exec_module(module)
+
+    # 3. FastAPI Stub
+    try:
+        import fastapi
+    except ImportError:
+        fastapi = types.ModuleType("fastapi")
+        fastapi.status = types.SimpleNamespace(HTTP_422_UNPROCESSABLE_CONTENT=422)
+        sys.modules["fastapi"] = fastapi
+        sys.modules["fastapi.status"] = fastapi.status
+
+    # 4. Workers Tasks Stub
+    # If workers module exists but tasks fails to import (due to missing deps), stub it
+    workers_module = "theo.infrastructure.api.app.workers.tasks"
+    if workers_module not in sys.modules:
+        try:
+            importlib.import_module(workers_module)
+        except Exception:
+            # Create stub for tasks module
+            tasks = types.ModuleType(workers_module)
+
+            class CeleryConfStub:
+                def __init__(self):
+                    self.task_always_eager = True
+                    self.task_eager_propagates = True
+                    self.broker_url = "memory://"
+                    self.result_backend = "memory://"
+                    self.task_ignore_result = False
+                    self.task_store_eager_result = False
+
+                def update(self, **kwargs):
+                    for k, v in kwargs.items():
+                        setattr(self, k, v)
+
+            tasks.celery = types.SimpleNamespace(
+                conf=CeleryConfStub()
+            )
+            sys.modules[workers_module] = tasks
+
+            # Register in parent
+            try:
+                parent = importlib.import_module("theo.infrastructure.api.app.workers")
+                setattr(parent, "tasks", tasks)
+            except ImportError:
+                pass
+
+_install_optional_dependency_stubs()
+
 
 _EXAMPLE_COM_RESPONSES: dict[str, str] = {
     "https://example.com/test": "<html><body>Test fixture</body></html>",
@@ -38,6 +151,30 @@ _EXAMPLE_COM_RESPONSES: dict[str, str] = {
     "https://example.com/benchmark": "<html><body>Benchmark check</body></html>",
     "https://example.com/fixture": "<html><body>Retry fixture</body></html>",
     "https://example.com/replay": "<html><body>Replay fixture</body></html>",
+}
+
+
+_SUITE_CONFIG: dict[str, dict[str, Any]] = {
+    "schema": {
+        "flag": "--schema",
+        "help": "Enable schema-dependent tests (implied by --pgvector).",
+        "implies": [],
+    },
+    "pgvector": {
+        "flag": "--pgvector",
+        "help": "Enable tests requiring a Postgres+pgvector container (implies --schema).",
+        "implies": ["schema"],
+    },
+    "contract": {
+        "flag": "--contract",
+        "help": "Enable contract tests validating API schemas.",
+        "implies": [],
+    },
+    "gpu": {
+        "flag": "--gpu",
+        "help": "Enable tests requiring GPU acceleration.",
+        "implies": [],
+    },
 }
 
 
@@ -124,7 +261,7 @@ class _DowngradeIngestionErrorFilter(logging.Filter):
         return True
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def downgrade_ingestion_error_logs():
     """Suppress noisy ingestion failure errors emitted during retry scenarios."""
 
@@ -181,44 +318,6 @@ def bootstrap_embedding_service_stub(
     return _bootstrap_embedding_service_stub
 
 
-def _ensure_celery_pytest_plugin() -> None:
-    """Load the bundled Celery pytest plugin when the real dependency is absent."""
-
-    repo_root = Path(__file__).resolve().parents[1]
-    celery_module = sys.modules.get("celery")
-    if celery_module is not None and not hasattr(celery_module, "__path__"):
-        celery_module.__path__ = [str(repo_root / "celery")]  # type: ignore[attr-defined]
-
-    try:
-        spec = importlib.util.find_spec("celery.contrib.pytest")
-    except ModuleNotFoundError:
-        spec = None
-
-    if spec is not None:
-        return
-
-    plugin_path = repo_root / "celery" / "contrib" / "pytest.py"
-    if not plugin_path.exists():
-        return
-
-    celery_pkg = sys.modules.get("celery")
-    if celery_pkg is None:
-        celery_pkg = types.ModuleType("celery")
-        celery_pkg.__path__ = [str(repo_root / "celery")]  # type: ignore[attr-defined]
-        sys.modules["celery"] = celery_pkg
-    elif not hasattr(celery_pkg, "__path__"):
-        celery_pkg.__path__ = [str(repo_root / "celery")]  # type: ignore[attr-defined]
-
-    contrib_name = "celery.contrib"
-    contrib_mod = sys.modules.get(contrib_name)
-    if contrib_mod is None:
-        contrib_mod = types.ModuleType(contrib_name)
-        contrib_mod.__path__ = [str(repo_root / "celery" / "contrib")]  # type: ignore[attr-defined]
-        setattr(celery_pkg, "contrib", contrib_mod)  # type: ignore[attr-defined]
-        sys.modules[contrib_name] = contrib_mod
-
-
-_prepare_celery_pytest_plugin()
 
 try:  # pragma: no cover - optional dependency
     import pydantic  # type: ignore
@@ -410,8 +509,46 @@ def _register_xdist_plugin(pluginmanager: pytest.PluginManager) -> bool:
     return True
 
 
+def pytest_ignore_collect(collection_path: Path, config: pytest.Config) -> bool:
+    """Skip heavy test directories when running in fast mode."""
+    if not config.getoption("--fast", default=False):
+        return False
+
+    # List of directories to ignore in fast mode
+    heavy_dirs = {
+        "api",
+        "integration",
+        "ingest",
+        "contracts",
+        "workers",
+        "redteam",
+        "perf",
+        "ranking",
+        "e2e",
+    }
+
+    # Check if the current path is a directory we want to ignore
+    # We check if any part of the path relative to 'tests' matches
+    try:
+        rel_path = collection_path.relative_to(config.rootpath / "tests")
+        if rel_path.parts[0] in heavy_dirs:
+            return True
+    except ValueError:
+        # Not under tests/, ignore check
+        pass
+
+    return False
+
+
 def pytest_addoption(parser: pytest.Parser) -> None:
     """Register optional CLI flags and shim coverage arguments when needed."""
+
+    parser.addoption(
+        "--fast",
+        action="store_true",
+        default=False,
+        help="Skip heavy integration tests and use stubs for faster collection/execution.",
+    )
 
     if not _HAS_PYTEST_COV:
         group = parser.getgroup("cov", "coverage reporting (stub)")
@@ -440,50 +577,34 @@ def pytest_addoption(parser: pytest.Parser) -> None:
             help="Stub option allowing tests to run without pytest-cov installed.",
         )
 
-    parser.addoption(
-        "--pgvector",
-        action="store_true",
-        default=False,
-        dest="pgvector",
-        help="Enable tests marked with @pytest.mark.pgvector (starts a Postgres+pgvector Testcontainer).",
-    )
-    parser.addoption(
-        "--use-pgvector",
-        action="store_true",
-        default=False,
-        dest="pgvector",
-        help="Deprecated alias for --pgvector.",
-    )
-    parser.addoption(
-        "--schema",
-        action="store_true",
-        default=False,
-        dest="schema",
-        help="Allow database schema migrations required by @pytest.mark.schema tests.",
-    )
-    parser.addoption(
-        "--contract",
-        action="store_true",
-        default=False,
-        dest="contract",
-        help="Run contract suites marked with @pytest.mark.contract.",
-    )
-    parser.addoption(
-        "--gpu",
-        action="store_true",
-        default=False,
-        dest="gpu",
-        help="Allow GPU-dependent tests marked with @pytest.mark.gpu.",
-    )
+    for marker, config in _SUITE_CONFIG.items():
+        parser.addoption(
+            config["flag"],
+            action="store_true",
+            default=False,
+            dest=marker,
+            help=config["help"],
+        )
 
 
 def pytest_configure(config: pytest.Config) -> None:
     """Register custom markers used throughout the test suite."""
 
+    # Handle implications: e.g. --pgvector implies --schema
+    for marker, conf in _SUITE_CONFIG.items():
+        if config.getoption(marker):
+            for implied in conf["implies"]:
+                setattr(config.option, implied, True)
+
+    is_fast = config.getoption("--fast", default=False)
+
     if _register_randomly_plugin(config.pluginmanager):
         config.option.randomly_seed = 1337
 
-    _register_xdist_plugin(config.pluginmanager)
+    # In fast mode, disable xdist to avoid startup overhead,
+    # unless explicitly requested via -n
+    if not is_fast:
+        _register_xdist_plugin(config.pluginmanager)
 
     config.addinivalue_line(
         "markers",
@@ -497,7 +618,47 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "memcheck: enable the manage_memory fixture for targeted leak hunts.",
     )
-    _apply_suite_implications(config)
+
+    # Register suite markers from configuration
+    for marker, conf in _SUITE_CONFIG.items():
+        config.addinivalue_line("markers", f"{marker}: {conf['help']}")
+
+
+def _resolve_xdist_group(item: pytest.Item) -> str | None:
+    """Resolve the xdist group for a test item."""
+    # Group by module path to ensure tests in the same file run in the same worker
+    return str(item.path)
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    """Skip tests that require disabled suite options."""
+
+    skip_markers = {}
+    for marker, conf in _SUITE_CONFIG.items():
+        if not config.getoption(marker):
+            skip_markers[marker] = pytest.mark.skip(reason=f"requires {conf['flag']} flag")
+
+    has_xdist = config.pluginmanager.hasplugin("xdist")
+
+    for item in items:
+        for marker, skip_mark in skip_markers.items():
+            if marker in item.keywords:
+                item.add_marker(skip_mark)
+
+        if not _ENABLE_MEMCHECK and item.get_closest_marker("memcheck"):
+            item.add_marker(pytest.mark.usefixtures("manage_memory"))
+
+        if has_xdist:
+            group_name = _resolve_xdist_group(item)
+            if group_name is None:
+                continue
+
+            existing_groups = {
+                marker.kwargs.get("name")
+                for marker in item.iter_markers(name="xdist_group")
+            }
+            if group_name not in existing_groups:
+                item.add_marker(pytest.mark.xdist_group(name=group_name))
 
 
 def pytest_load_initial_conftests(
@@ -621,173 +782,6 @@ def _configure_celery_for_tests() -> Generator[None, None, None]:
         app.conf.update(**previous_config)
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
-
-
-_HEAVY_SUITES: dict[str, dict[str, Any]] = {
-    "pgvector": {
-        "marker": "pgvector",
-        "cli_option": "pgvector",
-        "fixtures": {
-            "ingest_engine",
-            "pgvector_db",
-            "pgvector_container",
-            "pgvector_database_url",
-            "pgvector_engine",
-            "pgvector_migrated_database_url",
-            "pipeline_engine",
-            "pipeline_session_factory",
-            "pgvector_pipeline_engine",
-            "pgvector_pipeline_session_factory",
-        },
-        "implies": ["schema"],
-        "deprecated_aliases": ["use-pgvector"],
-    },
-    "schema": {
-        "marker": "schema",
-        "cli_option": "schema",
-        "fixtures": {
-            "integration_database_url",
-            "integration_engine",
-        },
-        "implies": [],
-        "deprecated_aliases": [],
-    },
-    "contract": {
-        "marker": "contract",
-        "cli_option": "contract",
-        "fixtures": set(),
-        "implies": [],
-        "deprecated_aliases": [],
-    },
-    "gpu": {
-        "marker": "gpu",
-        "cli_option": "gpu",
-        "fixtures": set(),
-        "implies": [],
-        "deprecated_aliases": [],
-    },
-}
-
-
-_FIXTURE_MARKER_REQUIREMENTS: dict[str, set[str]] = {
-    suite["marker"]: set(suite["fixtures"])
-    for suite in _HEAVY_SUITES.values()
-    if suite["fixtures"]
-}
-
-
-_MARKER_OPTIONS: dict[str, str] = {
-    suite["marker"]: suite["cli_option"] for suite in _HEAVY_SUITES.values()
-}
-
-
-def _apply_suite_implications(config: pytest.Config) -> None:
-    for suite_name, suite in _HEAVY_SUITES.items():
-        option_name = suite["cli_option"]
-        if not config.getoption(option_name):
-            continue
-
-        for implied_name in suite.get("implies", ()):  # type: ignore[arg-type]
-            implied_suite = _HEAVY_SUITES.get(implied_name)
-            if implied_suite is None:
-                continue
-            implied_option = implied_suite["cli_option"]
-            if not config.getoption(implied_option):
-                setattr(config.option, implied_option, True)
-
-
-def _resolve_xdist_group(item: pytest.Item) -> str | None:
-    """Return the logical xdist group for a collected test item."""
-
-    keywords = item.keywords
-    if "db" in keywords or "schema" in keywords:
-        return "database"
-
-    if "network" in keywords:
-        return "network"
-
-    if "gpu" in keywords:
-        return "ml"
-
-    item_path = Path(str(getattr(item, "path", getattr(item, "fspath", ""))))
-    lower_parts = {part.lower() for part in item_path.parts}
-    if "ml" in lower_parts or "gpu" in lower_parts:
-        return "ml"
-
-    return None
-
-
-def _ensure_cli_opt_in(
-    request: pytest.FixtureRequest, *, option: str, marker: str
-) -> None:
-    """Skip costly fixtures unless explicitly enabled via CLI flag."""
-
-    if request.config.getoption(option):
-        return
-
-    cli_flag = option.replace("_", "-")
-    pytest.skip(
-        f"@pytest.mark.{marker} fixtures require the --{cli_flag} flag; "
-        f"rerun with --{cli_flag} to enable this opt-in suite."
-    )
-
-
-def pytest_collection_modifyitems(
-    config: pytest.Config, items: list[pytest.Item]
-) -> None:
-    """Enforce marker usage and CLI opt-ins for costly test suites."""
-
-    has_xdist = config.pluginmanager.hasplugin("xdist")
-
-    for item in items:
-        if not _ENABLE_MEMCHECK and item.get_closest_marker("memcheck"):
-            item.add_marker(pytest.mark.usefixtures("manage_memory"))
-
-        fixture_names = set(item.fixturenames)
-
-        for marker_name, fixtures in _FIXTURE_MARKER_REQUIREMENTS.items():
-            if fixtures & fixture_names and item.get_closest_marker(marker_name) is None:
-                fixtures_list = ", ".join(sorted(fixtures & fixture_names))
-                cli_flag = _MARKER_OPTIONS[marker_name].replace("_", "-")
-                raise pytest.UsageError(
-                    " ".join(
-                        [
-                            f"{item.nodeid} uses fixture(s) {fixtures_list}",
-                            f"but is missing @pytest.mark.{marker_name}.",
-                            f"Mark the test and re-run with --{cli_flag}",
-                            "to opt in to the heavy suite.",
-                        ]
-                    )
-                )
-
-        for marker_name, option_name in _MARKER_OPTIONS.items():
-            if item.get_closest_marker(marker_name) and not config.getoption(option_name):
-                cli_flag = option_name.replace("_", "-")
-                item.add_marker(
-                    pytest.mark.skip(
-                        reason=f"requires --{cli_flag} opt-in to run @{marker_name} tests"
-                    )
-                )
-
-        if item.get_closest_marker("schema"):
-            item.add_marker(pytest.mark.usefixtures("schema_isolation"))
-
-        if has_xdist:
-            group_name = _resolve_xdist_group(item)
-            if group_name is None:
-                continue
-
-            existing_groups = {
-                marker.kwargs.get("name")
-                for marker in item.iter_markers(name="xdist_group")
-            }
-            if group_name not in existing_groups:
-                item.add_marker(pytest.mark.xdist_group(name=group_name))
-
-
 POSTGRES_IMAGE = os.environ.get("PYTEST_PGVECTOR_IMAGE", "pgvector/pgvector:pg15")
 
 
@@ -802,7 +796,8 @@ def pgvector_db(request: pytest.FixtureRequest) -> Iterator[PGVectorDatabase]:
     schema and extensions without incurring the full migration cost again.
     """
 
-    _ensure_cli_opt_in(request, option="pgvector", marker="pgvector")
+    if not request.config.getoption("pgvector"):
+        pytest.skip("requires --pgvector flag")
 
     try:
         context = provision_pgvector_database(image=POSTGRES_IMAGE)
@@ -955,23 +950,17 @@ def integration_database_url(
 ) -> Iterator[str]:
     """Return a database URL for integration tests using schema migrations.
 
-    This fixture is guarded by the ``schema`` opt-in:
+    Requires the ``--schema`` flag (which is automatically implied if
+    ``--pgvector`` is used).
 
-    * When ``--schema`` (or ``--pgvector``, which implies ``--schema``) is not
-      provided, the fixture is skipped.
-    * When ``--schema`` is enabled without ``--pgvector``, a throwaway SQLite
-      database is created under the session's temporary directory.
     * When ``--pgvector`` is enabled, the URL of the migrated pgvector
       database is returned via ``pgvector_migrated_database_url``.
+    * Otherwise, a throwaway SQLite database is created under the session's
+      temporary directory.
 
     The fixture yields SQLAlchemy-compatible URLs so that test suites can
     ``create_engine`` with minimal boilerplate.
     """
-
-    if not request.config.getoption("schema"):
-        pytest.skip(
-            "@pytest.mark.schema fixtures require --schema (or --pgvector) opt-in"
-        )
 
     if request.config.getoption("pgvector"):
         pgvector_url = request.getfixturevalue("pgvector_migrated_database_url")
@@ -1065,7 +1054,12 @@ def _set_database_url_env(
     setup work while still restoring any pre-existing value afterwards.
     """
 
-    if not pytestconfig.getoption("schema"):
+    # Only set if we are running integration tests that might need it.
+    # For now, we just check if we are in a test session that hasn't explicitly opted out.
+    # Or simpler: just do it if integration_database_url is instantiated?
+    # But this is autouse.
+    # Let's just skip if we are in "fast" mode maybe?
+    if pytestconfig.getoption("--fast", default=False):
         yield
         return
 

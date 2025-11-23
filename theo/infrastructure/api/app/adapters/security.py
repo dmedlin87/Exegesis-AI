@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import threading
 import time
-from typing import Any
 
 import jwt
 from fastapi import Header, HTTPException, Request, status
@@ -61,7 +60,15 @@ class FastAPIPrincipalResolver(PrincipalResolver):
 
     def _refresh_settings_cache_if_stale(self) -> None:
         now = time.monotonic()
+        # Quick check without lock
+        if (
+            self._settings_refreshed_at is not None
+            and now - self._settings_refreshed_at < self._settings_refresh_interval_seconds
+        ):
+            return
+
         with self._settings_refresh_lock:
+            # Double-check inside lock
             if (
                 self._settings_refreshed_at is not None
                 and now - self._settings_refreshed_at < self._settings_refresh_interval_seconds
@@ -190,14 +197,8 @@ async def require_principal(
     )
 
 
-def configure_principal_resolver(config: str | None = None, key: str | None = None) -> None:
-    """Register the FastAPI resolver with the application facade.
-
-    ``config`` and ``key`` parameters are accepted for compatibility with
-    existing integration tests that monkeypatch this function, but they are
-    ignored by the default implementation.
-    """
-    del config, key  # parameters are currently unused
+def configure_principal_resolver() -> None:
+    """Register the FastAPI resolver with the application facade."""
     set_principal_resolver(FastAPIPrincipalResolver())
 
 

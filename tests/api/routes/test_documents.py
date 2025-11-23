@@ -15,12 +15,19 @@ def sample_document(api_engine) -> str:
     from theo.application.facades.database import get_session
 
     session = next(get_session())
+
+    # Ensure idempotency: delete if exists (in case of dirty DB from failed tests)
+    existing = session.get(Document, "test-doc-1")
+    if existing:
+        session.delete(existing)
+        session.commit()
+
     doc = Document(
         id="test-doc-1",
         title="Test Document",
-        author="Test Author",
+        authors=["Test Author"],
         source_type="article",
-        url="https://example.com/test",
+        source_url="https://example.com/test",
         abstract="Test abstract content",
     )
     session.add(doc)
@@ -29,19 +36,13 @@ def sample_document(api_engine) -> str:
     # Add a passage
     passage = Passage(
         document_id="test-doc-1",
-        passage_id="test-doc-1-p1",
-        ordinal=1,
-        content="Sample passage content for testing.",
+        id="test-doc-1-p1",
+        text="Sample passage content for testing.",
     )
     session.add(passage)
     session.commit()
 
     yield "test-doc-1"
-
-    # Cleanup
-    session.query(Passage).filter_by(document_id="test-doc-1").delete()
-    session.query(Document).filter_by(id="test-doc-1").delete()
-    session.commit()
 
 
 class TestDocumentList:
@@ -55,9 +56,9 @@ class TestDocumentList:
 
         assert response.status_code == 200
         data = response.json()
-        assert "documents" in data
+        assert "items" in data
         assert "total" in data
-        assert isinstance(data["documents"], list)
+        assert isinstance(data["items"], list)
 
     def test_list_documents_custom_limit(self, api_test_client: TestClient) -> None:
         """Test listing documents with custom limit."""
@@ -65,7 +66,7 @@ class TestDocumentList:
 
         assert response.status_code == 200
         data = response.json()
-        assert len(data["documents"]) <= 5
+        assert len(data["items"]) <= 5
 
     def test_list_documents_with_offset(self, api_test_client: TestClient) -> None:
         """Test listing documents with offset pagination."""
@@ -79,7 +80,7 @@ class TestDocumentList:
 
         assert response.status_code == 200
         data = response.json()
-        assert len(data["documents"]) <= 1
+        assert len(data["items"]) <= 1
 
     def test_list_documents_limit_maximum(self, api_test_client: TestClient) -> None:
         """Test that maximum limit (100) is accepted."""
@@ -125,7 +126,7 @@ class TestDocumentDetail:
         data = response.json()
         assert data["id"] == sample_document
         assert "title" in data
-        assert "author" in data
+        assert "authors" in data
 
     def test_get_document_not_found(self, api_test_client: TestClient) -> None:
         """Test 404 response for non-existent document."""
@@ -144,7 +145,7 @@ class TestDocumentDetail:
 
         assert response.status_code == 200
         data = response.json()
-        expected_fields = ["id", "title", "author", "source_type"]
+        expected_fields = ["id", "title", "authors", "source_type"]
         for field in expected_fields:
             assert field in data
 
@@ -304,11 +305,9 @@ class TestDocumentAnnotations:
     ) -> None:
         """Test creating a new annotation."""
         annotation_payload = {
-            "passage_id": "test-doc-1-p1",
-            "annotation_type": "highlight",
-            "content": "Important passage",
-            "start_offset": 0,
-            "end_offset": 10,
+            "passage_ids": ["test-doc-1-p1"],
+            "type": "note",
+            "text": "Important passage",
         }
 
         response = api_test_client.post(
@@ -319,17 +318,17 @@ class TestDocumentAnnotations:
         assert response.status_code == 201
         data = response.json()
         assert "id" in data
-        assert data["annotation_type"] == "highlight"
-        assert data["content"] == "Important passage"
+        assert data["type"] == "note"
+        assert data["body"] == "Important passage"
 
     def test_create_annotation_document_not_found(
         self, api_test_client: TestClient
     ) -> None:
         """Test creating annotation for non-existent document."""
         annotation_payload = {
-            "passage_id": "test-passage",
-            "annotation_type": "note",
-            "content": "Test note",
+            "passage_ids": ["test-passage"],
+            "type": "note",
+            "text": "Test note",
         }
 
         response = api_test_client.post(
@@ -343,10 +342,7 @@ class TestDocumentAnnotations:
         self, api_test_client: TestClient, sample_document: str
     ) -> None:
         """Test creating annotation with invalid payload."""
-        invalid_payload = {
-            # Missing required fields
-            "content": "Test note",
-        }
+        invalid_payload = {}
 
         response = api_test_client.post(
             f"/documents/{sample_document}/annotations",
@@ -361,9 +357,9 @@ class TestDocumentAnnotations:
         """Test deleting an annotation."""
         # First create an annotation
         annotation_payload = {
-            "passage_id": "test-doc-1-p1",
-            "annotation_type": "highlight",
-            "content": "To be deleted",
+            "passage_ids": ["test-doc-1-p1"],
+            "type": "note",
+            "text": "To be deleted",
         }
 
         create_response = api_test_client.post(
@@ -442,9 +438,9 @@ class TestDocumentsAuthentication:
     ) -> None:
         """Test that creating annotations requires authentication."""
         annotation_payload = {
-            "passage_id": "test-passage",
-            "annotation_type": "note",
-            "content": "Test note",
+            "passage_ids": ["test-passage"],
+            "type": "note",
+            "text": "Test note",
         }
 
         response = api_test_client.post(

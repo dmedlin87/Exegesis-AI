@@ -237,12 +237,18 @@ def register_trace_handlers(app: FastAPI) -> None:
     async def theo_error_with_trace(request, exc: TheoError):  # pragma: no cover - thin wrapper
         trace_context = get_trace_context()
         trace_id = getattr(trace_context, "trace_id", None)
+
+        # Fallback to request header if context is empty
+        if not trace_id:
+            from ..tracing import TRACE_ID_HEADER_NAME as HEADER_NAME
+            trace_id = request.headers.get(HEADER_NAME)
+
         # Re-invoke the principal resolver configuration hook so that
         # integration tests observing configure_principal_resolver calls can
         # confirm behaviour during error handling.
         try:
             if _PRIMARY_API_KEY is not None:
-                configure_principal_resolver(None, _PRIMARY_API_KEY)
+                configure_principal_resolver()
         except Exception:
             # Tests may monkeypatch this hook; avoid leaking failures into
             # the error reporting path.
@@ -310,7 +316,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         primary_key = "test-key"
     global _PRIMARY_API_KEY
     _PRIMARY_API_KEY = primary_key
-    configure_principal_resolver(None, primary_key)
+    configure_principal_resolver()
     # Ensure the principal resolver is installed even if the app_factory
     # shim is monkeypatched in tests. Use a resolver that reuses the
     # Settings instance provided to create_app.

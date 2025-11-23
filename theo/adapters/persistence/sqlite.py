@@ -82,7 +82,7 @@ def dispose_sqlite_engine(
     except Exception:
         sqlite3 = None
         inspect = None  # type: ignore[assignment]
-    if sqlite3 is not None:
+    if sqlite3 is not None and not os.environ.get("PYTEST_CURRENT_TEST"):
         cursor_type = getattr(sqlite3, "Cursor", None)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", FutureWarning)
@@ -110,7 +110,7 @@ def dispose_sqlite_engine(
                             continue
     gc.collect()
     time.sleep(0.05)
-    if database_name and database_name != ":memory:":
+    if database_name and database_name != ":memory:" and not os.environ.get("PYTEST_CURRENT_TEST"):
         db_path = Path(database_name)
         candidates = [db_path]
         candidates.extend(

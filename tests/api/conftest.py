@@ -488,32 +488,74 @@ def _api_engine_template(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return template_path
 
 
-@pytest.fixture()
-def api_engine(
-    tmp_path_factory: pytest.TempPathFactory,
-    _api_engine_template: Path,
-):
-    """Provide an isolated SQLite engine for API tests with pre-applied migrations."""
-    database_path = tmp_path_factory.mktemp("db") / "api.sqlite"
-    # Clone the pre-migrated template so each test starts from the same baseline.
-    shutil.copy2(_api_engine_template, database_path)
-    configure_engine(f"sqlite:///{database_path}")
+@pytest.fixture(scope="session")
+def _shared_api_engine(_api_engine_template: Path):
+    """Shared engine instance connected to the template database."""
+    engine = create_engine(f"sqlite:///{_api_engine_template}", future=True)
+    yield engine
+    engine.dispose()
 
-    engine = get_engine()
+
+@pytest.fixture()
+def api_engine(_shared_api_engine):
+    """Provide a transaction-isolated database environment.
+
+    Instead of creating a new database file per test, this fixture:
+    1. Connects to the shared session-scoped engine
+    2. Starts a transaction
+    3. Uses nested transactions (SAVEPOINT) to isolate app commits
+    4. Overrides get_session to use a session bound to this transaction
+    5. Rolls back the transaction at teardown
+
+    This mimics a fresh database for every test but is much faster (~instant).
+    """
+    from sqlalchemy import event
+    from sqlalchemy.orm import Session
+    from theo.application.facades import database as database_module
+
+    connection = _shared_api_engine.connect()
+    transaction = connection.begin()
+    session = Session(bind=connection, join_transaction_mode="create_savepoint")
+
+    # Override global get_session for direct usage in fixtures/tests
+    def _stub_get_session():
+        yield session
+
+    original_get_session = database_module.get_session
+    database_module.get_session = _stub_get_session
+
+    # Override FastAPI dependency for route handlers
+    # Note: We key off the *original* function object because that's what Depends uses
+    app.dependency_overrides[original_get_session] = _stub_get_session
 
     try:
-        yield engine
+        yield connection
     finally:
-        if engine is not None:
-            engine.dispose()
-        database_module._engine = None  # type: ignore[attr-defined]
-        database_module._SessionLocal = None  # type: ignore[attr-defined]
+        app.dependency_overrides.pop(original_get_session, None)
+        database_module.get_session = original_get_session
+        session.close()
+        transaction.rollback()
+        connection.close()
 
 
-@pytest.fixture()
-def api_test_client(api_engine) -> TestClient:
-    """Yield a ``TestClient`` bound to an isolated, migrated database."""
+@pytest.fixture(scope="session")
+def _global_test_client() -> Iterator[TestClient]:
+    """Create a single TestClient instance for the entire session.
 
+    This avoids the overhead of running FastAPI startup/shutdown events for every test.
+    """
     with TestClient(app) as client:
         yield client
 
+
+@pytest.fixture()
+def api_test_client(api_engine, _global_test_client) -> TestClient:
+    """Yield a ``TestClient`` bound to the isolated transaction.
+
+    This fixture ensures:
+    1. The DB transaction is active (via api_engine)
+    2. The global TestClient is reused (via _global_test_client)
+    """
+    # api_engine fixture handles the dependency overrides on the app
+    # The shared client will see these overrides because they are set on the app instance
+    return _global_test_client

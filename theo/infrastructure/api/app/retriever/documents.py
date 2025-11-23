@@ -89,11 +89,8 @@ def get_document(session: Session, document_id: str) -> DocumentDetailResponse:
     stmt = (
         select(Document)
         .options(
-            selectinload(Document.passages)
-            .order_by(Passage.page_no.asc(), Passage.start_char.asc()),
-            selectinload(Document.annotations).order_by(
-                DocumentAnnotation.created_at.asc()
-            ),
+            selectinload(Document.passages),
+            selectinload(Document.annotations),
         )
         .where(Document.id == document_id)
     )
@@ -101,8 +98,14 @@ def get_document(session: Session, document_id: str) -> DocumentDetailResponse:
     if document is None:
         raise KeyError(f"Document {document_id} not found")
 
-    passages = list(document.passages)
-    annotations = list(document.annotations)
+    passages = sorted(
+        document.passages,
+        key=lambda p: (p.page_no or 0, p.start_char or 0),
+    )
+    annotations = sorted(
+        document.annotations,
+        key=lambda a: a.created_at,
+    )
 
     passage_schemas = [_passage_to_schema(passage) for passage in passages]
 
