@@ -33,7 +33,13 @@
 5.  **Run Tests:**
     -   Once the debug script shows "OK" for all modules, run `python -m pytest tests/api/retriever/test_ranking.py` to confirm the original issue is resolved.
 
-## 3. Broader Verification
+## 3. Validation Log (2025-02-19)
+
+-   Installed missing runtime dependencies to satisfy the RAG imports and API bootstrap during testing: `sqlalchemy`, `pydantic`, `pydantic-settings`, `pythonbible`, `httpx`, `cachetools`, `opentelemetry-api`, `pypdf`, `fastapi`, `PyJWT`, `pyyaml`, `joblib`, `numpy`, `networkx`, and `python-multipart`.
+-   `python debug_rag_import.py` now reports successful imports for `reasoning`, `chat`, `collaboration`, and `verse`, along with the other RAG modules.
+-   `python -m pytest tests/api/retriever/test_ranking.py` passes (1 test, 1 warning about `celery.contrib.pytest` already imported for assert rewriting).
+
+## 4. Broader Verification
 
 -   Run the full test suite `tests/api/` to ensure no regressions.
 -   Check for any other `from ...models` patterns in `theo/infrastructure/api/app/research/ai/rag/` that might have been missed.
