@@ -23,7 +23,7 @@ if "fastapi" not in sys.modules:
     sys.modules["fastapi.status"] = status_module
 
 legacy_services = importlib.import_module("theo.services")
-chunking_module = importlib.import_module("theo.infrastructure.api.app.ingest.chunking")
+chunking_module = importlib.import_module("theo.infrastructure.api.app.library.ingest.chunking")
 
 
 def _register_legacy_submodule(name: str, module: types.ModuleType) -> None:

@@ -37,8 +37,8 @@ from theo.infrastructure.api.app.persistence_models import Document, Passage
 from theo.application.services.bootstrap import resolve_application
 
 try:  # pragma: no cover - optional AI deliverables dependency
-    from ..ai.rag import deliverables as rag_deliverables
-    from ..ai.rag import exports as rag_exports
+    from ..research.ai.rag import deliverables as rag_deliverables
+    from ..research.ai.rag import exports as rag_exports
 except Exception:  # pragma: no cover - lean environments
     class _MissingRAGModule:
         def __getattr__(self, name: str) -> Any:
@@ -50,7 +50,7 @@ except Exception:  # pragma: no cover - lean environments
     rag_deliverables = _MissingRAGModule()
     rag_exports = _MissingRAGModule()
 try:  # pragma: no cover - optional guardrail dependency
-    from ..ai.rag.guardrail_helpers import (
+    from ..research.ai.rag.guardrail_helpers import (
         GuardrailError,
         build_citations,
         validate_model_completion,
@@ -65,7 +65,7 @@ except Exception:  # pragma: no cover - lean environments
     def validate_model_completion(_completion: str, _citations: Sequence[RAGCitation]) -> None:
         return None
 try:  # pragma: no cover - optional AI dependency
-    from ..ai.rag.models import RAGCitation
+    from ..research.ai.rag import RAGCitation
 except Exception:  # pragma: no cover - lean environments
     @dataclass(slots=True)
     class RAGCitation:  # type: ignore[override]
@@ -119,7 +119,7 @@ from ..models.export import DeliverableDownload
 from ..models.search import HybridSearchFilters, HybridSearchRequest
 from ..retriever.hybrid import hybrid_search
 from theo.application.facades.telemetry import log_workflow_event, record_counter
-from theo.application.telemetry import CITATION_DRIFT_EVENTS_METRIC
+from theo.application.core.telemetry import CITATION_DRIFT_EVENTS_METRIC
 
 APPLICATION_CONTAINER, _ADAPTER_REGISTRY = resolve_application()
 settings = _ADAPTER_REGISTRY.resolve("settings")

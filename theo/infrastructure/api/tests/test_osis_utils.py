@@ -6,8 +6,8 @@ import pytest
 
 from theo.application.facades.database import get_engine
 from theo.application.dtos import TranscriptSegmentDTO
-from theo.infrastructure.api.app.ingest.osis import _osis_to_readable, osis_intersects
-from theo.infrastructure.api.app.transcripts.service import _matches_osis
+from theo.infrastructure.api.app.library.ingest.osis import _osis_to_readable, osis_intersects
+from theo.infrastructure.api.app.library.transcripts.service import _matches_osis
 
 
 @pytest.fixture(autouse=True)

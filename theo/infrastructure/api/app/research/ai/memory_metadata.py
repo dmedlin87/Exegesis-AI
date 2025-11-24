@@ -8,7 +8,14 @@ from typing import TYPE_CHECKING, Iterable, Sequence
 from urllib.parse import urlparse
 
 if TYPE_CHECKING:  # pragma: no cover - used only for type checking
-    from ..models.ai import ChatMemoryEntry, IntentTagPayload
+    from ...models.ai import (
+        ChatMemoryEntry,
+        MemorySearchResult,
+        MemoryStoreStats,
+        MemoryStoreStatus,
+        RelevanceScore,
+    )
+    from ...models.ai import IntentTagPayload
     from .rag import RAGAnswer, RAGCitation
 else:  # pragma: no cover - help mypy without runtime imports
     ChatMemoryEntry = object  # type: ignore[assignment]

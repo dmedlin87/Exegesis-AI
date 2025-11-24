@@ -8,7 +8,7 @@ import time
 from dataclasses import asdict, dataclass
 from typing import Any, Awaitable, Callable, MutableMapping, TypeVar
 
-from theo.application.resilience import (
+from theo.application.core.resilience import (
     ResilienceError,
     ResilienceMetadata,
     ResiliencePolicy,

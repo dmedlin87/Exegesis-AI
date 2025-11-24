@@ -3,8 +3,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from theo.infrastructure.api.app.ai.rag.guardrails import GuardrailError
-from theo.infrastructure.api.app.ai.rag.models import RAGAnswer
+from theo.infrastructure.api.app.research.ai.rag.guardrails import GuardrailError
+from theo.infrastructure.api.app.research.ai.rag.models import RAGAnswer
 from theo.infrastructure.api.app.models.search import HybridSearchFilters
 from theo.infrastructure.api.app.routes.ai.workflows.guardrails import (
     build_guardrail_metadata,

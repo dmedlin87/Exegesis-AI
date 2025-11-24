@@ -12,7 +12,7 @@ from theo.application.facades.database import get_engine
 from theo.adapters.persistence.models import Document, DocumentAnnotation, Passage
 from theo.infrastructure.api.app.models.documents import DocumentAnnotationResponse
 from theo.infrastructure.api.app.models.search import HybridSearchRequest
-from theo.infrastructure.api.app.retriever.hybrid import (
+from theo.infrastructure.api.app.retrieval.retriever.hybrid import (
     _Candidate,
     _fallback_search,
     _merge_scored_candidates,

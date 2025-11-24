@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from theo.infrastructure.api.app.ai.passage import (
+from theo.infrastructure.api.app.research.ai.passage import (
     PassageResolutionError,
     resolve_passage_reference,
 )

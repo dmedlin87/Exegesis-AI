@@ -7,7 +7,7 @@ from importlib import import_module
 from fastapi import APIRouter, Depends, Query, Request, status
 from sqlalchemy.orm import Session
 
-from ...errors import ExportError, Severity
+from ...core.errors import ExportError, Severity
 from ...models.search import HybridSearchFilters, HybridSearchRequest
 from theo.application.facades.database import get_session as get_db_session
 from .utils import _BAD_REQUEST_RESPONSE, finalize_response, parse_fields

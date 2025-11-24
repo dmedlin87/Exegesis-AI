@@ -23,7 +23,7 @@ from theo.infrastructure.api.app.persistence_models import (
     DocumentAnnotation,
     Passage,
 )
-from theo.infrastructure.api.app.retriever import documents
+from theo.infrastructure.api.app.retrieval.retriever import documents
 from tests.fixtures.pgvector import PGVectorDatabase, PGVectorClone
 
 

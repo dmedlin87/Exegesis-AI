@@ -6,8 +6,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from theo.infrastructure.api.app.ai.reasoning import hypotheses as hypotheses_module
-from theo.infrastructure.api.app.ai.reasoning.hypotheses import (
+from theo.infrastructure.api.app.research.ai.reasoning import hypotheses as hypotheses_module
+from theo.infrastructure.api.app.research.ai.reasoning.hypotheses import (
     Hypothesis,
     HypothesisGenerator,
     test_hypothesis as run_hypothesis_test,

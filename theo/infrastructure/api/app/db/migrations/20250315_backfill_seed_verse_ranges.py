@@ -8,7 +8,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from theo.infrastructure.api.app.ingest.osis import expand_osis_reference
+from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference
 from theo.infrastructure.api.app.persistence_models import (
     CommentaryExcerptSeed,
     ContradictionSeed,

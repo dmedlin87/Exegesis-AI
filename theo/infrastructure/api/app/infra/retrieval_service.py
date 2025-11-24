@@ -14,7 +14,7 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from theo.application.facades.settings import Settings, get_settings
-from theo.application.search import QueryRewriter
+from theo.application.retrieval.search import QueryRewriter
 
 from ..analytics.experiments import (
     ExperimentAnalyticsSink,
@@ -23,11 +23,11 @@ from ..analytics.experiments import (
     summarise_reranker_outcome,
 )
 from ..models.search import HybridSearchRequest, HybridSearchResult
-from ..ranking.mlflow_integration import is_mlflow_uri, mlflow_signature
-from ..ranking.re_ranker import Reranker, load_reranker
-from ..retriever.hybrid import hybrid_search
+from ..retrieval.ranking.mlflow_integration import is_mlflow_uri, mlflow_signature
+from ..retrieval.ranking.re_ranker import Reranker, load_reranker
+from ..retrieval.retriever.hybrid import hybrid_search
 from theo.application.facades.telemetry import record_counter
-from theo.application.telemetry import SEARCH_RERANKER_EVENTS_METRIC
+from theo.application.core.telemetry import SEARCH_RERANKER_EVENTS_METRIC
 
 LOGGER = logging.getLogger(__name__)
 

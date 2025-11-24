@@ -17,12 +17,12 @@ from theo.domain.errors import (
     RateLimitError,
     ValidationError,
 )
-from theo.infrastructure.api.app.error_handlers import (
+from theo.infrastructure.api.app.core.error_handlers import (
     ERROR_STATUS_MAP,
     _build_error_response,
     domain_error_handler,
 )
-from theo.infrastructure.api.app.tracing import TRACE_ID_HEADER_NAME
+from theo.infrastructure.api.app.core.tracing import TRACE_ID_HEADER_NAME
 
 
 class TestErrorStatusMapping:

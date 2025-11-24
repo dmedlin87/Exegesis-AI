@@ -16,10 +16,10 @@ from sqlalchemy.orm import Session
 from theo.application.facades.database import get_session
 from theo.application.facades.settings import get_settings
 
-from ..discoveries.tasks import schedule_discovery_refresh
-from ..errors import IngestionError, Severity
-from ..ingest.exceptions import UnsupportedSourceError
-from ..ingest.pipeline import (
+from ..research.discoveries.tasks import schedule_discovery_refresh
+from ..core.errors import IngestionError, Severity
+from ..library.ingest.exceptions import UnsupportedSourceError
+from ..library.ingest.pipeline import (
     run_pipeline_for_file as _run_pipeline_for_file,
     run_pipeline_for_transcript as _run_pipeline_for_transcript,
     run_pipeline_for_url as _run_pipeline_for_url,
@@ -35,7 +35,7 @@ from theo.application.facades.resilience import (
     ResilienceSettings,
     resilient_async_operation,
 )
-from theo.application.security import Principal
+from theo.application.core.security import Principal
 
 from ..adapters.security import require_principal
 from ..infra.ingestion_service import IngestionService, get_ingestion_service

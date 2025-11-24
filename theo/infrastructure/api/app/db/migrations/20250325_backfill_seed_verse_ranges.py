@@ -8,7 +8,7 @@ from typing import Iterable
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
-from theo.infrastructure.api.app.ingest.osis import expand_osis_reference
+from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference
 from theo.infrastructure.api.app.persistence_models import (
     CommentaryExcerptSeed,
     ContradictionSeed,

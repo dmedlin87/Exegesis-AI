@@ -29,7 +29,7 @@ from theo.infrastructure.api.app.persistence_models import (
 )
 from theo.application.services.geo import seed_openbible_geo
 
-from ..ingest.osis import expand_osis_reference
+from ..library.ingest.osis import expand_osis_reference
 
 PROJECT_ROOT = Path(__file__).resolve().parents[5]
 SEED_ROOT = PROJECT_ROOT / "data" / "seeds"

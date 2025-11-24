@@ -14,7 +14,7 @@ from theo.adapters.persistence.models import (
     HarmonySeed,
 )
 from theo.infrastructure.api.app.db.verse_graph import load_seed_relationships
-from theo.infrastructure.api.app.ingest.osis import expand_osis_reference
+from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference
 from theo.infrastructure.api.app.research.commentaries import search_commentaries
 from theo.infrastructure.api.app.research.contradictions import search_contradictions
 

@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 from fastapi.testclient import TestClient
 
 from theo.application.facades.database import get_session
-from theo.infrastructure.api.app.ai.rag import GuardrailError, RAGAnswer
+from theo.infrastructure.api.app.research.ai.rag import GuardrailError, RAGAnswer
 from theo.infrastructure.api.app.main import app
 from theo.infrastructure.api.app.models.ai import (
     ChatSessionMessage,

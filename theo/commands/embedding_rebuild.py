@@ -13,7 +13,7 @@ from typing import Callable, TypeVar
 
 import click
 
-from theo.application.embeddings import (
+from theo.application.retrieval.embeddings import (
     EmbeddingRebuildError,
     EmbeddingRebuildOptions,
     EmbeddingRebuildProgress,
@@ -29,14 +29,14 @@ from theo.application.facades.telemetry import (
     set_span_attribute,
     set_telemetry_provider,
 )
-from theo.application.telemetry import EMBEDDING_REBUILD_PROGRESS_METRIC
-from theo.application.embeddings.checkpoint_store import (
+from theo.application.core.telemetry import EMBEDDING_REBUILD_PROGRESS_METRIC
+from theo.application.retrieval.embeddings.checkpoint_store import (
     CheckpointError,
     EmbeddingCheckpoint,
     load_checkpoint,
     save_checkpoint,
 )
-from theo.infrastructure.api.app.ingest.embeddings import clear_embedding_cache
+from theo.infrastructure.api.app.library.ingest.embeddings import clear_embedding_cache
 from theo.application.services.bootstrap import resolve_application
 from theo.domain.services.embeddings import EmbeddingRebuildConfig
 

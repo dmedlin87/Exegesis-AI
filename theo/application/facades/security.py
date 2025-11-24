@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..security import Principal, PrincipalResolver
+from ..core.security import Principal, PrincipalResolver
 
 _resolver: PrincipalResolver | None = None
 

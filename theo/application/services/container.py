@@ -19,11 +19,15 @@ class _RetireCallable(Protocol):
 
 
 class _GetCallable(Protocol):
-    def __call__(self, document_id: DocumentId) -> Document | None: ...
+    def __call__(
+        self, document_id: DocumentId, session: SessionProtocol | None = None
+    ) -> Document | None: ...
 
 
 class _ListCallable(Protocol):
-    def __call__(self, *, limit: int = 20) -> list[Document]: ...
+    def __call__(
+        self, *, limit: int = 20, session: SessionProtocol | None = None
+    ) -> list[Document]: ...
 
 
 @dataclass(slots=True)

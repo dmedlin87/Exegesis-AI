@@ -16,8 +16,8 @@ from ..models.notebooks import (
     NotebookResponse,
     NotebookUpdatePayload,
 )
-from ..notebooks.service import NotebookService
-from theo.application.security import Principal
+from ..research.notebooks.service import NotebookService
+from theo.application.core.security import Principal
 
 from ..adapters.security import require_principal
 

@@ -8,7 +8,7 @@ from sqlalchemy import Integer, cast, exists, func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
 from theo.application.dtos import TranscriptSegmentDTO, TranscriptVideoDTO
-from theo.application.observability import trace_repository_call
+from theo.application.core.observability import trace_repository_call
 from theo.application.repositories.transcript_repository import TranscriptRepository
 from theo.domain.research.osis import expand_osis_reference
 

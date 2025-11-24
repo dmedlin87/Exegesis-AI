@@ -6,7 +6,7 @@ from typing import Mapping, Sequence
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from theo.application.embeddings.store import PassageEmbeddingStore
+from theo.application.retrieval.embeddings.store import PassageEmbeddingStore
 
 from .models import PassageEmbedding
 

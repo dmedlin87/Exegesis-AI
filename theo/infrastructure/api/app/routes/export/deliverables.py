@@ -8,7 +8,7 @@ from fastapi import APIRouter, status
 
 from theo.application.facades import resilience  # noqa: F401
 
-from ...errors import ExportError, Severity
+from ...core.errors import ExportError, Severity
 from ...export.formatters import generate_export_id
 from ...models.export import DeliverableRequest, DeliverableResponse
 from ...workers import tasks as worker_tasks

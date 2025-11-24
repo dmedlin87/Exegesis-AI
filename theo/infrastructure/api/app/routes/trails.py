@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from theo.application.facades.database import get_session
 
-from ..ai.trails import TrailService
+from ..research.ai.trails import TrailService
 from ..models.trails import (
     AgentTrail,
     TrailReplayDiff,

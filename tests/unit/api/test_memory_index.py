@@ -1,6 +1,6 @@
-"""Unit tests for :mod:`theo.infrastructure.api.app.ai.memory_index`."""
+"""Unit tests for :mod:`theo.infrastructure.api.app.research.ai.memory_index`."""
 
-from theo.infrastructure.api.app.ai.memory_index import MemoryIndex
+from theo.infrastructure.api.app.research.ai.memory_index import MemoryIndex
 
 
 def test_score_similarity_identical_vectors() -> None:

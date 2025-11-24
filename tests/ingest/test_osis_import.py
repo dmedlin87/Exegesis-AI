@@ -20,7 +20,7 @@ from theo.application.facades.database import (  # noqa: E402
     get_settings,
 )
 from theo.adapters.persistence.models import CommentaryExcerptSeed  # noqa: E402
-from theo.infrastructure.api.app.ingest.pipeline import (  # noqa: E402
+from theo.infrastructure.api.app.library.ingest.pipeline import (  # noqa: E402
     PipelineDependencies,
     import_osis_commentary,
 )

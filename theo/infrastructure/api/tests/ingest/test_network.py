@@ -2,8 +2,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from theo.infrastructure.api.app.ingest.exceptions import UnsupportedSourceError
-from theo.infrastructure.api.app.ingest.network import ensure_url_allowed
+from theo.infrastructure.api.app.library.ingest.exceptions import UnsupportedSourceError
+from theo.infrastructure.api.app.library.ingest.network import ensure_url_allowed
 
 
 def _make_settings(**overrides):

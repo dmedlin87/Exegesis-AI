@@ -6,7 +6,7 @@ from fastapi import APIRouter
 
 from theo.application.facades import telemetry  # noqa: F401
 
-from ...ai.registry import get_llm_registry
+from ...research.ai.registry import get_llm_registry
 from ...analytics.topics import (
     TopicDigest,
     generate_topic_digest,

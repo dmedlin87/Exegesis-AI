@@ -31,11 +31,12 @@ try:  # pragma: no cover - prefer importing the full implementation
         ensure_completion_safe,
         validate_model_completion,
     )
-    from .models import (
+    from ....models.ai import (
         CollaborationResponse,
         ComparativeAnalysisResponse,
         CorpusCurationReport,
         DevotionalResponse,
+        GuardrailError,
         MultimediaDigestResponse,
         RAGAnswer,
         RAGCitation,
@@ -140,7 +141,7 @@ except ModuleNotFoundError as exc:  # pragma: no cover - lightweight fallback
     __all__ = ["RAGCitation"]
 
     try:  # pragma: no cover - ensure forward refs resolve when models import this module
-        from ..models.ai import ChatMemoryEntry
+        from ...models.ai import ChatMemoryEntry
     except Exception:  # pragma: no cover - cyclic import guard
         ChatMemoryEntry = None
     else:

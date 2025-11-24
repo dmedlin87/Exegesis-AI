@@ -6,7 +6,7 @@ from datetime import UTC, datetime, timedelta
 
 from sqlalchemy.orm import Session
 
-from ..analytics.topics import TopicDigest, load_topic_digest
+from ...analytics.service import AnalyticsService, load_topic_digest
 
 
 class DigestService:

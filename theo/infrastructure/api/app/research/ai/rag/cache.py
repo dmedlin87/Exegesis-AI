@@ -14,7 +14,7 @@ from theo.application.facades.runtime import allow_insecure_startup
 from theo.application.facades.settings import get_settings
 from theo.application.facades.version import get_git_sha
 from theo.application.facades.telemetry import log_workflow_event, record_counter
-from theo.application.telemetry import RAG_CACHE_EVENTS_METRIC
+from theo.application.core.telemetry import RAG_CACHE_EVENTS_METRIC
 
 try:  # pragma: no cover - optional dependency guard
     import redis

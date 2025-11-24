@@ -7,7 +7,7 @@ from importlib import import_module
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from ...errors import ExportError, Severity
+from ...core.errors import ExportError, Severity
 from ...export.citations import CitationSource, build_citation_export
 from ...export.zotero import ZoteroExportError
 from ...models.export import ZoteroExportRequest, ZoteroExportResponse

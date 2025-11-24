@@ -61,7 +61,7 @@ def test_ingest_url_failure_surfaces_resilience_metadata(
         raise socket.timeout("boom")
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.ingest.pipeline.fetch_web_document",
+        "theo.infrastructure.api.app.library.ingest.pipeline.fetch_web_document",
         _failing_fetch,
     )
 

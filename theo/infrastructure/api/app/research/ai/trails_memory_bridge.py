@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 from theo.infrastructure.api.app.persistence_models import AgentTrail, ChatSession
 
-from ..models.ai import (
+from ...models.ai import (
     ChatGoalState,
     ChatMemoryEntry,
     ChatSessionMessage,

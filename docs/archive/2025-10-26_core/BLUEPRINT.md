@@ -98,7 +98,7 @@ If present, a small frontmatter JSON/YAML block improves provenance/dedupe (see 
 
 ### Ingestion Notifications
 
-Theo's ingestion pipeline now calls synchronous hooks inside `theo.infrastructure.api.app.ingest.persistence` once a document is
+Theo's ingestion pipeline now calls synchronous hooks inside `theo.infrastructure.api.app.library.ingest.persistence` once a document is
 committed. These hooks warm the embedding service and log telemetry via
 `theo.application.facades.telemetry.log_workflow_event`, removing the need for an event bus and ensuring deployments without
 background workers still capture analytics deterministically.

@@ -1,4 +1,4 @@
-from theo.infrastructure.api.app.ai.rag.reasoning_trace import (
+from theo.infrastructure.api.app.research.ai.rag.reasoning_trace import (
     build_reasoning_trace_from_completion,
 )
 

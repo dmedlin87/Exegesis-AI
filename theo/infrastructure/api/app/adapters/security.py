@@ -11,7 +11,7 @@ from fastapi.security.utils import get_authorization_scheme_param
 
 from theo.application.facades.security import resolve_principal, set_principal_resolver
 from theo.application.facades.settings import Settings, get_settings
-from theo.application.security import Principal, PrincipalResolver
+from theo.application.core.security import Principal, PrincipalResolver
 
 
 class FastAPIPrincipalResolver(PrincipalResolver):
@@ -20,7 +20,7 @@ class FastAPIPrincipalResolver(PrincipalResolver):
     def __init__(self) -> None:
         self._settings_refresh_lock = threading.Lock()
         self._settings_refreshed_at: float | None = None
-        self._settings_refresh_interval_seconds = 5.0
+        self._settings_refresh_interval_seconds = 60.0
 
     async def resolve(
         self,

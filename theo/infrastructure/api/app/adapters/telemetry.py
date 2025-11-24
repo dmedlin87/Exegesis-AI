@@ -11,7 +11,7 @@ from threading import Lock
 from time import perf_counter
 from typing import Any, ClassVar, Iterable, Iterator, Protocol, Self, cast
 
-from theo.application.telemetry import TelemetryProvider, WorkflowSpan
+from theo.application.core.telemetry import TelemetryProvider, WorkflowSpan
 
 
 class _SpanProtocol(Protocol):  # pragma: no cover - structural typing helper

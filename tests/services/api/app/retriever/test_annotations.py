@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 
 from hypothesis import given, settings, strategies as st
 
-from theo.infrastructure.api.app.retriever.annotations import (
+from theo.infrastructure.api.app.retrieval.retriever.annotations import (
     annotation_to_schema,
     index_annotations_by_passage,
     load_annotations_for_documents,

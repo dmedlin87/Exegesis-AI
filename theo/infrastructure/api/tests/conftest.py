@@ -17,8 +17,8 @@ os.environ.setdefault("THEO_API_KEYS", "[\"pytest-default-key\"]")
 os.environ.setdefault("THEO_ALLOW_INSECURE_STARTUP", "1")
 os.environ.setdefault("THEORIA_ENVIRONMENT", "development")
 
-_DISCOVERIES_MODULE = types.ModuleType("theo.infrastructure.api.app.discoveries")
-_DISCOVERY_TASKS_MODULE = types.ModuleType("theo.infrastructure.api.app.discoveries.tasks")
+_DISCOVERIES_MODULE = types.ModuleType("theo.infrastructure.api.app.research.discoveries")
+_DISCOVERY_TASKS_MODULE = types.ModuleType("theo.infrastructure.api.app.research.discoveries.tasks")
 
 
 def _noop_schedule_discovery_refresh(*_: object, **__: object) -> None:
@@ -35,8 +35,8 @@ class _DiscoveryServiceStub:
 
 _DISCOVERIES_MODULE.DiscoveryService = _DiscoveryServiceStub  # type: ignore[attr-defined]
 _DISCOVERIES_MODULE.tasks = _DISCOVERY_TASKS_MODULE  # type: ignore[attr-defined]
-sys.modules.setdefault("theo.infrastructure.api.app.discoveries", _DISCOVERIES_MODULE)
-sys.modules.setdefault("theo.infrastructure.api.app.discoveries.tasks", _DISCOVERY_TASKS_MODULE)
+sys.modules.setdefault("theo.infrastructure.api.app.research.discoveries", _DISCOVERIES_MODULE)
+sys.modules.setdefault("theo.infrastructure.api.app.research.discoveries.tasks", _DISCOVERY_TASKS_MODULE)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
 if str(PROJECT_ROOT) not in sys.path:

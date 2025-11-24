@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from theo.application.embeddings.rebuild_service import EmbeddingRebuildService
+from theo.application.retrieval.embeddings.rebuild_service import EmbeddingRebuildService
 from theo.adapters import AdapterRegistry
 from theo.domain import Document, DocumentId, DocumentMetadata
 from theo.application.services import bootstrap as bootstrap_module
@@ -47,11 +47,11 @@ def test_resolve_application_wires_container(
     def fake_retire(registry, document_id):
         fake_registry_calls.setdefault("retire", []).append((registry, document_id))
 
-    def fake_get(registry, document_id):
+    def fake_get(registry, document_id, session=None):
         fake_registry_calls.setdefault("get", []).append((registry, document_id))
         return f"retrieved:{document_id}"
 
-    def fake_list(registry, limit=20):
+    def fake_list(registry, limit=20, session=None):
         fake_registry_calls.setdefault("list", []).append((registry, limit))
         return [f"doc-{limit}"]
 

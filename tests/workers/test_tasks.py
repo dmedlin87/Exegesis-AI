@@ -41,7 +41,7 @@ def _stub_pythonbible(monkeypatch: pytest.MonkeyPatch):
     """Replace heavy pythonbible lookups with a lightweight stub during worker tests."""
 
     try:
-        from theo.infrastructure.api.app.ingest import osis as ingest_osis
+        from theo.infrastructure.api.app.library.ingest import osis as ingest_osis
     except ModuleNotFoundError:  # pragma: no cover - dependency not installed
         yield
         return
@@ -79,7 +79,7 @@ from theo.infrastructure.api.app.models.export import (  # noqa: E402
 )
 
 try:  # noqa: E402 - optional dependency fallback for lightweight profiling
-    from theo.infrastructure.api.app.ai.rag import RAGCitation
+    from theo.infrastructure.api.app.research.ai.rag import RAGCitation
 except ModuleNotFoundError:  # pragma: no cover - minimal fallback for lean environments
     @dataclass(slots=True)
     class RAGCitation:

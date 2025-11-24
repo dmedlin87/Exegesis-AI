@@ -11,7 +11,7 @@ from theo.adapters.persistence.transcript_repository import (
 from theo.application.facades.database import get_session
 
 from ..models.transcripts import TranscriptSearchResponse, TranscriptSegmentModel
-from ..transcripts.service import (
+from ..library.transcripts.service import (
     build_source_ref,
     canonical_primary_osis,
     search_transcript_segments,

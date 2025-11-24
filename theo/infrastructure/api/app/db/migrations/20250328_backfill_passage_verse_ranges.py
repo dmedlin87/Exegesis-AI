@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
-from theo.infrastructure.api.app.ingest.osis import canonical_verse_range
+from theo.infrastructure.api.app.library.ingest.osis import canonical_verse_range
 from theo.infrastructure.api.app.persistence_models import Passage
 
 BATCH_SIZE = 500

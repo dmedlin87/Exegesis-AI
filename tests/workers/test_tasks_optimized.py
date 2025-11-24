@@ -32,7 +32,7 @@ from theo.adapters.persistence.models import (  # noqa: E402
 )
 
 try:  # noqa: E402 - optional dependency handling
-    from theo.infrastructure.api.app.ai.rag import RAGCitation
+    from theo.infrastructure.api.app.research.ai.rag import RAGCitation
 except ModuleNotFoundError:
     @dataclass(slots=True)
     class RAGCitation:

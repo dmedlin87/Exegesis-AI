@@ -2,9 +2,9 @@ import pytest
 import asyncio
 from datetime import timedelta
 from unittest.mock import AsyncMock, Mock, patch
-from theo.infrastructure.api.app.ai.routing.router import SafeAIRouter
-from theo.infrastructure.api.app.ai.cache.cache_manager import CacheManager
-from theo.infrastructure.api.app.ai import BaseAIClient, AIProvider
+from theo.infrastructure.api.app.research.ai.routing.router import SafeAIRouter
+from theo.infrastructure.api.app.research.ai.cache.cache_manager import CacheManager
+from theo.infrastructure.api.app.research.ai import BaseAIClient, AIProvider
 
 class MockClient(BaseAIClient):
     def __init__(self, provider: AIProvider, model: str, response: str = "response"):

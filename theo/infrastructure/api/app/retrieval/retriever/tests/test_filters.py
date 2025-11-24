@@ -14,9 +14,9 @@ from sqlalchemy.orm import Session
 from theo.application.facades import database as database_module
 from theo.application.facades.database import Base, configure_engine, get_engine
 from theo.infrastructure.api.app.persistence_models import Document, Passage
-from theo.infrastructure.api.app.ingest.osis import expand_osis_reference
+from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference
 from theo.infrastructure.api.app.models.verses import VerseMentionsFilters
-from theo.infrastructure.api.app.retriever.verses import get_mentions_for_osis
+from theo.infrastructure.api.app.retrieval.retriever.verses import get_mentions_for_osis
 
 
 @contextmanager

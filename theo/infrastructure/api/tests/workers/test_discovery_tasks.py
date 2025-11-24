@@ -12,8 +12,8 @@ import pytest
 def tasks_module():
     """Load the real discovery task module instead of the test stub."""
 
-    module_name = "theo.infrastructure.api.app.discoveries.tasks"
-    package_name = "theo.infrastructure.api.app.discoveries"
+    module_name = "theo.infrastructure.api.app.research.discoveries.tasks"
+    package_name = "theo.infrastructure.api.app.research.discoveries"
 
     original_tasks = sys.modules.pop(module_name, None)
     original_package = sys.modules.pop(package_name, None)

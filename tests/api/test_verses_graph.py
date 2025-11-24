@@ -15,7 +15,7 @@ from theo.adapters.persistence.models import (
     Passage,
     PassageVerse,
 )
-from theo.infrastructure.api.app.ingest.osis import expand_osis_reference
+from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference
 
 
 @pytest.fixture()

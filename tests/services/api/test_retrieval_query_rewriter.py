@@ -3,7 +3,7 @@ from typing import Sequence
 from sqlalchemy.orm import Session
 
 from theo.application.facades.settings import Settings
-from theo.application.search import QueryRewriter
+from theo.application.retrieval.search import QueryRewriter
 from theo.infrastructure.api.app.models.search import HybridSearchRequest, HybridSearchResult
 from theo.infrastructure.api.app.infra.retrieval_service import RetrievalService
 

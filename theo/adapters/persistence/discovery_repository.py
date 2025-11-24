@@ -17,7 +17,7 @@ from theo.application.dtos import (
     DiscoveryDTO,
     DiscoveryListFilters,
 )
-from theo.application.observability import trace_repository_call
+from theo.application.core.observability import trace_repository_call
 from theo.application.repositories.discovery_repository import DiscoveryRepository
 
 from .base_repository import BaseRepository

@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from theo.application.facades.database import get_session
-from theo.infrastructure.api.app.ai.registry import (
+from theo.infrastructure.api.app.research.ai.registry import (
     LLMModel,
     LLMRegistry,
     get_llm_registry,

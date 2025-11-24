@@ -25,7 +25,7 @@ if "fastapi" not in sys.modules:
 pytest.importorskip("pythonbible")
 
 legacy_services = importlib.import_module("theo.services")
-osis_module = importlib.import_module("theo.infrastructure.api.app.ingest.osis")
+osis_module = importlib.import_module("theo.infrastructure.api.app.library.ingest.osis")
 
 
 def _register_legacy_submodule(name: str, module: types.ModuleType) -> None:

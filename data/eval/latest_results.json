@@ -1,0 +1,49 @@
+{
+  "overall": {
+    "faithfulness": 0.1,
+    "groundedness": 1.0,
+    "context_precision": 1.0,
+    "context_recall": 1.0,
+    "answer_relevance": 1.0
+  },
+  "per_sample": [
+    {
+      "id": "1",
+      "question": "q",
+      "answer": "a",
+      "contexts": [],
+      "ground_truth": [],
+      "citations": [],
+      "scores": {
+        "faithfulness": 0.1
+      },
+      "dataset_row": {}
+    },
+    {
+      "id": "1",
+      "question": "q",
+      "answer": "a",
+      "contexts": [],
+      "ground_truth": [],
+      "citations": [],
+      "scores": {},
+      "dataset_row": {}
+    }
+  ],
+  "failing_rows": [
+    "1"
+  ],
+  "regressions": [
+    {
+      "metric": "faithfulness",
+      "baseline": 0.9,
+      "current": 0.1,
+      "tolerance": 0.01
+    }
+  ],
+  "baseline": {
+    "faithfulness": 0.9
+  },
+  "tolerance": 0.01,
+  "notes": "Evaluation ran with deterministic fake LLM/embeddings; metrics are informational only."
+}

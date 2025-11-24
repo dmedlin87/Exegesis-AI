@@ -5,7 +5,7 @@ from __future__ import annotations
 from contextlib import AbstractContextManager, contextmanager
 from typing import Any, Mapping, Optional
 
-from ..telemetry import TelemetryProvider, WorkflowSpan
+from ..core.telemetry import TelemetryProvider, WorkflowSpan
 
 _provider: TelemetryProvider | None = None
 

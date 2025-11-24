@@ -32,12 +32,12 @@ def _use_real_discovery_service() -> Generator[None, None, None]:
     monkeypatcher = pytest.MonkeyPatch()
     stubbed_modules: dict[str, Any] = {}
     for module_name in (
-        "theo.infrastructure.api.app.discoveries",
-        "theo.infrastructure.api.app.discoveries.tasks",
+        "theo.infrastructure.api.app.research.discoveries",
+        "theo.infrastructure.api.app.research.discoveries.tasks",
     ):
         stubbed_modules[module_name] = sys.modules.pop(module_name, None)
 
-    discoveries_module = importlib.import_module("theo.infrastructure.api.app.discoveries")
+    discoveries_module = importlib.import_module("theo.infrastructure.api.app.research.discoveries")
     real_service = discoveries_module.DiscoveryService
     routes_module = importlib.import_module("theo.infrastructure.api.app.routes.discoveries")
 

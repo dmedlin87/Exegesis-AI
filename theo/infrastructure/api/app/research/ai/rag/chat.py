@@ -83,7 +83,7 @@ def _missing_deliverable_hook(name: str) -> Callable[..., Any]:
     def _missing(*_args: Any, **_kwargs: Any) -> Any:
         raise RuntimeError(
             "Deliverable hook '%s' has not been configured. "
-            "Import 'theo.infrastructure.api.app.ai.rag.workflow' to initialise the"
+            "Import 'theo.infrastructure.api.app.research.ai.rag.workflow' to initialise the"
             " compatibility layer." % name
         )
 

@@ -16,10 +16,10 @@ from starlette.middleware.base import RequestResponseEndpoint
 from starlette.responses import Response
 
 from ..debug import ErrorReportingMiddleware
-from ..errors import TheoError
-from ..ingest.exceptions import UnsupportedSourceError
+from ..core.errors import TheoError
+from ..library.ingest.exceptions import UnsupportedSourceError
 from ..adapters.security import require_principal
-from ..tracing import TRACE_ID_HEADER_NAME, get_current_trace_headers
+from ..core.tracing import TRACE_ID_HEADER_NAME, get_current_trace_headers
 
 __all__ = [
     "configure_cors",

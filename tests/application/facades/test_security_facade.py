@@ -1,7 +1,7 @@
 import pytest
 
 from theo.application.facades import security as security_facade
-from theo.application.security import Principal, PrincipalResolver
+from theo.application.core.security import Principal, PrincipalResolver
 
 
 class _Resolver(PrincipalResolver):

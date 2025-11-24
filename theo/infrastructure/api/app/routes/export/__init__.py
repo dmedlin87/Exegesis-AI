@@ -6,9 +6,9 @@ from fastapi import APIRouter
 
 from theo.application.facades import telemetry  # noqa: F401
 
-from ...errors import ExportError
+from ...core.errors import ExportError
 from ...export.formatters import build_search_export, render_bundle
-from ...retriever.export import export_search_results
+from ...retrieval.retriever.export import export_search_results
 from ...export.zotero import export_to_zotero as _zotero_export_adapter
 from . import citations, deliverables, documents, search, zotero
 

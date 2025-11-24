@@ -169,7 +169,7 @@ def test_refresh_creator_rollups_helper_handles_async_failure(
     settings.creator_verse_rollups_async_refresh = True
     try:
         from theo.infrastructure.api.app.workers import tasks as worker_tasks
-        from theo.infrastructure.api.app.ingest.pipeline import _refresh_creator_verse_rollups
+        from theo.infrastructure.api.app.library.ingest.pipeline import _refresh_creator_verse_rollups
 
         recorded: list[list[str]] = []
 

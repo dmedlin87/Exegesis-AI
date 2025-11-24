@@ -5,8 +5,8 @@ from __future__ import annotations
 from hypothesis import given, settings, strategies as st
 import pythonbible as pb
 
-from theo.infrastructure.api.app.ingest.chunking import Chunk, chunk_text
-from theo.infrastructure.api.app.ingest.osis import (
+from theo.infrastructure.api.app.library.ingest.chunking import Chunk, chunk_text
+from theo.infrastructure.api.app.library.ingest.osis import (
     DetectedOsis,
     combine_references,
     detect_osis_references,

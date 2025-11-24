@@ -11,15 +11,15 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
-from theo.infrastructure.api.app.ai.clients import GenerationError
-from theo.infrastructure.api.app.ai.ledger import CacheRecord, SharedLedger
-from theo.infrastructure.api.app.ai.registry import LLMModel, LLMRegistry
-from theo.infrastructure.api.app.ai.router import (
+from theo.infrastructure.api.app.research.ai.clients import GenerationError
+from theo.infrastructure.api.app.research.ai.ledger import CacheRecord, SharedLedger
+from theo.infrastructure.api.app.research.ai.registry import LLMModel, LLMRegistry
+from theo.infrastructure.api.app.research.ai.router import (
     LLMRouterService,
     RoutedGeneration,
     reset_router_state,
 )
-from theo.infrastructure.api.app.ai import router as router_module
+from theo.infrastructure.api.app.research.ai import router as router_module
 
 
 @pytest.fixture(autouse=True)

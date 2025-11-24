@@ -13,7 +13,7 @@ from theo.infrastructure.api.app.models.search import (
     HybridSearchRequest,
     HybridSearchResult,
 )
-from theo.infrastructure.api.app.retriever import hybrid
+from theo.infrastructure.api.app.retrieval.retriever import hybrid
 
 
 HYPOTHESIS_SETTINGS = settings(max_examples=40, deadline=None)

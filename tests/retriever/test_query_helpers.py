@@ -10,8 +10,8 @@ from theo.infrastructure.api.app.models.search import (
     HybridSearchRequest,
     HybridSearchResult,
 )
-from theo.infrastructure.api.app.retriever import hybrid
-from theo.infrastructure.api.app.retriever.hybrid import _Candidate
+from theo.infrastructure.api.app.retrieval.retriever import hybrid
+from theo.infrastructure.api.app.retrieval.retriever.hybrid import _Candidate
 
 
 @pytest.fixture

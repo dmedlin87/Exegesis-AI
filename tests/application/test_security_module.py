@@ -1,6 +1,6 @@
 import pytest
 
-from theo.application.security import Principal, PrincipalResolver
+from theo.application.core.security import Principal, PrincipalResolver
 
 
 class _Resolver(PrincipalResolver):

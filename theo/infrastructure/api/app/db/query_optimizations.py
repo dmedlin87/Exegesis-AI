@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from sqlalchemy.orm import InstrumentedAttribute
 
 from theo.application.facades.telemetry import record_counter, record_histogram
-from theo.application.telemetry import (
+from theo.application.core.telemetry import (
     DB_QUERY_ERROR_METRIC,
     DB_QUERY_LATENCY_METRIC,
     DB_QUERY_REQUESTS_METRIC,

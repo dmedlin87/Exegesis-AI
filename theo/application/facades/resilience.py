@@ -5,7 +5,7 @@ from __future__ import annotations
 import time
 from typing import Awaitable, Callable, Optional, TypeVar
 
-from ..resilience import ResilienceError, ResilienceMetadata, ResiliencePolicy, ResilienceSettings
+from ..core.resilience import ResilienceError, ResilienceMetadata, ResiliencePolicy, ResilienceSettings
 
 T = TypeVar("T")
 

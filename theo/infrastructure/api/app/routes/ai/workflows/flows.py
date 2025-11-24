@@ -9,20 +9,20 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from theo.application.facades.database import get_session
-from theo.infrastructure.api.app.ai.rag.collaboration import run_research_reconciliation
-from theo.infrastructure.api.app.ai.rag.corpus import run_corpus_curation
-from theo.infrastructure.api.app.ai.rag.deliverables import (
+from theo.infrastructure.api.app.research.ai.rag.collaboration import run_research_reconciliation
+from theo.infrastructure.api.app.research.ai.rag.corpus import run_corpus_curation
+from theo.infrastructure.api.app.research.ai.rag.deliverables import (
     generate_comparative_analysis,
     generate_devotional_flow,
     generate_multimedia_digest,
     generate_sermon_prep_outline,
 )
-from theo.infrastructure.api.app.ai.rag.verse import generate_verse_brief
-from theo.infrastructure.api.app.ai.passage import (
+from theo.infrastructure.api.app.research.ai.rag.verse import generate_verse_brief
+from theo.infrastructure.api.app.research.ai.passage import (
     PassageResolutionError,
     resolve_passage_reference,
 )
-from theo.infrastructure.api.app.ai.rag import (
+from theo.infrastructure.api.app.research.ai.rag import (
     CollaborationResponse,
     ComparativeAnalysisResponse,
     CorpusCurationReport,
@@ -32,7 +32,7 @@ from theo.infrastructure.api.app.ai.rag import (
     SermonPrepResponse,
     VerseCopilotResponse,
 )
-from theo.infrastructure.api.app.ai.trails import TrailService
+from theo.infrastructure.api.app.research.ai.trails import TrailService
 from theo.infrastructure.api.app.models.ai import (
     CollaborationRequest,
     ComparativeAnalysisRequest,

@@ -1,6 +1,6 @@
 import pytest
 
-from theo.application.resilience import (
+from theo.application.core.resilience import (
     ResilienceError,
     ResilienceMetadata,
     ResiliencePolicy,

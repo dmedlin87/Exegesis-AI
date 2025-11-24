@@ -1,4 +1,4 @@
-"""Tests for :mod:`theo.infrastructure.api.app.discoveries.service`."""
+"""Tests for :mod:`theo.infrastructure.api.app.research.discoveries.service`."""
 
 from __future__ import annotations
 
@@ -13,9 +13,9 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 # Ensure that any stubbed module from other tests is removed before import.
-sys.modules.pop("theo.infrastructure.api.app.discoveries", None)
-sys.modules.pop("theo.infrastructure.api.app.discoveries.service", None)
-sys.modules.pop("theo.infrastructure.api.app.discoveries.tasks", None)
+sys.modules.pop("theo.infrastructure.api.app.research.discoveries", None)
+sys.modules.pop("theo.infrastructure.api.app.research.discoveries.service", None)
+sys.modules.pop("theo.infrastructure.api.app.research.discoveries.tasks", None)
 
 from theo.adapters.persistence.discovery_repository import (  # noqa: E402 - imported after cleanup
     SQLAlchemyDiscoveryRepository,
@@ -31,7 +31,7 @@ from theo.adapters.persistence.models import (
     Passage,
 )
 from theo.domain.discoveries import CorpusSnapshotSummary, DiscoveryType
-from theo.infrastructure.api.app.discoveries.service import DiscoveryService  # noqa: E402
+from theo.infrastructure.api.app.research.discoveries.service import DiscoveryService  # noqa: E402
 
 
 @pytest.fixture(scope="module")

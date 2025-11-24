@@ -8,6 +8,8 @@ from typing import Tuple
 
 from importlib import import_module
 
+from sqlalchemy.orm import load_only, selectinload
+
 from theo.adapters.persistence.sqlalchemy_support import Session, select
 
 from theo.adapters import AdapterRegistry
@@ -19,7 +21,7 @@ from theo.adapters.research import (
     SqlAlchemyHypothesisRepositoryFactory,
     SqlAlchemyResearchNoteRepositoryFactory,
 )
-from theo.application.embeddings import EmbeddingRebuildService
+from theo.application.retrieval.embeddings import EmbeddingRebuildService
 from theo.application.facades.database import get_engine
 from theo.application.facades.settings import get_settings
 from theo.application.research import ResearchService
@@ -35,6 +37,18 @@ def _session_scope(registry: AdapterRegistry) -> Iterator[Session]:
     engine = registry.resolve("engine")
     with Session(engine) as session:
         yield session
+
+
+@contextmanager
+def _maybe_session_scope(
+    registry: AdapterRegistry, session: Session | None = None
+) -> Iterator[Session]:
+    """Yield the provided session or create a new one if None."""
+    if session is not None:
+        yield session
+    else:
+        with _session_scope(registry) as new_session:
+            yield new_session
 
 
 def _extract_language(record: DocumentRecord) -> str | None:
@@ -86,13 +100,15 @@ def _extract_scripture_refs(session: Session, record: DocumentRecord) -> tuple[s
                 seen.add(value)
                 refs.append(value)
 
-    passage_stmt = (
-        select(Passage.osis_ref)
-        .where(Passage.document_id == record.id, Passage.osis_ref.is_not(None))
-        .order_by(Passage.page_no.asc(), Passage.t_start.asc(), Passage.start_char.asc())
+    # Use eager-loaded relationship if available to avoid N+1 queries
+    passages = record.passages or []
+    sorted_passages = sorted(
+        passages,
+        key=lambda p: (p.page_no or 0, p.t_start or 0.0, p.start_char or 0),
     )
-    for row in session.execute(passage_stmt):
-        osis_ref = row[0]
+
+    for passage in sorted_passages:
+        osis_ref = passage.osis_ref
         if isinstance(osis_ref, str) and osis_ref and osis_ref not in seen:
             seen.add(osis_ref)
             refs.append(osis_ref)
@@ -130,14 +146,27 @@ def _document_from_record(session: Session, record: DocumentRecord) -> Document:
     )
 
 
-def _list_documents(registry: AdapterRegistry, *, limit: int = 20) -> list[Document]:
+def _list_documents(
+    registry: AdapterRegistry,
+    *,
+    limit: int = 20,
+    session: Session | None = None,
+) -> list[Document]:
     """Return a list of documents ordered by recency."""
 
     normalised_limit = max(1, int(limit)) if isinstance(limit, int) else 20
 
-    with _session_scope(registry) as session:
+    with _maybe_session_scope(registry, session) as session:
         stmt = (
             select(DocumentRecord)
+            .options(
+                selectinload(DocumentRecord.passages).load_only(
+                    Passage.osis_ref,
+                    Passage.page_no,
+                    Passage.t_start,
+                    Passage.start_char,
+                )
+            )
             .order_by(DocumentRecord.created_at.desc())
             .limit(normalised_limit)
         )
@@ -146,12 +175,26 @@ def _list_documents(registry: AdapterRegistry, *, limit: int = 20) -> list[Docum
 
 
 def _get_document(
-    registry: AdapterRegistry, document_id: DocumentId
+    registry: AdapterRegistry,
+    document_id: DocumentId,
+    session: Session | None = None,
 ) -> Document | None:
     """Fetch a single document by identifier."""
 
-    with _session_scope(registry) as session:
-        record = session.get(DocumentRecord, str(document_id))
+    with _maybe_session_scope(registry, session) as session:
+        stmt = (
+            select(DocumentRecord)
+            .where(DocumentRecord.id == str(document_id))
+            .options(
+                selectinload(DocumentRecord.passages).load_only(
+                    Passage.osis_ref,
+                    Passage.page_no,
+                    Passage.t_start,
+                    Passage.start_char,
+                )
+            )
+        )
+        record = session.scalars(stmt).one_or_none()
         if record is None:
             return None
         return _document_from_record(session, record)
@@ -249,12 +292,12 @@ def resolve_application() -> Tuple[ApplicationContainer, AdapterRegistry]:
 
     def _build_embedding_rebuild_service() -> EmbeddingRebuildService:
         embeddings_module = import_module(
-            "theo.infrastructure.api.app.ingest.embeddings"
+            "theo.infrastructure.api.app.library.ingest.embeddings"
         )
         clear_embedding_cache = getattr(embeddings_module, "clear_embedding_cache")
         get_embedding_service = getattr(embeddings_module, "get_embedding_service")
         sanitizer_module = import_module(
-            "theo.infrastructure.api.app.ingest.sanitizer"
+            "theo.infrastructure.api.app.library.ingest.sanitizer"
         )
         sanitize_passage_text = getattr(
             sanitizer_module, "sanitize_passage_text"
@@ -288,12 +331,16 @@ def resolve_application() -> Tuple[ApplicationContainer, AdapterRegistry]:
     def _build_retire_callable() -> Callable[[DocumentId], None]:
         return lambda document_id: _retire_document(registry, document_id)
 
-    def _build_get_callable() -> Callable[[DocumentId], Document | None]:
-        return lambda document_id: _get_document(registry, document_id)
+    def _build_get_callable() -> Callable[..., Document | None]:
+        return lambda document_id, session=None: _get_document(
+            registry, document_id, session=session
+        )
 
     def _build_list_callable() -> Callable[..., list[Document]]:
-        def _runner(*, limit: int = 20) -> list[Document]:
-            return _list_documents(registry, limit=limit)
+        def _runner(
+            *, limit: int = 20, session: Session | None = None
+        ) -> list[Document]:
+            return _list_documents(registry, limit=limit, session=session)
 
         return _runner
 

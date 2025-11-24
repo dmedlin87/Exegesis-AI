@@ -6,8 +6,8 @@ from collections import deque
 
 import pytest
 
-from theo.infrastructure.api.app.ai.rag import workflow
-from theo.infrastructure.api.app.ai.rag.models import RAGAnswer, RAGCitation
+from theo.infrastructure.api.app.research.ai.rag import workflow
+from theo.infrastructure.api.app.research.ai.rag.models import RAGAnswer, RAGCitation
 from theo.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
 
 

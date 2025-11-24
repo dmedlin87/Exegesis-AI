@@ -17,12 +17,12 @@ from urllib.parse import urlparse
 
 from theo.adapters.persistence.models import Document
 from theo.infrastructure.api.app.enrich import MetadataEnricher
-from theo.infrastructure.api.app.ingest.pipeline import (
+from theo.infrastructure.api.app.library.ingest.pipeline import (
     PipelineDependencies,
     run_pipeline_for_file,
     run_pipeline_for_url,
 )
-from theo.infrastructure.api.app.telemetry import log_workflow_event
+from theo.infrastructure.api.app.core.telemetry import log_workflow_event
 from theo.application.services.bootstrap import resolve_application
 
 

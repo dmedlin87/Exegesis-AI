@@ -7,7 +7,7 @@ from typing import Iterable, Sequence
 import pytest
 from sqlalchemy.exc import SQLAlchemyError
 
-from theo.application.embeddings import (
+from theo.application.retrieval.embeddings import (
     EmbeddingRebuildError,
     EmbeddingRebuildOptions,
     EmbeddingRebuildProgress,

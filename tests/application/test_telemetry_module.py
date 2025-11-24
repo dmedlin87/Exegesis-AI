@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 
-from theo.application.telemetry import (
+from theo.application.core.telemetry import (
     CITATION_DRIFT_EVENTS_METRIC,
     RAG_CACHE_EVENTS_METRIC,
     SEARCH_RERANKER_EVENTS_METRIC,

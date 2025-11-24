@@ -1,7 +1,7 @@
 """Modular AI service architecture for Theoria.
 
 This package exposes the new Phase 2 AI modules while maintaining backwards
-compatible accessors for the legacy ``theo.infrastructure.api.app.ai`` namespace.
+compatible accessors for the legacy ``theo.infrastructure.api.app.research.ai`` namespace.
 Existing call sites still import helpers such as ``run_guarded_chat`` and the
 guardrailed workflow responses directly from this package, so we intentionally
 re-export the RAG layer and commonly consumed submodules here.
@@ -98,7 +98,7 @@ except ModuleNotFoundError:  # pragma: no cover - lightweight fallback for tests
 
 # Backwards compatibility ---------------------------------------------------
 # Keep historically imported submodules addressable from the package root so
-# ``from theo.infrastructure.api.app.ai import digest_service`` (and similar imports)
+# ``from theo.infrastructure.api.app.research.ai import digest_service`` (and similar imports)
 # continue to work during the incremental migration away from models.ai.
 digest_service = import_module(".digest_service", __name__)
 memory_index = import_module(".memory_index", __name__)

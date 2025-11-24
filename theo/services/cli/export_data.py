@@ -27,8 +27,8 @@ from theo.infrastructure.api.app.models.export import (
     ExportManifest,
 )
 from theo.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchRequest
-from theo.infrastructure.api.app.retriever.export import export_documents, export_search_results
-from theo.infrastructure.api.app.retriever.verses import get_mentions_for_osis
+from theo.infrastructure.api.app.retrieval.retriever.export import export_documents, export_search_results
+from theo.infrastructure.api.app.retrieval.retriever.verses import get_mentions_for_osis
 from theo.infrastructure.api.app.models.verses import VerseMentionsFilters
 from theo.application.services.bootstrap import resolve_application
 

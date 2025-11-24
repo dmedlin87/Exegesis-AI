@@ -20,9 +20,9 @@ except ImportError:  # pragma: no cover - allows stubbing in tests
 from packaging.version import InvalidVersion, Version
 from sqlalchemy.orm import Session
 
-from theo.infrastructure.api.app.ai import rag as rag_service
+from theo.infrastructure.api.app.research.ai import rag as rag_service
 from theo.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchRequest
-from theo.infrastructure.api.app.retriever.hybrid import hybrid_search
+from theo.infrastructure.api.app.retrieval.retriever.hybrid import hybrid_search
 from theo.application.services.bootstrap import resolve_application
 
 
@@ -190,7 +190,9 @@ def _compute_overall_scores(result: Any, metric_names: Sequence[str]) -> dict[st
         if value is None:
             continue
         try:
-            overall[name] = float(value)
+            float_val = float(value)
+            if not math.isnan(float_val):
+                overall[name] = float_val
         except (TypeError, ValueError):
             continue
     return overall

@@ -31,8 +31,8 @@ from theo.infrastructure.api.app.analytics.topics import (  # noqa: E402
     TopicCluster,
     TopicDigest,
 )
-from theo.infrastructure.api.app.ai.rag import RAGAnswer  # noqa: E402
-from theo.infrastructure.api.app.ai.trails import TrailReplayResult  # noqa: E402
+from theo.infrastructure.api.app.research.ai.rag import RAGAnswer  # noqa: E402
+from theo.infrastructure.api.app.research.ai.trails import TrailReplayResult  # noqa: E402
 from theo.infrastructure.api.app.models.ai import (  # noqa: E402
     ChatGoalState,
     ChatMemoryEntry,
@@ -81,7 +81,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 pytest.importorskip("theo.adapters.persistence.models")
 
-from theo.infrastructure.api.app.ai.registry import (  # noqa: E402
+from theo.infrastructure.api.app.research.ai.registry import (  # noqa: E402
     LLMModel,
     LLMRegistry,
     save_llm_registry,
@@ -543,7 +543,7 @@ def _stub_external_services(contract_context: ContractTestContext):
         return _StubAuditLogger()
 
     patcher.setattr(
-        "theo.infrastructure.api.app.ai.audit_logging.AuditLogWriter.from_session",
+        "theo.infrastructure.api.app.research.ai.audit_logging.AuditLogWriter.from_session",
         classmethod(_fake_audit_from_session),
     )
 
@@ -778,7 +778,7 @@ def _stub_external_services(contract_context: ContractTestContext):
         )
 
     patcher.setattr(
-        "theo.infrastructure.api.app.ai.trails.TrailService.replay_trail",
+        "theo.infrastructure.api.app.research.ai.trails.TrailService.replay_trail",
         _fake_replay_trail,
         raising=False,
     )

@@ -1019,7 +1019,7 @@ def test_detect_large_corpus(large_corpus_fixture):
 import pytest
 from sqlalchemy.orm import Session
 from theo.adapters.persistence import SQLAlchemyDiscoveryRepository
-from theo.infrastructure.api.app.discoveries.service import DiscoveryService
+from theo.infrastructure.api.app.research.discoveries.service import DiscoveryService
 
 @pytest.mark.db
 def test_refresh_discoveries_end_to_end(session: Session, user_id: str):

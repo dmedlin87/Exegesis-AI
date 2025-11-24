@@ -34,7 +34,7 @@ if "pypdf" not in sys.modules:
     sys.modules["pypdf.errors"] = errors_module
 
 from theo.domain.research.osis import format_osis
-from theo.infrastructure.api.app.ingest.parsers import TranscriptSegment
+from theo.infrastructure.api.app.library.ingest.parsers import TranscriptSegment
 
 __all__ = [
     "DEFAULT_HYPOTHESIS_SETTINGS",

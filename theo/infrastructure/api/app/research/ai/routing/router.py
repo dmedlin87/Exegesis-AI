@@ -14,7 +14,7 @@ from .. import BaseAIClient
 from ..cache.cache_manager import CacheManager
 from ..ledger.usage_tracker import UsageTracker
 from theo.application.facades.telemetry import record_counter, record_histogram
-from theo.application.telemetry import (
+from theo.application.core.telemetry import (
     LLM_INFERENCE_ERROR_METRIC,
     LLM_INFERENCE_LATENCY_METRIC,
     LLM_INFERENCE_REQUESTS_METRIC,

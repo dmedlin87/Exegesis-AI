@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from theo.application.observability import trace_repository_call
+from theo.application.core.observability import trace_repository_call
 from theo.application.repositories import IngestionJobRepository
 
 from .base_repository import BaseRepository

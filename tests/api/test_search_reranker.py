@@ -12,8 +12,8 @@ import joblib  # type: ignore[import]
 from theo.application.facades.settings import get_settings
 from theo.infrastructure.api.app.main import app
 from theo.infrastructure.api.app.models.search import HybridSearchResult
-from theo.infrastructure.api.app.ranking.features import FEATURE_NAMES, extract_features
-from theo.infrastructure.api.app.ranking.re_ranker import Reranker, load_reranker
+from theo.infrastructure.api.app.retrieval.ranking.features import FEATURE_NAMES, extract_features
+from theo.infrastructure.api.app.retrieval.ranking.re_ranker import Reranker, load_reranker
 from theo.infrastructure.api.app.routes import search as search_route
 from theo.infrastructure.api.app.infra import retrieval_service as retrieval_service_module
 

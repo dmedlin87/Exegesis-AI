@@ -112,7 +112,7 @@ def _stub_pythonbible(monkeypatch: pytest.MonkeyPatch):
     """Replace heavy pythonbible lookups with a lightweight stub during tests."""
 
     try:
-        from theo.infrastructure.api.app.ingest import osis as ingest_osis
+        from theo.infrastructure.api.app.library.ingest import osis as ingest_osis
     except ModuleNotFoundError:  # pragma: no cover - dependency not installed
         yield
         return

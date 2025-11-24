@@ -5,11 +5,11 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Protocol, Sequence, runtime_checkable
 
-from ..ingest.embeddings import get_embedding_service
-from ..ingest.stages.base import EmbeddingServiceProtocol
+from ...library.ingest.embeddings import get_embedding_service
+from ...library.ingest.stages.base import EmbeddingServiceProtocol
 
 if TYPE_CHECKING:
-    from ..models.ai import ChatMemoryEntry
+    from ...models.ai import ChatMemoryEntry
 
 
 @runtime_checkable

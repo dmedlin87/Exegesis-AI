@@ -5,7 +5,7 @@ import zipfile
 
 import pytest
 
-from theo.infrastructure.api.app.ingest import parsers  # noqa: E402
+from theo.infrastructure.api.app.library.ingest import parsers  # noqa: E402
 
 
 @pytest.fixture

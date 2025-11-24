@@ -723,15 +723,15 @@
 <polygon fill="none" stroke="black" points="7299,-393.36 7112,-393.36 7112,-357.36 7299,-357.36 7299,-393.36"/>
 <text text-anchor="middle" x="7205.5" y="-372.86" font-family="Helvetica,sans-Serif" font-size="10.00">theo.application.facades.resilience</text>
 </g>
-<!-- theo.application.resilience -->
+<!-- theo.application.core.resilience -->
 <g id="node61" class="node">
-<title>theo.application.resilience</title>
+<title>theo.application.core.resilience</title>
 <polygon fill="none" stroke="black" points="7539,-374.36 7393,-374.36 7393,-338.36 7539,-338.36 7539,-374.36"/>
-<text text-anchor="middle" x="7466" y="-353.86" font-family="Helvetica,sans-Serif" font-size="10.00">theo.application.resilience</text>
+<text text-anchor="middle" x="7466" y="-353.86" font-family="Helvetica,sans-Serif" font-size="10.00">theo.application.core.resilience</text>
 </g>
-<!-- theo.application.facades.resilience&#45;&gt;theo.application.resilience -->
+<!-- theo.application.facades.resilience&#45;&gt;theo.application.core.resilience -->
 <g id="edge68" class="edge">
-<title>theo.application.facades.resilience&#45;&gt;theo.application.resilience</title>
+<title>theo.application.facades.resilience&#45;&gt;theo.application.core.resilience</title>
 <path fill="none" stroke="black" d="M7299.09,-368.55C7326.46,-366.54 7356.21,-364.35 7382.86,-362.39"/>
 <polygon fill="black" stroke="black" points="7383.2,-365.88 7392.91,-361.65 7382.68,-358.9 7383.2,-365.88"/>
 </g>
@@ -795,15 +795,15 @@
 <polygon fill="none" stroke="black" points="5475,-4017.36 5296,-4017.36 5296,-3981.36 5475,-3981.36 5475,-4017.36"/>
 <text text-anchor="middle" x="5385.5" y="-3996.86" font-family="Helvetica,sans-Serif" font-size="10.00">theo.application.facades.security</text>
 </g>
-<!-- theo.application.security -->
+<!-- theo.application.core.security -->
 <g id="node64" class="node">
-<title>theo.application.security</title>
+<title>theo.application.core.security</title>
 <polygon fill="none" stroke="black" points="5761.5,-3865.36 5624.5,-3865.36 5624.5,-3829.36 5761.5,-3829.36 5761.5,-3865.36"/>
-<text text-anchor="middle" x="5693" y="-3844.86" font-family="Helvetica,sans-Serif" font-size="10.00">theo.application.security</text>
+<text text-anchor="middle" x="5693" y="-3844.86" font-family="Helvetica,sans-Serif" font-size="10.00">theo.application.core.security</text>
 </g>
-<!-- theo.application.facades.security&#45;&gt;theo.application.security -->
+<!-- theo.application.facades.security&#45;&gt;theo.application.core.security -->
 <g id="edge74" class="edge">
-<title>theo.application.facades.security&#45;&gt;theo.application.security</title>
+<title>theo.application.facades.security&#45;&gt;theo.application.core.security</title>
 <path fill="none" stroke="black" d="M5475.07,-3990.84C5491.72,-3985.94 5507.96,-3978.52 5521,-3967.36 5553.1,-3939.87 5524.89,-3906.82 5557,-3879.36 5573.04,-3865.63 5593.93,-3857.55 5614.46,-3852.87"/>
 <polygon fill="black" stroke="black" points="5615.38,-3856.25 5624.49,-3850.83 5613.99,-3849.39 5615.38,-3856.25"/>
 </g>
@@ -843,15 +843,15 @@
 <polygon fill="none" stroke="black" points="7299.5,-3572.36 7111.5,-3572.36 7111.5,-3536.36 7299.5,-3536.36 7299.5,-3572.36"/>
 <text text-anchor="middle" x="7205.5" y="-3551.86" font-family="Helvetica,sans-Serif" font-size="10.00">theo.application.facades.telemetry</text>
 </g>
-<!-- theo.application.telemetry -->
+<!-- theo.application.core.telemetry -->
 <g id="node66" class="node">
-<title>theo.application.telemetry</title>
+<title>theo.application.core.telemetry</title>
 <polygon fill="none" stroke="black" points="7539,-3781.36 7393,-3781.36 7393,-3745.36 7539,-3745.36 7539,-3781.36"/>
-<text text-anchor="middle" x="7466" y="-3760.86" font-family="Helvetica,sans-Serif" font-size="10.00">theo.application.telemetry</text>
+<text text-anchor="middle" x="7466" y="-3760.86" font-family="Helvetica,sans-Serif" font-size="10.00">theo.application.core.telemetry</text>
 </g>
-<!-- theo.application.facades.telemetry&#45;&gt;theo.application.telemetry -->
+<!-- theo.application.facades.telemetry&#45;&gt;theo.application.core.telemetry -->
 <g id="edge80" class="edge">
-<title>theo.application.facades.telemetry&#45;&gt;theo.application.telemetry</title>
+<title>theo.application.facades.telemetry&#45;&gt;theo.application.core.telemetry</title>
 <path fill="none" stroke="black" d="M7228.99,-3572.54C7275.39,-3610.06 7381.81,-3696.1 7434.42,-3738.63"/>
 <polygon fill="black" stroke="black" points="7432.4,-3741.5 7442.38,-3745.07 7436.8,-3736.06 7432.4,-3741.5"/>
 </g>
@@ -1047,27 +1047,27 @@
 <path fill="none" stroke="black" d="M7295.31,-10969.72C7370.07,-10975.51 7479.74,-10985.04 7575,-10997.36 7591.09,-10999.44 7594.9,-11001.36 7611,-11003.36 7767.44,-11022.77 7806.86,-11032.36 7964.5,-11032.36 7964.5,-11032.36 7964.5,-11032.36 8197.5,-11032.36 8331.02,-11032.36 8384.7,-11072.13 8496,-10998.36 8561.67,-10954.83 8594.95,-10862.02 8608.08,-10815.36"/>
 <polygon fill="black" stroke="black" points="8611.49,-10816.17 8610.72,-10805.61 8604.73,-10814.35 8611.49,-10816.17"/>
 </g>
-<!-- theo.application.search -->
+<!-- theo.application.retrieval.search -->
 <g id="node62" class="node">
-<title>theo.application.search</title>
+<title>theo.application.retrieval.search</title>
 <polygon fill="none" stroke="black" points="6706,-2905.36 6575,-2905.36 6575,-2869.36 6706,-2869.36 6706,-2905.36"/>
-<text text-anchor="middle" x="6640.5" y="-2884.86" font-family="Helvetica,sans-Serif" font-size="10.00">theo.application.search</text>
+<text text-anchor="middle" x="6640.5" y="-2884.86" font-family="Helvetica,sans-Serif" font-size="10.00">theo.application.retrieval.search</text>
 </g>
-<!-- theo.application.search.query_rewriter -->
+<!-- theo.application.retrieval.search.query_rewriter -->
 <g id="node63" class="node">
-<title>theo.application.search.query_rewriter</title>
+<title>theo.application.retrieval.search.query_rewriter</title>
 <polygon fill="none" stroke="black" points="8068,-2989.36 7863,-2989.36 7863,-2953.36 8068,-2953.36 8068,-2989.36"/>
-<text text-anchor="middle" x="7965.5" y="-2968.86" font-family="Helvetica,sans-Serif" font-size="10.00">theo.application.search.query_rewriter</text>
+<text text-anchor="middle" x="7965.5" y="-2968.86" font-family="Helvetica,sans-Serif" font-size="10.00">theo.application.retrieval.search.query_rewriter</text>
 </g>
-<!-- theo.application.search&#45;&gt;theo.application.search.query_rewriter -->
+<!-- theo.application.retrieval.search&#45;&gt;theo.application.retrieval.search.query_rewriter -->
 <g id="edge104" class="edge">
-<title>theo.application.search&#45;&gt;theo.application.search.query_rewriter</title>
+<title>theo.application.retrieval.search&#45;&gt;theo.application.retrieval.search.query_rewriter</title>
 <path fill="none" stroke="black" d="M6706.24,-2899.48C6832.63,-2922.74 7108.27,-2971.36 7204.5,-2971.36 7204.5,-2971.36 7204.5,-2971.36 7467,-2971.36 7599.35,-2971.36 7751.51,-2971.36 7852.34,-2971.36"/>
 <polygon fill="black" stroke="black" points="7852.55,-2974.86 7862.55,-2971.36 7852.55,-2967.86 7852.55,-2974.86"/>
 </g>
-<!-- theo.application.search.query_rewriter&#45;&gt;theo.domain.research.osis -->
+<!-- theo.application.retrieval.search.query_rewriter&#45;&gt;theo.domain.research.osis -->
 <g id="edge105" class="edge">
-<title>theo.application.search.query_rewriter&#45;&gt;theo.domain.research.osis</title>
+<title>theo.application.retrieval.search.query_rewriter&#45;&gt;theo.domain.research.osis</title>
 <path fill="none" stroke="black" d="M8052.94,-2953.33C8125.84,-2943.61 8227.81,-2943.81 8289,-3003.36 8357,-3069.53 8399.55,-3773.13 8407.96,-3924.69"/>
 <polygon fill="black" stroke="black" points="8404.48,-3925.22 8408.53,-3935.02 8411.47,-3924.84 8404.48,-3925.22"/>
 </g>
@@ -1683,9 +1683,9 @@
 <path fill="none" stroke="black" d="M4869.54,-2997.34C4887.57,-3001.62 4906.49,-3006.4 4924,-3011.36 4940.23,-3015.95 4943.82,-3018.61 4960,-3023.36 4973.24,-3027.24 4987.35,-3031.09 5001.15,-3034.71"/>
 <polygon fill="black" stroke="black" points="5000.58,-3038.18 5011.13,-3037.3 5002.33,-3031.4 5000.58,-3038.18"/>
 </g>
-<!-- theo.services.api.app.adapters.resilience&#45;&gt;theo.application.resilience -->
+<!-- theo.services.api.app.adapters.resilience&#45;&gt;theo.application.core.resilience -->
 <g id="edge171" class="edge">
-<title>theo.services.api.app.adapters.resilience&#45;&gt;theo.application.resilience</title>
+<title>theo.services.api.app.adapters.resilience&#45;&gt;theo.application.core.resilience</title>
 <path fill="none" stroke="black" d="M5170.38,-639.35C5442.52,-581.01 6338.16,-398.08 7090,-348.36 7190.58,-341.7 7306.64,-346.02 7382.68,-350.47"/>
 <polygon fill="black" stroke="black" points="7382.48,-353.97 7392.68,-351.07 7382.9,-346.98 7382.48,-353.97"/>
 </g>
@@ -1701,15 +1701,15 @@
 <path fill="none" stroke="black" d="M5091.73,-3737.21C5107.72,-3659.07 5171.58,-3343.42 5214,-3082.36 5232.78,-2966.77 5209.47,-2931.22 5250,-2821.36 5327.28,-2611.88 5429.76,-2602.14 5521,-2398.36 5545.32,-2344.03 5514.92,-2311.45 5557,-2269.36 5645.74,-2180.59 5738.2,-2280.02 5829,-2193.36 5865.9,-2158.13 5824.72,-2115.66 5865,-2084.36 5919.26,-2042.18 6413.55,-2047.43 6482,-2041.36 6806.12,-2012.6 7189.24,-1968.3 7366.25,-1947.25"/>
 <polygon fill="black" stroke="black" points="7366.81,-1950.71 7376.33,-1946.06 7365.98,-1943.76 7366.81,-1950.71"/>
 </g>
-<!-- theo.services.api.app.adapters.security&#45;&gt;theo.application.security -->
+<!-- theo.services.api.app.adapters.security&#45;&gt;theo.application.core.security -->
 <g id="edge174" class="edge">
-<title>theo.services.api.app.adapters.security&#45;&gt;theo.application.security</title>
+<title>theo.services.api.app.adapters.security&#45;&gt;theo.application.core.security</title>
 <path fill="none" stroke="black" d="M5123.29,-3773.36C5155.41,-3788.81 5204.62,-3810.15 5250,-3820.36 5375.3,-3848.55 5525.3,-3851.44 5614.39,-3850.05"/>
 <polygon fill="black" stroke="black" points="5614.48,-3853.55 5624.42,-3849.87 5614.36,-3846.55 5614.48,-3853.55"/>
 </g>
-<!-- theo.services.api.app.adapters.telemetry&#45;&gt;theo.application.telemetry -->
+<!-- theo.services.api.app.adapters.telemetry&#45;&gt;theo.application.core.telemetry -->
 <g id="edge175" class="edge">
-<title>theo.services.api.app.adapters.telemetry&#45;&gt;theo.application.telemetry</title>
+<title>theo.services.api.app.adapters.telemetry&#45;&gt;theo.application.core.telemetry</title>
 <path fill="none" stroke="black" d="M5099.47,-3037.17C5170.18,-2927.22 5552.82,-2363.34 5829,-2583.36 5884.99,-2627.96 5817.93,-2686.42 5865,-2740.36 6057.74,-2961.2 6294.63,-2747.93 6482,-2973.36 6540.01,-3043.15 6461.86,-3103.05 6518,-3174.36 6759.15,-3480.67 7027.54,-3270.72 7321,-3527.36 7389.31,-3587.09 7435.26,-3687.3 7454.62,-3735.63"/>
 <polygon fill="black" stroke="black" points="7451.43,-3737.1 7458.35,-3745.13 7457.95,-3734.54 7451.43,-3737.1"/>
 </g>
@@ -2163,9 +2163,9 @@
 <path fill="none" stroke="black" d="M6937.17,-4451.7C6962.43,-4500.74 7030.05,-4639.6 7054,-4764.36 7106.63,-5038.49 7019.11,-7006.37 7090,-7276.36 7108.79,-7347.93 7156.91,-7421.62 7184.41,-7459.8"/>
 <polygon fill="black" stroke="black" points="7181.88,-7462.26 7190.61,-7468.27 7187.53,-7458.14 7181.88,-7462.26"/>
 </g>
-<!-- theo.services.api.app.ai.rag.cache&#45;&gt;theo.application.telemetry -->
+<!-- theo.services.api.app.ai.rag.cache&#45;&gt;theo.application.core.telemetry -->
 <g id="edge215" class="edge">
-<title>theo.services.api.app.ai.rag.cache&#45;&gt;theo.application.telemetry</title>
+<title>theo.services.api.app.ai.rag.cache&#45;&gt;theo.application.core.telemetry</title>
 <path fill="none" stroke="black" d="M7018.31,-4447.67C7119.94,-4461.51 7276.26,-4475.57 7321,-4439.36 7424.46,-4355.62 7456.74,-3909.36 7463.52,-3791.77"/>
 <polygon fill="black" stroke="black" points="7467.03,-3791.62 7464.1,-3781.44 7460.04,-3791.23 7467.03,-3791.62"/>
 </g>
@@ -4113,9 +4113,9 @@
 <path fill="none" stroke="black" d="M5087.68,-10071.55C5087.39,-10146.59 5096.64,-10434.9 5250,-10582.36 5481.61,-10805.06 6544.55,-10802.56 6845.75,-10797.23"/>
 <polygon fill="black" stroke="black" points="6846.2,-10800.72 6856.14,-10797.04 6846.07,-10793.72 6846.2,-10800.72"/>
 </g>
-<!-- theo.services.api.app.graphql.context&#45;&gt;theo.application.security -->
+<!-- theo.services.api.app.graphql.context&#45;&gt;theo.application.core.security -->
 <g id="edge450" class="edge">
-<title>theo.services.api.app.graphql.context&#45;&gt;theo.application.security</title>
+<title>theo.services.api.app.graphql.context&#45;&gt;theo.application.core.security</title>
 <path fill="none" stroke="black" d="M5089.96,-10035.26C5103.54,-9909.23 5183.83,-9149.27 5214,-8528.36 5217.31,-8460.32 5215.14,-6134.88 5250,-6076.36 5320.66,-5957.71 5450.04,-6042.83 5521,-5924.36 5573.28,-5837.07 5530.77,-4191.66 5557,-4093.36 5580.21,-4006.39 5640.24,-3916.81 5671.85,-3873.69"/>
 <polygon fill="black" stroke="black" points="5674.81,-3875.58 5677.96,-3865.46 5669.19,-3871.41 5674.81,-3875.58"/>
 </g>
@@ -4317,15 +4317,15 @@
 <path fill="none" stroke="black" d="M6458.4,-3600.1C6542.73,-3597.44 6660.03,-3593.17 6763,-3587.36 6878.83,-3580.82 7011.54,-3570.52 7100.97,-3563.17"/>
 <polygon fill="black" stroke="black" points="7101.44,-3566.64 7111.12,-3562.33 7100.86,-3559.66 7101.44,-3566.64"/>
 </g>
-<!-- theo.services.api.app.infra.retrieval_service&#45;&gt;theo.application.search -->
+<!-- theo.services.api.app.infra.retrieval_service&#45;&gt;theo.application.retrieval.search -->
 <g id="edge478" class="edge">
-<title>theo.services.api.app.infra.retrieval_service&#45;&gt;theo.application.search</title>
+<title>theo.services.api.app.infra.retrieval_service&#45;&gt;theo.application.retrieval.search</title>
 <path fill="none" stroke="black" d="M6352.03,-3585.17C6376.63,-3531.84 6448.12,-3370.76 6482,-3229.36 6498.16,-3161.91 6472.56,-2971.75 6518,-2919.36 6530,-2905.52 6547.19,-2897.32 6564.89,-2892.54"/>
 <polygon fill="black" stroke="black" points="6565.8,-2895.92 6574.74,-2890.23 6564.2,-2889.11 6565.8,-2895.92"/>
 </g>
-<!-- theo.services.api.app.infra.retrieval_service&#45;&gt;theo.application.telemetry -->
+<!-- theo.services.api.app.infra.retrieval_service&#45;&gt;theo.application.core.telemetry -->
 <g id="edge479" class="edge">
-<title>theo.services.api.app.infra.retrieval_service&#45;&gt;theo.application.telemetry</title>
+<title>theo.services.api.app.infra.retrieval_service&#45;&gt;theo.application.core.telemetry</title>
 <path fill="none" stroke="black" d="M6458.25,-3619.73C6685.01,-3652.08 7185.61,-3723.5 7382.83,-3751.63"/>
 <polygon fill="black" stroke="black" points="7382.45,-3755.11 7392.84,-3753.06 7383.44,-3748.18 7382.45,-3755.11"/>
 </g>
@@ -5889,9 +5889,9 @@
 <path fill="none" stroke="black" d="M4835.51,-3981.34C4937.05,-3942.64 5166.51,-3849.6 5214,-3782.36 5285.62,-3680.95 5160.2,-3591.07 5250,-3505.36 5343.39,-3416.21 5707.08,-3499.85 5829,-3457.36 5847.16,-3451.03 5847.28,-3440.83 5865,-3433.36 5880.14,-3426.97 5896.69,-3421.81 5913.1,-3417.64"/>
 <polygon fill="black" stroke="black" points="5914.38,-3420.93 5923.28,-3415.18 5912.74,-3414.13 5914.38,-3420.93"/>
 </g>
-<!-- theo.services.api.app.routes.ai.watchlists&#45;&gt;theo.application.security -->
+<!-- theo.services.api.app.routes.ai.watchlists&#45;&gt;theo.application.core.security -->
 <g id="edge681" class="edge">
-<title>theo.services.api.app.routes.ai.watchlists&#45;&gt;theo.application.security</title>
+<title>theo.services.api.app.routes.ai.watchlists&#45;&gt;theo.application.core.security</title>
 <path fill="none" stroke="black" d="M4867.76,-3981.34C4957.74,-3965.65 5104.89,-3953.35 5214,-4010.36 5237.95,-4022.87 5225.89,-4047.15 5250,-4059.36 5357.46,-4113.75 5427.86,-4135.72 5521,-4059.36 5584.09,-4007.63 5500.34,-3938.06 5557,-3879.36 5572.09,-3863.72 5593.31,-3855.13 5614.47,-3850.56"/>
 <polygon fill="black" stroke="black" points="5615.3,-3853.97 5624.49,-3848.68 5614.01,-3847.09 5615.3,-3853.97"/>
 </g>
@@ -6453,9 +6453,9 @@
 <path fill="none" stroke="black" d="M4892.76,-8290.49C5131.28,-8311.07 5707.41,-8360.81 5927.52,-8379.8"/>
 <polygon fill="black" stroke="black" points="5927.46,-8383.31 5937.72,-8380.69 5928.06,-8376.34 5927.46,-8383.31"/>
 </g>
-<!-- theo.services.api.app.routes.discoveries&#45;&gt;theo.application.security -->
+<!-- theo.services.api.app.routes.discoveries&#45;&gt;theo.application.core.security -->
 <g id="edge767" class="edge">
-<title>theo.services.api.app.routes.discoveries&#45;&gt;theo.application.security</title>
+<title>theo.services.api.app.routes.discoveries&#45;&gt;theo.application.core.security</title>
 <path fill="none" stroke="black" d="M4790.6,-8263.2C4809.11,-8168.82 4893.95,-7724.46 4924,-7356.36 4934.25,-7230.81 4911.22,-5205.49 4960,-5089.36 5022.2,-4941.3 5146.09,-4977.88 5214,-4832.36 5286.3,-4677.42 5173.84,-4602.43 5250,-4449.36 5322.73,-4303.18 5445.91,-4346.33 5521,-4201.36 5579.51,-4088.38 5484.19,-4021.69 5557,-3917.36 5572.14,-3895.66 5596.11,-3880.23 5619.68,-3869.47"/>
 <polygon fill="black" stroke="black" points="5621.23,-3872.62 5629.02,-3865.44 5618.45,-3866.19 5621.23,-3872.62"/>
 </g>
@@ -6627,9 +6627,9 @@
 <path fill="none" stroke="black" d="M4822.69,-2581.24C4854.64,-2563.04 4900.04,-2531.9 4924,-2491.36 4973.74,-2407.19 4889.86,-2342.46 4960,-2274.36 4966,-2268.53 5548.7,-2194.42 5557,-2193.36 5617.39,-2185.6 5782.2,-2199.3 5829,-2160.36 5870.17,-2126.1 5822.94,-2078.52 5865,-2045.36 5918.96,-2002.81 6413.5,-2008.73 6482,-2003.36 6752.46,-1982.14 6819.25,-1966.42 7090,-1949.36 7183.65,-1943.45 7290.63,-1939.76 7366.29,-1937.66"/>
 <polygon fill="black" stroke="black" points="7366.39,-1941.16 7376.29,-1937.39 7366.2,-1934.16 7366.39,-1941.16"/>
 </g>
-<!-- theo.services.api.app.routes.ingest&#45;&gt;theo.application.security -->
+<!-- theo.services.api.app.routes.ingest&#45;&gt;theo.application.core.security -->
 <g id="edge796" class="edge">
-<title>theo.services.api.app.routes.ingest&#45;&gt;theo.application.security</title>
+<title>theo.services.api.app.routes.ingest&#45;&gt;theo.application.core.security</title>
 <path fill="none" stroke="black" d="M4794.11,-2617.59C4813.87,-2666.36 4873.74,-2801.75 4960,-2885.36 5053.03,-2975.52 5142.19,-2920.53 5214,-3028.36 5289.91,-3142.33 5204.3,-3205.27 5250,-3334.36 5252.66,-3341.88 5550.42,-3815.83 5557,-3820.36 5573.76,-3831.88 5594.3,-3838.73 5614.26,-3842.73"/>
 <polygon fill="black" stroke="black" points="5613.84,-3846.22 5624.3,-3844.53 5615.07,-3839.32 5613.84,-3846.22"/>
 </g>
@@ -6711,9 +6711,9 @@
 <path fill="none" stroke="black" d="M4890.56,-4178.41C5002.79,-4173.92 5171.57,-4159.46 5214,-4113.36 5288.54,-4032.37 5176.5,-3701.29 5250,-3619.36 5337.35,-3521.99 5726.03,-3594.02 5829,-3513.36 5859.69,-3489.31 5834.66,-3457.84 5865,-3433.36 5878.99,-3422.07 5896.03,-3414.51 5913.54,-3409.49"/>
 <polygon fill="black" stroke="black" points="5914.49,-3412.86 5923.3,-3406.96 5912.74,-3406.08 5914.49,-3412.86"/>
 </g>
-<!-- theo.services.api.app.routes.notebooks&#45;&gt;theo.application.security -->
+<!-- theo.services.api.app.routes.notebooks&#45;&gt;theo.application.core.security -->
 <g id="edge810" class="edge">
-<title>theo.services.api.app.routes.notebooks&#45;&gt;theo.application.security</title>
+<title>theo.services.api.app.routes.notebooks&#45;&gt;theo.application.core.security</title>
 <path fill="none" stroke="black" d="M4890.76,-4193.76C5071.58,-4214.56 5433.54,-4244.12 5521,-4160.36 5599.85,-4084.84 5493.58,-4006.23 5557,-3917.36 5572.43,-3895.73 5596.6,-3880.29 5620.24,-3869.51"/>
 <polygon fill="black" stroke="black" points="5621.82,-3872.64 5629.61,-3865.46 5619.04,-3866.22 5621.82,-3872.64"/>
 </g>
@@ -6735,9 +6735,9 @@
 <path fill="none" stroke="black" d="M4855.02,-4118.4C4949.82,-4138.99 5120.56,-4158.71 5214,-4064.36 5289.74,-3987.88 5177.93,-3661.29 5250,-3581.36 5425.08,-3387.18 5603.6,-3609.84 5829,-3477.36 5850.78,-3464.55 5843.43,-3446.51 5865,-3433.36 5879.63,-3424.43 5896.39,-3417.97 5913.28,-3413.3"/>
 <polygon fill="black" stroke="black" points="5914.4,-3416.63 5923.22,-3410.75 5912.67,-3409.85 5914.4,-3416.63"/>
 </g>
-<!-- theo.services.api.app.routes.realtime&#45;&gt;theo.application.security -->
+<!-- theo.services.api.app.routes.realtime&#45;&gt;theo.application.core.security -->
 <g id="edge814" class="edge">
-<title>theo.services.api.app.routes.realtime&#45;&gt;theo.application.security</title>
+<title>theo.services.api.app.routes.realtime&#45;&gt;theo.application.core.security</title>
 <path fill="none" stroke="black" d="M4832.4,-4118.41C4960.11,-4165.89 5325.82,-4278.56 5521,-4097.36 5580.79,-4041.85 5507.96,-3982.55 5557,-3917.36 5573.18,-3895.84 5597.89,-3880.36 5621.77,-3869.52"/>
 <polygon fill="black" stroke="black" points="5623.41,-3872.62 5631.21,-3865.45 5620.64,-3866.2 5623.41,-3872.62"/>
 </g>
@@ -7041,9 +7041,9 @@
 <path fill="none" stroke="black" d="M5109.49,-7324.38C5139.13,-7348.22 5195.12,-7389.74 5250,-7411.36 5363.81,-7456.18 5409.65,-7408.73 5521,-7459.36 5539.7,-7467.86 5538.12,-7480.26 5557,-7488.36 5690.09,-7545.45 6058.63,-7562.96 6203,-7574.36 6319.43,-7583.55 6453.81,-7585.66 6542.37,-7585.88"/>
 <polygon fill="black" stroke="black" points="6542.39,-7589.38 6552.4,-7585.9 6542.4,-7582.38 6542.39,-7589.38"/>
 </g>
-<!-- theo.services.api.app.workers.tasks&#45;&gt;theo.application.telemetry -->
+<!-- theo.services.api.app.workers.tasks&#45;&gt;theo.application.core.telemetry -->
 <g id="edge859" class="edge">
-<title>theo.services.api.app.workers.tasks&#45;&gt;theo.application.telemetry</title>
+<title>theo.services.api.app.workers.tasks&#45;&gt;theo.application.core.telemetry</title>
 <path fill="none" stroke="black" d="M5091.55,-7288.3C5108.17,-7203.15 5178.91,-6832.99 5214,-6526.36 5220.72,-6467.6 5212.31,-6040.92 5250,-5995.36 5329.36,-5899.42 5443.54,-6021.84 5521,-5924.36 5609.1,-5813.48 5467.14,-4759.8 5557,-4650.36 5635.68,-4554.53 5746.6,-4681.01 5829,-4588.36 5928.51,-4476.46 5762.02,-4362.08 5865,-4253.36 5917.33,-4198.11 6127.15,-4204.49 6203,-4198.36 6326.6,-4188.37 6389.5,-4115.77 6482,-4198.36 6587.77,-4292.79 6412.23,-4420.92 6518,-4515.36 6578.32,-4569.21 7226.84,-4548.57 7321,-4464.36 7423.94,-4372.29 7456.69,-3911.49 7463.52,-3791.8"/>
 <polygon fill="black" stroke="black" points="7467.03,-3791.79 7464.09,-3781.61 7460.04,-3791.4 7467.03,-3791.79"/>
 </g>

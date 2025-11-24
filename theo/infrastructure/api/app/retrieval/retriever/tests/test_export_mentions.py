@@ -3,7 +3,7 @@ from __future__ import annotations
 from theo.infrastructure.api.app.models.base import Passage
 from theo.infrastructure.api.app.models.search import HybridSearchRequest
 from theo.infrastructure.api.app.models.verses import VerseMention
-from theo.infrastructure.api.app.retriever.export import _mentions_to_export_response
+from theo.infrastructure.api.app.retrieval.retriever.export import _mentions_to_export_response
 
 
 def _build_mention(idx: int) -> VerseMention:

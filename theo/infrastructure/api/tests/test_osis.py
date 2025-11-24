@@ -1,6 +1,6 @@
 """Tests for OSIS detection utilities."""
 
-from theo.infrastructure.api.app.ingest.osis import (
+from theo.infrastructure.api.app.library.ingest.osis import (
     detect_osis_references,
     expand_osis_reference,
     osis_intersects,

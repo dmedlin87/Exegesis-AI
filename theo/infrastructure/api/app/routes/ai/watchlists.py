@@ -9,15 +9,15 @@ from sqlalchemy.orm import Session
 
 from theo.application.facades.database import get_session
 
-from ...ai.watchlists_service import WatchlistNotFoundError, WatchlistsService
-from ...errors import AIWorkflowError
+from ...research.ai.watchlists_service import WatchlistNotFoundError, WatchlistsService
+from ...core.errors import AIWorkflowError
 from ...models.watchlists import (
     WatchlistCreateRequest,
     WatchlistResponse,
     WatchlistRunResponse,
     WatchlistUpdateRequest,
 )
-from theo.application.security import Principal
+from theo.application.core.security import Principal
 
 from ...adapters.security import require_principal
 

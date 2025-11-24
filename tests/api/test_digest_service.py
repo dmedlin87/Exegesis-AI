@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 
-from theo.infrastructure.api.app.ai import digest_service as digest_service_module
-from theo.infrastructure.api.app.ai.digest_service import DigestService
+from theo.infrastructure.api.app.research.ai import digest_service as digest_service_module
+from theo.infrastructure.api.app.research.ai.digest_service import DigestService
 from theo.infrastructure.api.app.analytics.topics import TopicCluster, TopicDigest
 
 

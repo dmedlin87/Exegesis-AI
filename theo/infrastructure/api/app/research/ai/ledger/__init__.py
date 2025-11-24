@@ -3,7 +3,7 @@
 The new ``ai/ledger/`` package co-exists with the legacy ``ai/ledger.py``
 module while Phase 2 migrations proceed.  Import the historical ``CacheRecord``
 and ``SharedLedger`` symbols from the legacy module using an explicit loader so
-``from theo.infrastructure.api.app.ai.ledger import CacheRecord`` continues to work
+``from theo.infrastructure.api.app.research.ai.ledger import CacheRecord`` continues to work
 without triggering circular imports.
 """
 
@@ -17,7 +17,7 @@ from .usage_tracker import UsageTracker
 
 _LEGACY_PATH = Path(__file__).resolve().parent.parent / "ledger.py"
 _LEGACY_SPEC = importlib.util.spec_from_file_location(
-    "theo.infrastructure.api.app.ai._legacy_ledger",
+    "theo.infrastructure.api.app.research.ai._legacy_ledger",
     _LEGACY_PATH,
 )
 if _LEGACY_SPEC is None or _LEGACY_SPEC.loader is None:  # pragma: no cover - safety guard

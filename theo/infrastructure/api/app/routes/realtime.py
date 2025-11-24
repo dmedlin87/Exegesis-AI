@@ -14,12 +14,12 @@ from sqlalchemy.orm import Session
 from theo.application.facades.database import get_session
 
 from ..models.notebooks import NotebookRealtimeSnapshot
-from theo.application.security import Principal
+from theo.application.core.security import Principal
 
 from ..adapters.security import require_principal
 
 if TYPE_CHECKING:  # pragma: no cover - used only for type hints
-    from ..notebooks.service import NotebookService
+    from ..research.notebooks.service import NotebookService
 
 
 router = APIRouter()
@@ -72,7 +72,7 @@ _BROKER = NotebookEventBroker()
 
 
 def _service(session: Session, principal: Principal | None) -> "NotebookService":
-    from ..notebooks.service import NotebookService
+    from ..research.notebooks.service import NotebookService
 
     return NotebookService(session, principal)
 

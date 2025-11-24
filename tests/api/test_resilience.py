@@ -4,7 +4,7 @@ import itertools
 import pytest
 
 from theo.application.facades import resilience as resilience_facade
-from theo.application.resilience import ResilienceError, ResilienceSettings
+from theo.application.core.resilience import ResilienceError, ResilienceSettings
 from theo.infrastructure.api.app.adapters import resilience as resilience_adapter
 
 

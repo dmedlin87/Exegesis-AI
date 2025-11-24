@@ -16,24 +16,24 @@ from sqlalchemy.orm import Session
 
 from theo.application.facades.database import get_session
 from theo.application.facades.settings import get_settings
-from theo.infrastructure.api.app.ai import memory_index as memory_index_module
-from theo.infrastructure.api.app.ai.audit_logging import (
+from theo.infrastructure.api.app.research.ai import memory_index as memory_index_module
+from theo.infrastructure.api.app.research.ai.audit_logging import (
     AuditLogWriter,
     compute_prompt_hash,
     serialise_citations,
 )
-from theo.infrastructure.api.app.ai.memory_metadata import (
+from theo.infrastructure.api.app.research.ai.memory_metadata import (
     MemoryFocus,
     extract_memory_metadata,
 )
-from theo.infrastructure.api.app.ai.rag import (
+from theo.infrastructure.api.app.research.ai.rag import (
     GuardrailError,
     RAGAnswer,
     ensure_completion_safe,
     run_guarded_chat,
 )
-from theo.infrastructure.api.app.ai.research_loop import ResearchLoopController
-from theo.infrastructure.api.app.ai.trails import TrailService
+from theo.infrastructure.api.app.research.ai.research_loop import ResearchLoopController
+from theo.infrastructure.api.app.research.ai.trails import TrailService
 from theo.infrastructure.api.app.intent.tagger import get_intent_tagger
 from theo.infrastructure.api.app.models.ai import (
     CHAT_SESSION_MEMORY_CHAR_BUDGET,

@@ -3,8 +3,8 @@
 import pytest
 
 try:
-    from theo.infrastructure.api.app.retriever import graph as graph_module
-    from theo.infrastructure.api.app.retriever.graph import get_verse_graph
+    from theo.infrastructure.api.app.retrieval.retriever import graph as graph_module
+    from theo.infrastructure.api.app.retrieval.retriever.graph import get_verse_graph
 except ModuleNotFoundError as exc:  # pragma: no cover - dependency missing in CI
     pytest.skip(f"dependency not available: {exc}", allow_module_level=True)
 except ImportError as exc:  # pragma: no cover - dependency missing in CI

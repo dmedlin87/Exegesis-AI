@@ -27,7 +27,7 @@ from theo.application.facades.database import get_session  # noqa: E402
 from theo.application.facades.settings import get_settings  # noqa: E402
 from theo.infrastructure.api.app.adapters.security import require_principal  # noqa: E402
 from theo.infrastructure.api.app.main import app  # noqa: E402
-from theo.infrastructure.api.app.tracing import TRACE_ID_HEADER_NAME  # noqa: E402
+from theo.infrastructure.api.app.core.tracing import TRACE_ID_HEADER_NAME  # noqa: E402
 
 
 @pytest.fixture(autouse=True)

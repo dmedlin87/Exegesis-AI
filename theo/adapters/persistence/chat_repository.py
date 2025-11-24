@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from theo.application.dtos import ChatSessionDTO
-from theo.application.observability import trace_repository_call
+from theo.application.core.observability import trace_repository_call
 from theo.application.repositories import ChatSessionRepository
 
 from .base_repository import BaseRepository

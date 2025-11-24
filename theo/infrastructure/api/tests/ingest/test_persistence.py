@@ -6,10 +6,10 @@ from sqlalchemy.orm import Session
 from theo.application.facades.database import get_engine
 from theo.application.facades.settings import get_settings
 from theo.adapters.persistence.models import Document
-from theo.infrastructure.api.app.ingest.chunking import Chunk
-from theo.infrastructure.api.app.ingest.exceptions import UnsupportedSourceError
-from theo.infrastructure.api.app.ingest.persistence import persist_text_document
-from theo.infrastructure.api.app.ingest.stages import IngestContext, Instrumentation
+from theo.infrastructure.api.app.library.ingest.chunking import Chunk
+from theo.infrastructure.api.app.library.ingest.exceptions import UnsupportedSourceError
+from theo.infrastructure.api.app.library.ingest.persistence import persist_text_document
+from theo.infrastructure.api.app.library.ingest.stages import IngestContext, Instrumentation
 
 
 class DummyEmbeddingService:

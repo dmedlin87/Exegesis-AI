@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from theo.infrastructure.api.app.ai.reasoning.perspectives import synthesize_perspectives
+from theo.infrastructure.api.app.research.ai.reasoning.perspectives import synthesize_perspectives
 from theo.infrastructure.api.app.models.search import HybridSearchResult
 
 

@@ -10,8 +10,8 @@ from uuid import UUID
 import pytest
 from fastapi.testclient import TestClient
 
-from theo.infrastructure.api.app.ai import SermonPrepResponse, VerseCopilotResponse
-from theo.infrastructure.api.app.ai.rag import RAGAnswer
+from theo.infrastructure.api.app.research.ai import SermonPrepResponse, VerseCopilotResponse
+from theo.infrastructure.api.app.research.ai.rag import RAGAnswer
 from theo.application.facades.database import get_session
 from theo.infrastructure.api.app.main import app
 from theo.infrastructure.api.app.models.ai import (

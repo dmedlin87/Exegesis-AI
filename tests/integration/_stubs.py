@@ -280,7 +280,7 @@ def install_openai_stub() -> None:
 def install_duplicate_detection_stub() -> None:
     """Install a placeholder duplicate detector when optional extras are absent."""
 
-    module_name = "theo.infrastructure.api.app.ingest.duplicate_detector"
+    module_name = "theo.infrastructure.api.app.library.ingest.duplicate_detector"
     if module_name in sys.modules:
         return
 

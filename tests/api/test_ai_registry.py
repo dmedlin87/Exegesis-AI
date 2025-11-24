@@ -13,7 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.infrastructure.api.app.ai.clients import (  # noqa: E402
+from theo.infrastructure.api.app.research.ai.clients import (  # noqa: E402
     AIClientSettings,
     AnthropicClient,
     AnthropicConfig,
@@ -27,7 +27,7 @@ from theo.infrastructure.api.app.ai.clients import (  # noqa: E402
     VertexAIConfig,
     build_client,
 )
-from theo.infrastructure.api.app.ai.registry import (  # noqa: E402
+from theo.infrastructure.api.app.research.ai.registry import (  # noqa: E402
     LLMModel,
     get_llm_registry,
     save_llm_registry,

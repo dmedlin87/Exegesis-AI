@@ -65,7 +65,7 @@ def test_process_url_retry_uses_exponential_backoff(
         raise failure
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.ingest.pipeline.run_pipeline_for_url",
+        "theo.infrastructure.api.app.library.ingest.pipeline.run_pipeline_for_url",
         failing_pipeline,
     )
 

@@ -364,7 +364,7 @@ def test_html_url_ingestion_and_searchable() -> None:
 def test_url_ingest_rejects_domain_resolving_to_blocked_network() -> None:
     with TestClient(app) as client:
         with patch(
-            "theo.infrastructure.api.app.ingest.pipeline._resolve_host_addresses",
+            "theo.infrastructure.api.app.library.ingest.pipeline._resolve_host_addresses",
             return_value=(ip_address("127.0.0.1"),),
         ) as resolver:
             response = client.post(

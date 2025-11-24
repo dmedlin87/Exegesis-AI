@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from theo.application.facades.database import get_session
 from theo.application.facades.settings import get_settings
 
-from ...ai.digest_service import DigestService
+from ...research.ai.digest_service import DigestService
 from ...analytics.topics import TopicDigest
 
 router = APIRouter()

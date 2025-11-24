@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from theo.application.observability import (
+from theo.application.core.observability import (
     REPOSITORY_LATENCY_METRIC,
     REPOSITORY_RESULT_METRIC,
     trace_repository_call,

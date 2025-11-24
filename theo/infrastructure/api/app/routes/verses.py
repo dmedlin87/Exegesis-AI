@@ -16,8 +16,8 @@ from ..models.verses import (
     VerseMentionsResponse,
     VerseTimelineResponse,
 )
-from ..retriever.graph import get_verse_graph
-from ..retriever.verses import get_mentions_for_osis, get_verse_timeline
+from ..retrieval.retriever.graph import get_verse_graph
+from ..retrieval.retriever.verses import get_mentions_for_osis, get_verse_timeline
 
 router = APIRouter()
 

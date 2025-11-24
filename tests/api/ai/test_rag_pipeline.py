@@ -10,9 +10,9 @@ from unittest.mock import MagicMock
 import pytest
 
 from theo.application.facades import telemetry as telemetry_facade
-from theo.infrastructure.api.app.ai.rag import chat as rag_chat
-from theo.infrastructure.api.app.ai.rag.guardrails import GuardrailError
-from theo.infrastructure.api.app.ai.rag.reasoning import ReasoningOutcome
+from theo.infrastructure.api.app.research.ai.rag import chat as rag_chat
+from theo.infrastructure.api.app.research.ai.rag.guardrails import GuardrailError
+from theo.infrastructure.api.app.research.ai.rag.reasoning import ReasoningOutcome
 from theo.infrastructure.api.app.models.search import (
     HybridSearchFilters,
     HybridSearchResult,

@@ -6,7 +6,7 @@ from fastapi import APIRouter
 
 from theo.application.facades import telemetry  # noqa: F401
 
-from theo.infrastructure.api.app.ai.guardrails import (
+from theo.infrastructure.api.app.research.ai.guardrails import (
     AIFeaturesResponse,
     DEFAULT_GUARDRAIL_SETTINGS,
 )

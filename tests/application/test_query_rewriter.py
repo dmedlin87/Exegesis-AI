@@ -11,7 +11,7 @@ if "fastapi" not in sys.modules:
     fastapi_module.status = status_module  # type: ignore[attr-defined]
     sys.modules["fastapi"] = fastapi_module
 
-from theo.application.search import QueryRewriter
+from theo.application.retrieval.search import QueryRewriter
 from theo.infrastructure.api.app.models.search import HybridSearchRequest
 
 
@@ -53,7 +53,7 @@ def test_query_rewriter_invalid_osis_and_no_changes(monkeypatch: pytest.MonkeyPa
     rewriter = QueryRewriter(synonym_index={"atonement": ("propitiation",)})
     request = HybridSearchRequest(query="love", osis="invalid")
 
-    monkeypatch.setattr("theo.application.search.query_rewriter.osis_to_readable", lambda value: (_ for _ in ()).throw(RuntimeError()))
+    monkeypatch.setattr("theo.application.retrieval.search.query_rewriter.osis_to_readable", lambda value: (_ for _ in ()).throw(RuntimeError()))
 
     result = rewriter.rewrite(request)
 

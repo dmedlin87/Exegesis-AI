@@ -4,7 +4,7 @@ from typing import Any
 import pytest
 
 from theo.application.facades import telemetry as telemetry_facade
-from theo.application.telemetry import TelemetryProvider, WorkflowSpan
+from theo.application.core.telemetry import TelemetryProvider, WorkflowSpan
 
 
 class _Span:

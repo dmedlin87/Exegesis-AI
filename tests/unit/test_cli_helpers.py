@@ -114,7 +114,7 @@ from theo.commands.embedding_rebuild import (
     _commit_with_retry,
     _normalise_timestamp,
 )
-from theo.application.embeddings.checkpoint_store import (
+from theo.application.retrieval.embeddings.checkpoint_store import (
     CheckpointError,
     EmbeddingCheckpoint,
     load_checkpoint,

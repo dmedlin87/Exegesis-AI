@@ -7,10 +7,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from theo.infrastructure.api.app.errors import IngestionError
+from theo.infrastructure.api.app.core.errors import IngestionError
 from theo.infrastructure.api.app.models.documents import SimpleIngestRequest
 from theo.infrastructure.api.app.infra.ingestion_service import IngestionService
-from theo.infrastructure.api.app.ingest.pipeline import PipelineDependencies
+from theo.infrastructure.api.app.library.ingest.pipeline import PipelineDependencies
 from theo.application.ports.events import DomainEvent
 
 

@@ -6,9 +6,9 @@ from contextlib import contextmanager
 
 import pytest
 
-from theo.infrastructure.api.app.ai.rag import workflow
-from theo.infrastructure.api.app.ai.rag.guardrail_helpers import GuardrailError
-from theo.infrastructure.api.app.ai.rag.models import RAGAnswer
+from theo.infrastructure.api.app.research.ai.rag import workflow
+from theo.infrastructure.api.app.research.ai.rag.guardrail_helpers import GuardrailError
+from theo.infrastructure.api.app.research.ai.rag.models import RAGAnswer
 from theo.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
 
 

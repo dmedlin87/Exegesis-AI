@@ -10,17 +10,17 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from theo.application.facades.database import get_session
-from theo.infrastructure.api.app.ai.rag.deliverables import generate_sermon_prep_outline
-from theo.infrastructure.api.app.ai.rag.exports import (
+from theo.infrastructure.api.app.research.ai.rag.deliverables import generate_sermon_prep_outline
+from theo.infrastructure.api.app.research.ai.rag.exports import (
     build_sermon_deliverable,
     build_transcript_deliverable,
 )
-from theo.infrastructure.api.app.ai.audit_logging import (
+from theo.infrastructure.api.app.research.ai.audit_logging import (
     AuditLogWriter,
     compute_prompt_hash,
     serialise_citations,
 )
-from theo.infrastructure.api.app.ai.rag import GuardrailError, RAGCitation
+from theo.infrastructure.api.app.research.ai.rag import GuardrailError, RAGCitation
 from theo.infrastructure.api.app.export import citations as citation_exports
 from theo.infrastructure.api.app.export.citations import build_citation_export
 from theo.infrastructure.api.app.models.ai import (

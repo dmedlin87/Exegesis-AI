@@ -13,7 +13,7 @@ from theo.adapters.persistence.models import Document, Passage, PassageEmbedding
 from theo.adapters.persistence.passage_embedding_store import (
     SQLAlchemyPassageEmbeddingStore,
 )
-from theo.application.embeddings.store import PassageEmbeddingService
+from theo.application.retrieval.embeddings.store import PassageEmbeddingService
 
 
 @contextmanager

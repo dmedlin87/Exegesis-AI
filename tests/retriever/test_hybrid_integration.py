@@ -8,7 +8,7 @@ from sqlalchemy.sql.elements import BinaryExpression
 
 from theo.infrastructure.api.app.models.documents import DocumentAnnotationResponse
 from theo.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchRequest
-from theo.infrastructure.api.app.retriever import hybrid
+from theo.infrastructure.api.app.retrieval.retriever import hybrid
 
 
 class _FakeResult:

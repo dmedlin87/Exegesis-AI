@@ -1,4 +1,4 @@
-from theo.infrastructure.api.app.ingest.metadata import (
+from theo.infrastructure.api.app.library.ingest.metadata import (
     extract_guardrail_profile,
     merge_metadata,
 )

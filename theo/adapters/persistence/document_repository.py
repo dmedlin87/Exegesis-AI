@@ -10,11 +10,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from theo.application.dtos import DocumentDTO, DocumentSummaryDTO
-from theo.application.observability import trace_repository_call
+from theo.application.core.observability import trace_repository_call
 from theo.application.repositories.document_repository import DocumentRepository
 from theo.domain.discoveries import DocumentEmbedding
 from theo.application.facades.settings import get_settings
-from theo.application.embeddings.store import PassageEmbeddingService
+from theo.application.retrieval.embeddings.store import PassageEmbeddingService
 
 from .base_repository import BaseRepository
 from .mappers import document_summary_to_dto, document_to_dto

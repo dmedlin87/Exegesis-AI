@@ -30,7 +30,7 @@ from theo.adapters.persistence.models import (
     PassageVerse,
 )
 from theo.infrastructure.api.app.db.seeds import CONTRADICTION_NAMESPACE
-from theo.infrastructure.api.app.ingest.osis import expand_osis_reference
+from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference
 from theo.infrastructure.api.app.main import app
 from theo.infrastructure.api.app.routes.ai.workflows.exports import _CSL_TYPE_MAP, _build_csl_entry
 

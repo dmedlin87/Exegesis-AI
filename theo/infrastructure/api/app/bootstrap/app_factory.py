@@ -35,8 +35,8 @@ from ..adapters.security import (
     configure_principal_resolver,
 )
 from ..adapters.telemetry import ApiTelemetryProvider
-from ..ai.registry import save_llm_registry
-from ..error_handlers import install_error_handlers
+from ..research.ai.registry import save_llm_registry
+from ..core.error_handlers import install_error_handlers
 from ..infra import router_registry as _router_registry  # noqa: F401
 from ..versioning import get_version_manager
 from .lifecycle import lifespan
@@ -219,8 +219,8 @@ def register_trace_handlers(app: FastAPI) -> None:
     integration tests can monkeypatch the trace identifier deterministically.
     """
 
-    from ..errors import TheoError
-    from ..tracing import TRACE_ID_HEADER_NAME
+    from ..core.errors import TheoError
+    from ..core.tracing import TRACE_ID_HEADER_NAME
 
     _base_register_trace_handlers(app)
 

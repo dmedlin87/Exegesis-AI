@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from theo.infrastructure.api.app.ingest.sanitizer import sanitize_passage_text
+from theo.infrastructure.api.app.library.ingest.sanitizer import sanitize_passage_text
 
 
 @pytest.mark.parametrize(

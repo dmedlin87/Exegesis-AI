@@ -27,7 +27,7 @@ def get_engine():  # pragma: no cover - transitional wiring helper
 
 
 def _load_corpus_curator():
-    module = import_module("theo.infrastructure.api.app.ai.rag.corpus")
+    module = import_module("theo.infrastructure.api.app.research.ai.rag.corpus")
     return getattr(module, "run_corpus_curation")
 
 

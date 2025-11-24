@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 
 from datetime import UTC, datetime
 
-from theo.infrastructure.api.app.ai.rag import RAGAnswer
+from theo.infrastructure.api.app.research.ai.rag import RAGAnswer
 from theo.application.facades.database import get_session
 from theo.infrastructure.api.app.intent.tagger import IntentTag
 from theo.infrastructure.api.app.main import app

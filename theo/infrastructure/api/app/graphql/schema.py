@@ -31,7 +31,10 @@ class Query:
     ) -> list[DocumentType]:
         """Return a list of indexed documents."""
 
-        documents = info.context.application.list_documents(limit=limit)
+        documents = info.context.application.list_documents(
+            limit=limit,
+            session=info.context.session,
+        )
         return [DocumentType.from_domain(document) for document in documents]
 
     @strawberry.field
@@ -42,7 +45,10 @@ class Query:
     ) -> DocumentType | None:
         """Fetch a single document by identifier."""
 
-        document = info.context.application.get_document(DocumentId(str(id)))
+        document = info.context.application.get_document(
+            DocumentId(str(id)),
+            session=info.context.session,
+        )
         if document is None:
             return None
         return DocumentType.from_domain(document)

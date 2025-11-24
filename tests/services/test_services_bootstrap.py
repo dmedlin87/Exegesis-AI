@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from sqlalchemy.orm import Session
 
-from theo.application.embeddings.rebuild_service import EmbeddingRebuildService
+from theo.application.retrieval.embeddings.rebuild_service import EmbeddingRebuildService
 from theo.adapters import AdapterRegistry
 from theo.application import ApplicationContainer
 from theo.application.facades.database import Base, configure_engine, get_engine

@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 
 from theo.application.facades.settings import Settings
 from theo.infrastructure.api.app.bootstrap.app_factory import create_app
-from theo.infrastructure.api.app.errors import TheoError
+from theo.infrastructure.api.app.core.errors import TheoError
 from theo.infrastructure.api.app.infra.registry import RouterRegistration
 
 

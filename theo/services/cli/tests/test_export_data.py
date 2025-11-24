@@ -91,14 +91,14 @@ def export_module(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> ModuleType
         },
     )
     install_stub(
-        "theo.infrastructure.api.app.retriever.export",
+        "theo.infrastructure.api.app.retrieval.retriever.export",
         {
             "export_documents": lambda *a, **k: [],
             "export_search_results": lambda *a, **k: SimpleNamespace(results=[]),
         },
     )
     install_stub(
-        "theo.infrastructure.api.app.retriever.verses",
+        "theo.infrastructure.api.app.retrieval.retriever.verses",
         {"get_mentions_for_osis": lambda *a, **k: []},
     )
     install_stub(

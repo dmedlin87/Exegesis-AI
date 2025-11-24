@@ -2,8 +2,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from theo.infrastructure.api.app.ai.rag import retrieval
-from theo.infrastructure.api.app.ai.rag.models import RAGCitation
+from theo.infrastructure.api.app.research.ai.rag import retrieval
+from theo.infrastructure.api.app.research.ai.rag.models import RAGCitation
 from theo.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
 
 

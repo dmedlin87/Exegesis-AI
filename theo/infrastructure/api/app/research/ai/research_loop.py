@@ -9,8 +9,8 @@ from typing import Any, Callable
 
 from sqlalchemy.orm import Session
 
-from ..models.ai import LoopControlAction, ResearchLoopState, ResearchLoopStatus
-from ..models.research_plan import (
+from ...models.ai import LoopControlAction, ResearchLoopState, ResearchLoopStatus
+from ...models.research_plan import (
     ResearchPlan,
     ResearchPlanReorderRequest,
     ResearchPlanStep,

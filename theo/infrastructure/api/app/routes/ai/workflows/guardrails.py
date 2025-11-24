@@ -12,13 +12,13 @@ from sqlalchemy.orm import Session
 
 from theo.application.facades import telemetry  # noqa: F401
 
-from theo.infrastructure.api.app.ai.rag import (
+from theo.infrastructure.api.app.research.ai.rag import (
     GuardrailError,
     RAGAnswer,
     build_guardrail_refusal,
 )
-from theo.infrastructure.api.app.errors import AIWorkflowError, Severity
-from theo.infrastructure.api.app.ai.guardrails import (
+from theo.infrastructure.api.app.core.errors import AIWorkflowError, Severity
+from theo.infrastructure.api.app.research.ai.guardrails import (
     GuardrailAdvisory,
     GuardrailFailureMetadata,
     GuardrailSuggestion,

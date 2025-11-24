@@ -7,7 +7,7 @@ from theo.infrastructure.api.app.models.search import (
     HybridSearchRequest,
     HybridSearchResult,
 )
-from theo.infrastructure.api.app.retriever.hybrid import (
+from theo.infrastructure.api.app.retrieval.retriever.hybrid import (
     _Candidate,
     _merge_scored_candidates,
     _score_candidates,

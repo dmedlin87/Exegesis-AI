@@ -89,7 +89,7 @@
 - Ensure CLI uses application services via dependency-injected container (no direct DB usage).
 
 ### Phase 4 – Eventing & Extensibility
-- Invoke synchronous ingestion hooks (via `theo.infrastructure.api.app.ingest.persistence`) to allow new adapters (e.g., auditing, analytics) without touching core.
+- Invoke synchronous ingestion hooks (via `theo.infrastructure.api.app.library.ingest.persistence`) to allow new adapters (e.g., auditing, analytics) without touching core.
 - Document extension points and register entrypoints for plugin discovery.
 
 ## Diagram Legend
@@ -97,7 +97,7 @@
 - **Inbound Ports:** Interfaces consumed by driving adapters (API/CLI/Web).
 - **Outbound Ports:** Interfaces implemented by driven adapters (DB, LLM, notifications).
 - **Facades:** `theo.application.facades` unify domain operations for adapters.
-- **Events:** Ingestion completions trigger synchronous telemetry/warm-up hooks exposed from `theo.infrastructure.api.app.ingest.persistence`.
+- **Events:** Ingestion completions trigger synchronous telemetry/warm-up hooks exposed from `theo.infrastructure.api.app.library.ingest.persistence`.
 
 ## Next Steps Checklist
 

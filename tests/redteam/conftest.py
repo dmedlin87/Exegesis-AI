@@ -166,24 +166,24 @@ def _stub_redteam_integrations() -> Generator[None, None, None]:
         raising=False,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.ai.trails._compute_input_hash",
+        "theo.infrastructure.api.app.research.ai.trails._compute_input_hash",
         lambda input_payload, tool, action: str(
             (tool or "", action or "", repr(input_payload))
         ),
         raising=False,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.ai.rag.guardrail_helpers.ensure_completion_safe",
+        "theo.infrastructure.api.app.research.ai.rag.guardrail_helpers.ensure_completion_safe",
         lambda *_a, **_kw: None,
         raising=False,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.ai.rag.chat.ensure_completion_safe",
+        "theo.infrastructure.api.app.research.ai.rag.chat.ensure_completion_safe",
         lambda *_a, **_kw: None,
         raising=False,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.ai.rag.guardrail_helpers.validate_model_completion",
+        "theo.infrastructure.api.app.research.ai.rag.guardrail_helpers.validate_model_completion",
         lambda completion, citations: {
             "status": "ok",
             "completion": completion,
@@ -192,7 +192,7 @@ def _stub_redteam_integrations() -> Generator[None, None, None]:
         raising=False,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.ai.rag.chat.validate_model_completion",
+        "theo.infrastructure.api.app.research.ai.rag.chat.validate_model_completion",
         lambda completion, citations: {
             "status": "ok",
             "completion": completion,

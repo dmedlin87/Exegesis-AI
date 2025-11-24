@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi.testclient import TestClient
 import pytest
 
-from theo.infrastructure.api.app.ai.reasoning.perspectives import (
+from theo.infrastructure.api.app.research.ai.reasoning.perspectives import (
     PerspectiveCitation,
     PerspectiveSynthesis,
     PerspectiveView,

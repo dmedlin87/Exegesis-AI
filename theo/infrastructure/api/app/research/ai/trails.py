@@ -13,11 +13,11 @@ from typing import Any
 from opentelemetry import trace
 from sqlalchemy.orm import Session
 
-from theo.infrastructure.api.app.persistence_models import (
-    AgentStep,
-    AgentTrail,
-    TrailRetrievalSnapshot,
-    TrailSource,
+from theo.infrastructure.api.app.persistence_models.ai import (
+    AgentTrailStep,
+    ChatMemoryEntry,
+    ChatSessionMessage,
+    TrailStepDigest,
 )
 
 from ..models.search import HybridSearchFilters
@@ -36,7 +36,7 @@ def _emit_trail_completion_event(trail: AgentTrail) -> None:
             span.set_attribute("trail.user_id", trail.user_id or "anonymous")
             span.set_attribute("trail.step_count", len(trail.steps))
             span.set_attribute("trail.retrieval_count", len(trail.retrieval_snapshots))
-            
+
             if trail.started_at:
                 span.set_attribute("trail.started_at", trail.started_at.isoformat())
             if trail.completed_at:
@@ -44,7 +44,7 @@ def _emit_trail_completion_event(trail: AgentTrail) -> None:
                 if trail.started_at:
                     duration_ms = (trail.completed_at - trail.started_at).total_seconds() * 1000
                     span.set_attribute("trail.duration_ms", round(duration_ms, 2))
-            
+
             # Add event for external monitoring systems
             span.add_event(
                 "trail_completion",
@@ -83,19 +83,19 @@ def _compute_input_hash(input_payload: Any, tool: str, action: str | None = None
         normalized = dict(input_payload)
     else:
         normalized = {"value": str(input_payload)}
-    
+
     # Remove non-deterministic fields that would cause false duplicates
     non_deterministic_keys = {"timestamp", "request_id", "trace_id", "random_seed", "nonce"}
     for key in non_deterministic_keys:
         normalized.pop(key, None)
-    
+
     # Create canonical representation
     hash_input = {
         "tool": tool,
         "action": action,
         "input": normalized,
     }
-    
+
     # Sort keys for deterministic ordering
     canonical = json.dumps(hash_input, sort_keys=True, separators=(",", ":"))
     return sha256(canonical.encode("utf-8")).hexdigest()[:16]
@@ -239,7 +239,7 @@ class TrailRecorder:
     ) -> AgentStep:
         # Compute input hash for deduplication
         input_hash = _compute_input_hash(input_payload, tool, action)
-        
+
         step = AgentStep(
             trail_id=self.trail.id,
             step_index=self._next_step_index,
@@ -389,10 +389,10 @@ class TrailRecorder:
         self.trail.updated_at = now
         self._session.add(self.trail)
         self._session.commit()
-        
+
         # Emit completion event to external sink
         _emit_trail_completion_event(self.trail)
-        
+
         self._finalized = True
         return self.trail
 
@@ -403,10 +403,10 @@ class TrailRecorder:
         self.trail.updated_at = datetime.now(UTC)
         self._session.add(self.trail)
         self._session.commit()
-        
+
         # Emit completion event to external sink
         _emit_trail_completion_event(self.trail)
-        
+
         self._finalized = True
         self._pending_digests.clear()
         return self.trail

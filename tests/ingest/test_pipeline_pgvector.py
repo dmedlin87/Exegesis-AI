@@ -11,11 +11,11 @@ from sqlalchemy import delete
 from sqlalchemy.orm import sessionmaker
 
 from theo.application.facades.settings import get_settings
-from theo.infrastructure.api.app.ingest import pipeline
-from theo.infrastructure.api.app.ingest.exceptions import UnsupportedSourceError
-from theo.infrastructure.api.app.ingest.stages import ErrorDecision, ErrorPolicy
+from theo.infrastructure.api.app.library.ingest import pipeline
+from theo.infrastructure.api.app.library.ingest.exceptions import UnsupportedSourceError
+from theo.infrastructure.api.app.library.ingest.stages import ErrorDecision, ErrorPolicy
 from theo.infrastructure.api.app.persistence_models import Document, Passage
-from theo.infrastructure.api.app.ingest import persistence as ingest_persistence
+from theo.infrastructure.api.app.library.ingest import persistence as ingest_persistence
 
 
 class _StubEmbeddingService:

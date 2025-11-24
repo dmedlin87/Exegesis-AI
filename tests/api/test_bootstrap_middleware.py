@@ -29,8 +29,8 @@ from theo.infrastructure.api.app.bootstrap.middleware import (
     register_trace_handlers,
 )
 from theo.infrastructure.api.app.debug import ErrorReportingMiddleware
-from theo.infrastructure.api.app.errors import TheoError
-from theo.infrastructure.api.app.ingest.exceptions import UnsupportedSourceError
+from theo.infrastructure.api.app.core.errors import TheoError
+from theo.infrastructure.api.app.library.ingest.exceptions import UnsupportedSourceError
 
 
 def test_configure_cors_adds_middleware():

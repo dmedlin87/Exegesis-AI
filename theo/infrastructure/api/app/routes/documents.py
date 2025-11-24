@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from theo.application.facades.database import get_session
 
-from ..errors import RetrievalError, Severity
+from ..core.errors import RetrievalError, Severity
 from ..models.documents import (
     DocumentAnnotationCreate,
     DocumentAnnotationResponse,
@@ -17,7 +17,7 @@ from ..models.documents import (
     DocumentPassagesResponse,
     DocumentUpdateRequest,
 )
-from ..retriever.documents import (
+from ..retrieval.retriever.documents import (
     create_annotation,
     delete_annotation,
     get_document,

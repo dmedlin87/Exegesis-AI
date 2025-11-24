@@ -10,14 +10,14 @@ from theo.adapters.persistence.document_repository import SQLAlchemyDocumentRepo
 from theo.application.facades.database import get_session
 from theo.application.repositories import DiscoveryRepository, DocumentRepository
 
-from ..discoveries import DiscoveryService
+from ..research.discoveries import DiscoveryService
 from ..models.discoveries import (
     DiscoveryFeedbackRequest,
     DiscoveryListResponse,
     DiscoveryResponse,
     DiscoveryStats,
 )
-from theo.application.security import Principal
+from theo.application.core.security import Principal
 
 from ..adapters.security import require_principal
 
