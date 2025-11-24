@@ -27,7 +27,7 @@ jobs:
       security-events: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v5
 
       - name: Prepare image metadata
         id: meta
@@ -85,7 +85,7 @@ jobs:
           cosign-release: 'v2.4.1'
 
       - name: Generate CycloneDX image SBOM
-        uses: anchore/sbom-action@8e94d75ddd33f69f691467e42275782e4bfefe84 # v0.20.9
+        uses: anchore/sbom-action@fbfd9c6c189226748411491745178e0c2017392d # v0.20.10
         with:
           image: ${{ steps.meta.outputs.image }}@${{ steps.build.outputs.digest }}
           format: cyclonedx-json
