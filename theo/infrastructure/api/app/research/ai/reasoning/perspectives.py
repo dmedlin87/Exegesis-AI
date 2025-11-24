@@ -12,16 +12,19 @@ from theo.application.facades.settings import get_settings
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
 
-    from ...models.search import (
+    from theo.infrastructure.api.app.models.search import (
         HybridSearchFilters,
         HybridSearchRequest,
         HybridSearchResult,
     )
-    from ...infra.retrieval_service import RetrievalService
+    from theo.infrastructure.api.app.infra.retrieval_service import RetrievalService
 
-from ...models.search import HybridSearchFilters, HybridSearchRequest
-from ...retriever.hybrid import hybrid_search
-from ...infra.retrieval_service import RetrievalService
+from theo.infrastructure.api.app.models.search import (
+    HybridSearchFilters,
+    HybridSearchRequest,
+)
+from theo.infrastructure.api.app.retrieval.retriever.hybrid import hybrid_search
+from theo.infrastructure.api.app.infra.retrieval_service import RetrievalService
 
 
 @dataclass(slots=True)

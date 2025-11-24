@@ -19,7 +19,7 @@ from theo.infrastructure.api.app.models.ai import (
     LLMSettingsResponse,
 )
 
-from ....errors import AIWorkflowError
+from theo.infrastructure.api.app.core.errors import AIWorkflowError
 
 router = APIRouter()
 

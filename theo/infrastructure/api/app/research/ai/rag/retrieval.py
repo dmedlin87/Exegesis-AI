@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy.orm import Session
 
-from ....analytics.telemetry import record_feedback_event
-from ....models.search import (
+from theo.infrastructure.api.app.analytics.telemetry import record_feedback_event
+from theo.infrastructure.api.app.models.search import (
     HybridSearchFilters,
     HybridSearchRequest,
     HybridSearchResult,
 )
-from ....retrieval.retriever.hybrid import hybrid_search
+from theo.infrastructure.api.app.retrieval.retriever.hybrid import hybrid_search
 from .guardrail_helpers import load_passages_for_osis
 
 if TYPE_CHECKING:  # pragma: no cover - hints only

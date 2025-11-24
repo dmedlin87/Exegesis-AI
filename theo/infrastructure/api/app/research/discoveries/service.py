@@ -16,7 +16,7 @@ from theo.domain.discoveries import (
     TrendDiscoveryEngine,
 )
 
-from ..db.query_optimizations import query_with_monitoring
+from theo.infrastructure.api.app.db.query_optimizations import query_with_monitoring
 
 
 class DiscoveryService:

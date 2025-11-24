@@ -15,7 +15,10 @@ from sqlalchemy.orm import Session
 from theo.application.ports.ai_registry import GenerationError
 from theo.infrastructure.api.app.persistence_models import Document, Passage
 
-from ....models.search import HybridSearchFilters, HybridSearchResult
+from theo.infrastructure.api.app.models.search import (
+    HybridSearchFilters,
+    HybridSearchResult,
+)
 from .models import RAGAnswer, RAGCitation
 from .prompts import sanitise_json_structure
 

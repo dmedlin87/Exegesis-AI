@@ -15,7 +15,7 @@ from typing import Protocol, cast
 try:  # pragma: no cover - optional telemetry dependency
     from opentelemetry import trace
 except ModuleNotFoundError:  # pragma: no cover - lightweight fallback for tests
-    from ..ai.router import _NoopTracer
+    from theo.infrastructure.api.app.research.ai.router import _NoopTracer
 
     class _TraceProxy:
         def get_tracer(self, *_args, **_kwargs) -> _NoopTracer:

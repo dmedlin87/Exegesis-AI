@@ -19,8 +19,8 @@ from theo.infrastructure.api.app.persistence_models import (
     NotebookEntry,
 )
 
-from ..ingest.osis import expand_osis_reference
-from ..models.notebooks import (
+from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference
+from theo.infrastructure.api.app.models.notebooks import (
     EntryMentionPayload,
     NotebookCollaboratorPayload,
     NotebookCreatePayload,
@@ -31,7 +31,7 @@ from ..models.notebooks import (
     NotebookResponse,
     NotebookUpdatePayload,
 )
-from ..routes.realtime import publish_notebook_update
+from theo.infrastructure.api.app.routes.realtime import publish_notebook_update
 from theo.application.core.security import Principal
 
 
@@ -114,7 +114,10 @@ def _serialize_entry(entry: NotebookEntry) -> NotebookEntryResponse:
     )
 
 
-from ..models.notebooks import EntryMentionResponse, NotebookCollaboratorResponse
+from theo.infrastructure.api.app.models.notebooks import (
+    EntryMentionResponse,
+    NotebookCollaboratorResponse,
+)
 
 
 def _serialize_collaborator(collaborator: NotebookCollaborator) -> NotebookCollaboratorResponse:
