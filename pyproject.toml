@@ -61,7 +61,7 @@ api = [
     "webvtt-py>=0.5.1,<0.6",
 ]
 ml = [
-    "openai-whisper>=20231117,<20231118",
+    "openai-whisper>=20231117,<20250626",
     "bertopic>=0.15,<1",
     "datasets>=2.19,<5",
     "evaluate>=0.4,<1",
