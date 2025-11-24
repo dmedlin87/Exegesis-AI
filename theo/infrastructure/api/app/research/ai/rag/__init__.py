@@ -31,12 +31,11 @@ try:  # pragma: no cover - prefer importing the full implementation
         ensure_completion_safe,
         validate_model_completion,
     )
-    from ....models.ai import (
+    from .models import (
         CollaborationResponse,
         ComparativeAnalysisResponse,
         CorpusCurationReport,
         DevotionalResponse,
-        GuardrailError,
         MultimediaDigestResponse,
         RAGAnswer,
         RAGCitation,

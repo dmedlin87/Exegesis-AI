@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any
 
 from theo.application.ports.ai_registry import GenerationError
 
-from ...models.search import HybridSearchFilters
+from theo.infrastructure.api.app.models.search import HybridSearchFilters
 from ..clients import build_hypothesis_prompt
 from ..rag.retrieval import PassageRetriever
 from ..registry import LLMRegistry

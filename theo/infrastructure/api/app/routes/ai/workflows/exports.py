@@ -36,7 +36,7 @@ from theo.infrastructure.api.app.models.documents import DocumentDetailResponse
 from theo.infrastructure.api.app.models.export import serialise_asset_content
 from theo.infrastructure.api.app.persistence_models import Document, Passage
 
-from ....errors import AIWorkflowError
+from theo.infrastructure.api.app.core.errors import AIWorkflowError
 from .guardrails import guardrail_http_exception
 
 router = APIRouter()

@@ -12,9 +12,9 @@ from theo.infrastructure.api.app.persistence_models import (
     Passage,
 )
 
-from ..db.query_optimizations import query_with_monitoring
-from ..models.base import Passage as PassageSchema
-from ..models.documents import (
+from theo.infrastructure.api.app.db.query_optimizations import query_with_monitoring
+from theo.infrastructure.api.app.models.base import Passage as PassageSchema
+from theo.infrastructure.api.app.models.documents import (
     DocumentAnnotationCreate,
     DocumentAnnotationResponse,
     DocumentDetailResponse,

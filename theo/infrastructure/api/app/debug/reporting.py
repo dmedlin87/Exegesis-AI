@@ -15,7 +15,7 @@ from typing import Any, Iterable, Mapping
 
 from fastapi import Request
 
-from ..tracing import get_current_trace_id
+from theo.infrastructure.api.app.core.tracing import get_current_trace_id
 
 SAFE_HEADER_PREFIXES = ("x-", "cf-", "forwarded")
 SAFE_ENV_PREFIXES = ("THEO_", "APP_", "FEATURE_")
