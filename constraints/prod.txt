@@ -86,7 +86,7 @@ distro==1.9.0
     # via openai
 evaluate==0.4.6
     # via theoria (pyproject.toml)
-fastapi==0.121.1
+fastapi==0.121.3
     # via
     #   theoria (pyproject.toml)
     #   strawberry-graphql

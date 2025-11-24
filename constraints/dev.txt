@@ -112,7 +112,7 @@ evaluate==0.4.6
     # via theoria (pyproject.toml)
 execnet==2.1.1
     # via pytest-xdist
-fastapi==0.121.1
+fastapi==0.121.3
     # via
     #   theoria (pyproject.toml)
     #   strawberry-graphql
