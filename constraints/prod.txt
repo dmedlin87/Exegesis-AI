@@ -275,7 +275,7 @@ openai==1.109.1
     # via
     #   langchain-openai
     #   ragas
-openai-whisper==20231117
+openai-whisper==20250625
     # via theoria (pyproject.toml)
 opentelemetry-api==1.38.0
     # via
