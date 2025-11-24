@@ -8,7 +8,7 @@ from typing import Literal
 
 from pydantic import Field, model_serializer
 
-from ...models.base import APIModel
+from ....models.base import APIModel
 
 
 class RAGCitation(APIModel):

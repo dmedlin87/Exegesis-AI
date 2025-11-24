@@ -11,9 +11,9 @@ from sqlalchemy.orm import Session, joinedload
 
 from theo.infrastructure.api.app.persistence_models import Document, Passage, PassageVerse
 
-from ..ingest.osis import canonical_verse_range, expand_osis_reference
-from ..models.base import Passage as PassageSchema
-from ..models.verses import (
+from ...library.ingest.osis import canonical_verse_range, expand_osis_reference
+from ...models.base import Passage as PassageSchema
+from ...models.verses import (
     VerseMention,
     VerseMentionsFilters,
     VerseTimelineBucket,

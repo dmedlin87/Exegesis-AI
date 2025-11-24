@@ -1,47 +1,25 @@
-============================= test session starts =============================
-platform win32 -- Python 3.12.6, pytest-8.4.2, pluggy-1.5.0
-rootdir: C:\Users\dmedl\Projects\Theoria
-configfile: pyproject.toml
-plugins: anyio-4.11.0, Faker-25.9.2, hypothesis-6.124.6, cov-5.0.0, flask-1.3.0, subtests-0.14.2, timeout-2.3.1, schemathesis-3.39.16
-collected 1 item
-
-tests\integration\test_documents_api.py F                                [100%]
-
-================================== FAILURES ===================================
-______________ test_documents_api_with_real_database_transaction ______________
-tests\integration\test_documents_api.py:66: in test_documents_api_with_real_database_transaction
-    assert response.status_code == 200
-E   assert 403 == 200
-E    +  where 403 = <Response [403 Forbidden]>.status_code
------------------------------- Captured log call ------------------------------
-WARNING  theo.application.services.geo.seed_openbible_geo:seed_openbible_geo.py:594 OpenBible geo dataset not available at C:\Users\dmedl\Projects\Theoria\theo\data\providers\openbible-geo\data
-WARNING  theo.application.facades.settings:settings.py:791 SETTINGS_SECRET_KEY not configured; using insecure fallback for tests
-============================== warnings summary ===============================
-<frozen importlib._bootstrap>:488
-  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
-
-<frozen importlib._bootstrap>:488
-  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
-
-..\..\AppData\Roaming\Python\Python312\site-packages\google\protobuf\internal\well_known_types.py:91
-  C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\google\protobuf\internal\well_known_types.py:91: DeprecationWarning: datetime.datetime.utcfromtimestamp() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.fromtimestamp(timestamp, datetime.UTC).
-    _EPOCH_DATETIME_NAIVE = datetime.datetime.utcfromtimestamp(0)
-
-..\..\AppData\Roaming\Python\Python312\site-packages\testcontainers\core\waiting_utils.py:215
-  C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\testcontainers\core\waiting_utils.py:215: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
-    @wait_container_is_ready()
-
-..\..\AppData\Roaming\Python\Python312\site-packages\testcontainers\postgres\__init__.py:90
-  C:\Users\dmedl\AppData\Roaming\Python\Python312\site-packages\testcontainers\postgres\__init__.py:90: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
-    @wait_container_is_ready()
-
--- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-============================ slowest 50 durations =============================
-2.65s call     tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction
-1.49s setup    tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction
-
-(1 durations < 0.05s hidden.)
-=========================== short test summary info ===========================
-FAILED tests/integration/test_documents_api.py::test_documents_api_with_real_database_transaction
-======================== 1 failed, 5 warnings in 6.28s ========================
+2025-11-23 22:49:11.779137: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-11-23 22:49:12.781436: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+ImportError while loading conftest 'C:\Users\dmedl\Projects\Theoria\tests\api\conftest.py'.
+tests\api\conftest.py:279: in <module>
+    from theo.infrastructure.api.app.main import app
+theo\infrastructure\api\app\main.py:22: in <module>
+    from .bootstrap import ROUTER_REGISTRATIONS, create_app
+theo\infrastructure\api\app\bootstrap\__init__.py:3: in <module>
+    from .app_factory import ROUTER_REGISTRATIONS, create_app, get_router_registrations
+theo\infrastructure\api\app\bootstrap\app_factory.py:40: in <module>
+    from ..infra import router_registry as _router_registry  # noqa: F401
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+theo\infrastructure\api\app\infra\router_registry.py:15: in <module>
+    from ..routes import (
+theo\infrastructure\api\app\routes\ai\__init__.py:16: in <module>
+    from . import digest, watchlists, workflows
+theo\infrastructure\api\app\routes\ai\watchlists.py:12: in <module>
+    from ...research.ai.watchlists_service import WatchlistNotFoundError, WatchlistsService
+theo\infrastructure\api\app\research\ai\__init__.py:108: in <module>
+    trails = import_module(".trails", __name__)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+theo\infrastructure\api\app\research\ai\trails.py:16: in <module>
+    from theo.infrastructure.api.app.persistence_models.ai import (
+E   ModuleNotFoundError: No module named 'theo.infrastructure.api.app.persistence_models.ai'; 'theo.infrastructure.api.app.persistence_models' is not a package
 sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

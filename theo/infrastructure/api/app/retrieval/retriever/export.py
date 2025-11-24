@@ -9,18 +9,18 @@ from sqlalchemy.orm import Session
 
 from theo.infrastructure.api.app.persistence_models import Document, Passage
 
-from ..models.base import Passage as PassageSchema
-from ..models.documents import DocumentDetailResponse
-from ..models.export import (
+from ...models.base import Passage as PassageSchema
+from ...models.documents import DocumentDetailResponse
+from ...models.export import (
     DocumentExportFilters,
     DocumentExportResponse,
     ExportedDocumentSummary,
     SearchExportResponse,
     SearchExportRow,
 )
-from ..models.search import HybridSearchRequest
-from ..models.verses import VerseMentionsFilters
-from ..retriever.verses import get_mentions_for_osis
+from ...models.search import HybridSearchRequest
+from ...models.verses import VerseMentionsFilters
+from .verses import get_mentions_for_osis
 from .hybrid import hybrid_search
 
 

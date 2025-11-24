@@ -31,7 +31,7 @@ from theo.infrastructure.api.app.persistence_models import (
     Video,
 )
 
-from ..creators.verse_perspectives import CreatorVersePerspectiveService
+from ...creators.verse_perspectives import CreatorVersePerspectiveService
 from .embeddings import get_embedding_service, lexical_representation
 from .events import emit_document_persisted_event
 from .exceptions import UnsupportedSourceError
@@ -172,7 +172,7 @@ def refresh_creator_verse_rollups(
     sorted_refs = sorted(osis_refs)
     if getattr(settings, "creator_verse_rollups_async_refresh", False):
         try:
-            from ..workers import tasks as worker_tasks
+            from ...workers import tasks as worker_tasks
 
             task = getattr(worker_tasks, "refresh_creator_verse_rollups", None)
             if task:

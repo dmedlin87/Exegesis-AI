@@ -8,7 +8,7 @@ from typing import Sequence
 
 import joblib  # type: ignore[import]
 
-from ..models.search import HybridSearchResult
+from ...models.search import HybridSearchResult
 from .features import extract_features
 from .mlflow_integration import (
     MlflowResolutionError,

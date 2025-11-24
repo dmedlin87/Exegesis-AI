@@ -11,7 +11,7 @@ from typing import Iterable, Sequence
 try:  # pragma: no cover - optional tracing dependency
     from opentelemetry import trace
 except ModuleNotFoundError:  # pragma: no cover - lightweight fallback for tests
-    from ..ai.router import _NoopTracer  # reuse shim defined in router
+    from ...research.ai.router import _NoopTracer  # reuse shim defined in router
 
     class _TraceProxy:
         def get_tracer(self, *_args, **_kwargs) -> _NoopTracer:
@@ -28,11 +28,11 @@ from theo.adapters.persistence.types import VectorType
 from theo.application.facades.settings import get_settings
 from theo.infrastructure.api.app.persistence_models import Document, Passage
 
-from ..db.query_optimizations import execute_with_metrics, query_with_monitoring
-from ..ingest.embeddings import get_embedding_service
-from ..ingest.osis import expand_osis_reference, osis_intersects
-from ..models.documents import DocumentAnnotationResponse
-from ..models.search import HybridSearchFilters, HybridSearchRequest, HybridSearchResult
+from ...db.query_optimizations import execute_with_metrics, query_with_monitoring
+from ...library.ingest.embeddings import get_embedding_service
+from ...library.ingest.osis import expand_osis_reference, osis_intersects
+from ...models.documents import DocumentAnnotationResponse
+from ...models.search import HybridSearchFilters, HybridSearchRequest, HybridSearchResult
 from .annotations import index_annotations_by_passage, load_annotations_for_documents
 from .utils import compose_passage_meta
 

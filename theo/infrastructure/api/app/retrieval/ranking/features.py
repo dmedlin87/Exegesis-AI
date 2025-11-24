@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Sequence
 
-from ..models.search import HybridSearchResult
+from ...models.search import HybridSearchResult
 
 FEATURE_NAMES: tuple[str, ...] = (
     "score",
