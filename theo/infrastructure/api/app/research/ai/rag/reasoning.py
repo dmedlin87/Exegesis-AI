@@ -11,7 +11,7 @@ from theo.application.ports.ai_registry import GenerationError
 from ..reasoning.chain_of_thought import parse_chain_of_thought
 from ..reasoning.metacognition import critique_reasoning, revise_with_critique
 from ..registry import LLMModel
-from .models import (
+from theo.infrastructure.api.app.research.ai.rag.models import (
     RAGCitation,
     ReasoningCritique,
     ReasoningTrace,
