@@ -373,23 +373,7 @@ class Settings(BaseSettings):
         ),
         description="Allowed signing algorithms for validating JWTs",
     )
-    auth_allow_anonymous: bool = Field(
-        default=False,
-        validation_alias=AliasChoices(
-            "THEO_AUTH_ALLOW_ANONYMOUS", "AUTH_ALLOW_ANONYMOUS"
-        ),
-        description="Allow unauthenticated requests (intended for testing only)",
-    )
 
-    @field_validator("auth_allow_anonymous", mode="before")
-    @classmethod
-    def _parse_bool_with_comment(cls, value: object) -> bool | str:
-        """Strip inline comments from boolean values."""
-        if isinstance(value, str):
-            # Remove inline comments (e.g., "1  # comment" -> "1")
-            cleaned = value.split("#")[0].strip()
-            return cleaned
-        return value
     cors_allowed_origins: str | list[str] = Field(
         default="http://127.0.0.1:3000,http://localhost:3000",
         validation_alias=AliasChoices(

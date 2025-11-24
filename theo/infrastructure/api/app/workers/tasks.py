@@ -117,7 +117,7 @@ except Exception:  # pragma: no cover - lean environments
 from ..models.ai import ChatMemoryEntry
 from ..models.export import DeliverableDownload
 from ..models.search import HybridSearchFilters, HybridSearchRequest
-from ..retriever.hybrid import hybrid_search
+from ..retrieval.retriever.hybrid import hybrid_search
 from theo.application.facades.telemetry import log_workflow_event, record_counter
 from theo.application.core.telemetry import CITATION_DRIFT_EVENTS_METRIC
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from theo.infrastructure.api.app import tracing
+from theo.infrastructure.api.app.core import tracing
 
 
 class _StubSpan:

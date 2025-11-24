@@ -15,7 +15,7 @@ from theo.adapters.persistence.document_repository import SQLAlchemyDocumentRepo
 from theo.infrastructure.api.app.persistence_models import Document
 from theo.application.services.bootstrap import resolve_application
 
-from ..discoveries import DiscoveryService
+from ..research.discoveries.service import DiscoveryService
 
 logger = logging.getLogger(__name__)
 

@@ -136,7 +136,7 @@ def get_trace_context() -> SimpleNamespace:
     deterministic trace identifier.
     """
 
-    from ..tracing import get_current_trace_id
+    from ..core.tracing import get_current_trace_id
 
     trace_id = get_current_trace_id()
     return SimpleNamespace(trace_id=trace_id)

@@ -31,20 +31,13 @@ class FastAPIPrincipalResolver(PrincipalResolver):
     ) -> Principal:
         settings, credentials_configured = self._resolve_settings_with_credentials()
 
-        allow_anonymous = settings.auth_allow_anonymous and not credentials_configured
-
         if not credentials_configured:
-            if not allow_anonymous:
-                self._reject_forbidden("Authentication is not configured")
+            self._reject_forbidden("Authentication is not configured")
             if not authorization and not api_key_header:
+                # Should not be reachable if reject_forbidden raises, but for safety
                 principal = self._anonymous_principal()
                 request.state.principal = principal
                 return principal
-
-        if allow_anonymous and not authorization and not api_key_header:
-            principal = self._anonymous_principal()
-            request.state.principal = principal
-            return principal
 
         principal = self._principal_from_headers(authorization, api_key_header, settings)
         request.state.principal = principal
