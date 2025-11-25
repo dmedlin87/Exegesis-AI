@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Sequence
 from sqlalchemy.orm import Session
 
 from theo.application.ports.ai_registry import GenerationError
-from ...models.search import HybridSearchFilters, HybridSearchResult
+from theo.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
 from theo.application.facades.telemetry import instrument_workflow, set_span_attribute
 from ..registry import LLMModel, LLMRegistry, get_llm_registry
 from ..router import get_router

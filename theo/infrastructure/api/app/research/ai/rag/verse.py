@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy.orm import Session
 
-from ...models.search import HybridSearchFilters
+from theo.infrastructure.api.app.models.search import HybridSearchFilters
 from theo.application.facades.telemetry import (
     instrument_workflow,
     log_workflow_event,

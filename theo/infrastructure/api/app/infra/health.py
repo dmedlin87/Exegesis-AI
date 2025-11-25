@@ -17,7 +17,7 @@ from theo.application.facades.database import get_engine, get_session
 from theo.application.facades.settings import get_settings
 
 from ..db.verse_graph import load_seed_relationships
-from ..ingest.embeddings import get_embedding_service
+from ..library.ingest.embeddings import get_embedding_service
 
 try:  # pragma: no cover - redis is an optional dependency at runtime
     import redis

@@ -12,7 +12,7 @@ from theo.infrastructure.api.app.models.ai import (
     ProviderSettingsResponse,
 )
 
-from ....errors import AIWorkflowError
+from theo.infrastructure.api.app.core.errors import AIWorkflowError
 
 router = APIRouter(prefix="/settings/ai", tags=["ai-settings"])
 

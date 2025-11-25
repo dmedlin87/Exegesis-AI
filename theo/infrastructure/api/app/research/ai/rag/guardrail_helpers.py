@@ -8,7 +8,10 @@ from sqlalchemy.orm import Session
 
 from theo.infrastructure.api.app.persistence_models import Document, Passage
 
-from ...models.search import HybridSearchFilters, HybridSearchResult
+from theo.infrastructure.api.app.models.search import (
+    HybridSearchFilters,
+    HybridSearchResult,
+)
 from .guardrails import (
     GuardrailError,
     _derive_snippet as _guardrails_derive_snippet,

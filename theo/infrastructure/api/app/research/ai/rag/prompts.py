@@ -6,7 +6,10 @@ import re
 from dataclasses import dataclass
 from typing import Sequence
 
-from ...models.search import HybridSearchFilters, HybridSearchResult
+from theo.infrastructure.api.app.models.search import (
+    HybridSearchFilters,
+    HybridSearchResult,
+)
 from .models import RAGCitation
 
 _MARKDOWN_ESCAPE_PATTERN = re.compile(r"([\\`*_{}\[\]()#+.!|\-])")

@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from time import perf_counter
 from typing import Any, Iterator, Mapping
 
-from .facades.telemetry import (
+from theo.application.facades.telemetry import (
     instrument_workflow,
     record_counter,
     record_histogram,

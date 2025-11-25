@@ -18,7 +18,7 @@ from ...models.research_plan import (
     ResearchPlanStepStatus,
     ResearchPlanStepUpdateRequest,
 )
-from ..persistence_models import ChatSession
+from ...persistence_models import ChatSession
 
 DEFAULT_LOOP_STEP_SEQUENCE = [
     "understand",

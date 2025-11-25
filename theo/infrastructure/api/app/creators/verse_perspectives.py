@@ -22,7 +22,7 @@ from theo.infrastructure.api.app.persistence_models import (
     Video,
 )
 
-from ..ingest.osis import expand_osis_reference, osis_intersects
+from ..library.ingest.osis import expand_osis_reference, osis_intersects
 from ..models.creators import (
     CreatorVersePerspectiveCreator,
     CreatorVersePerspectiveMeta,

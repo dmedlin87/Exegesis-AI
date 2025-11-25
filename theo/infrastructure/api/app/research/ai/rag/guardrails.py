@@ -15,7 +15,10 @@ from sqlalchemy.orm import Session
 from theo.application.ports.ai_registry import GenerationError
 from theo.infrastructure.api.app.persistence_models import Document, Passage
 
-from ...models.search import HybridSearchFilters, HybridSearchResult
+from theo.infrastructure.api.app.models.search import (
+    HybridSearchFilters,
+    HybridSearchResult,
+)
 from .models import RAGAnswer, RAGCitation
 from .prompts import sanitise_json_structure
 
@@ -133,7 +136,7 @@ def apply_guardrail_profile(
 
     tradition_filter = _normalise_profile_value(filters.theological_tradition)
     domain_filter = _normalise_profile_value(filters.topic_domain)
-    
+
     if not tradition_filter and not domain_filter:
         payload = {
             key: value
@@ -172,17 +175,17 @@ def apply_guardrail_profile(
     missing_metadata_count = 0
     tradition_mismatch_count = 0
     domain_mismatch_count = 0
-    
+
     for result in ordered:
         meta = getattr(result, "meta", None)
         meta_mapping: Mapping[str, Any] | None = meta if isinstance(meta, Mapping) else None
-        
+
         # Track missing metadata
         if not meta_mapping:
             missing_metadata_count += 1
             remainder.append(result)
             continue
-            
+
         meta_tradition = (
             _normalise_profile_value(str(meta_mapping.get("theological_tradition")))
             if meta_mapping and meta_mapping.get("theological_tradition") is not None
@@ -223,7 +226,7 @@ def apply_guardrail_profile(
             "domain_filter": domain_filter,
         },
     )
-    
+
     # Debug-level detailed passage tracking
     LOGGER.debug(
         "guardrail profile filtering detailed results",
@@ -277,7 +280,7 @@ def apply_guardrail_profile(
         }.items()
         if value
     }
-    
+
     # Enhanced telemetry: log successful filtering
     LOGGER.info(
         "guardrail profile filtering successful",
@@ -291,7 +294,7 @@ def apply_guardrail_profile(
             "payload": payload,
         },
     )
-    
+
     return matched + remainder, payload or None
 
 
@@ -496,7 +499,7 @@ def validate_model_completion(
     citations: Sequence[RAGCitation],
 ) -> dict[str, Any]:
     """Validate model completion and return structured decision reasons."""
-    
+
     if not completion or not completion.strip():
         return {
             "status": "failed",
@@ -574,11 +577,11 @@ def validate_model_completion(
         index = int(entry_match.group("index"))
         osis = entry_match.group("osis").strip()
         anchor = entry_match.group("anchor").strip()
-        
+
         # Normalize values for comparison
         normalized_osis = _normalise_citation_value(osis)
         normalized_anchor = _normalise_citation_value(anchor)
-        
+
         parsed_entries.append({"index": index, "osis": osis, "anchor": anchor})
         cited_indices.append(index)
 
@@ -593,11 +596,11 @@ def validate_model_completion(
                 f"citation index {index} not present in retrieved passages"
             )
             continue
-            
+
         # Compare normalized values
         expected_osis = _normalise_citation_value(citation.osis)
         expected_anchor = _normalise_citation_value(citation.anchor)
-        
+
         if normalized_osis != expected_osis:
             mismatches.append(
                 f"citation [{index}] OSIS mismatch (expected '{citation.osis}', got '{osis}')"

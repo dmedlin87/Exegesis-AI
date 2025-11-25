@@ -7,15 +7,18 @@ from sqlalchemy.orm import Session
 
 from theo.application.facades.database import get_session
 
-from ....ai.reasoning import synthesize_perspectives
-from ....ai.reasoning.perspectives import PerspectiveCitation, PerspectiveView
+from theo.infrastructure.api.app.research.ai.reasoning import synthesize_perspectives
+from theo.infrastructure.api.app.research.ai.reasoning.perspectives import (
+    PerspectiveCitation,
+    PerspectiveView,
+)
 from ....models.ai import (
     PerspectiveCitationModel,
     PerspectiveSynthesisRequest,
     PerspectiveSynthesisResponse,
     PerspectiveViewModel,
 )
-from ....infra.retrieval_service import (
+from theo.infrastructure.api.app.infra.retrieval_service import (
     RetrievalService,
     get_retrieval_service,
 )

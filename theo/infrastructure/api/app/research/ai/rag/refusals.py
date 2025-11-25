@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from theo.infrastructure.api.app.persistence_models import Document, Passage
 
-from ...models.search import HybridSearchResult
+from theo.infrastructure.api.app.models.search import HybridSearchResult
 from .guardrail_helpers import derive_snippet, format_anchor
 from .models import RAGAnswer, RAGCitation
 

@@ -86,7 +86,7 @@ distro==1.9.0
     # via openai
 evaluate==0.4.6
     # via theoria (pyproject.toml)
-fastapi==0.121.1
+fastapi==0.121.3
     # via
     #   theoria (pyproject.toml)
     #   strawberry-graphql
@@ -179,7 +179,7 @@ langchain-classic==1.0.0
     # via langchain-community
 langchain-community==0.4.1
     # via ragas
-langchain-core==1.0.7
+langchain-core==1.1.0
     # via
     #   langchain
     #   langchain-classic
@@ -251,7 +251,7 @@ numba==0.62.1
     #   openai-whisper
     #   pynndescent
     #   umap-learn
-numpy==2.3.4
+numpy==2.3.5
     # via
     #   theoria (pyproject.toml)
     #   accelerate
@@ -275,7 +275,7 @@ openai==1.109.1
     # via
     #   langchain-openai
     #   ragas
-openai-whisper==20231117
+openai-whisper==20250625
     # via theoria (pyproject.toml)
 opentelemetry-api==1.38.0
     # via
@@ -358,7 +358,7 @@ pyjwt==2.10.1
     # via theoria (pyproject.toml)
 pynndescent==0.5.13
     # via umap-learn
-pypdf==6.1.3
+pypdf==6.4.0
     # via theoria (pyproject.toml)
 pysbd==0.3.4
     # via ragas
@@ -457,7 +457,7 @@ sqlalchemy==2.0.44
     #   langchain-community
 starlette==0.49.1
     # via fastapi
-strawberry-graphql==0.286.0
+strawberry-graphql==0.287.0
     # via theoria (pyproject.toml)
 sympy==1.14.0
     # via torch

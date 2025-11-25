@@ -13,14 +13,18 @@ from typing import Any
 from opentelemetry import trace
 from sqlalchemy.orm import Session
 
-from theo.infrastructure.api.app.persistence_models.ai import (
-    AgentTrailStep,
+from theo.infrastructure.api.app.persistence_models import (
+    AgentStep,
+    AgentTrail,
+    TrailRetrievalSnapshot,
+    TrailSource,
+)
+from theo.infrastructure.api.app.models.ai import (
     ChatMemoryEntry,
     ChatSessionMessage,
-    TrailStepDigest,
 )
 
-from ..models.search import HybridSearchFilters
+from ...models.search import HybridSearchFilters
 
 LOGGER = logging.getLogger(__name__)
 _TRACER = trace.get_tracer("theo.trails")

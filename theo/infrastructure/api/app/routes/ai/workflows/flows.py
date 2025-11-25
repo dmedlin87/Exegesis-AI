@@ -43,7 +43,7 @@ from theo.infrastructure.api.app.models.ai import (
     VerseCopilotRequest,
 )
 
-from ....errors import AIWorkflowError
+from theo.infrastructure.api.app.core.errors import AIWorkflowError
 from .guardrails import guardrail_http_exception
 
 if TYPE_CHECKING:

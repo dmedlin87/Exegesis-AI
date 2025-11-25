@@ -60,7 +60,7 @@ from theo.infrastructure.api.app.models.research_plan import (
 )
 from theo.infrastructure.api.app.persistence_models import ChatSession
 
-from ....errors import AIWorkflowError, Severity
+from theo.infrastructure.api.app.core.errors import AIWorkflowError, Severity
 from .guardrails import extract_refusal_text, guardrail_http_exception
 from .utils import has_filters
 

@@ -10,11 +10,12 @@ from sqlalchemy.orm import Session
 
 from theo.infrastructure.api.app.persistence_models import DocumentAnnotation
 
-from ..models.documents import (
+from ...models.documents import (
     AnnotationType,
     DocumentAnnotationCreate,
     DocumentAnnotationResponse,
 )
+
 
 _ALLOWED_TYPES: set[str] = {"claim", "evidence", "question", "note"}
 

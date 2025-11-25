@@ -6,7 +6,7 @@ import re
 from dataclasses import dataclass
 from typing import Any, Sequence
 
-from ...models.search import HybridSearchResult
+from theo.infrastructure.api.app.models.search import HybridSearchResult
 from ..rag.models import RAGCitation
 
 

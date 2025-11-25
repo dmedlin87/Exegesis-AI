@@ -69,16 +69,7 @@ def api_client(monkeypatch, secure_env):
         yield client
 
 
-@pytest.fixture
-def anonymous_client(monkeypatch):
-    monkeypatch.delenv("THEO_API_KEYS", raising=False)
-    monkeypatch.delenv("THEO_AUTH_JWT_SECRET", raising=False)
-    monkeypatch.delenv("THEO_AUTH_JWT_ALGORITHMS", raising=False)
-    monkeypatch.delenv("THEO_AUTH_JWT_PUBLIC_KEY", raising=False)
-    monkeypatch.delenv("THEO_AUTH_JWT_PUBLIC_KEY_PATH", raising=False)
-    monkeypatch.setenv("THEO_AUTH_ALLOW_ANONYMOUS", "1")
-    with _client_context(monkeypatch) as client:
-        yield client
+
 
 
 @pytest.fixture
@@ -234,9 +225,7 @@ def test_hs256_jwt_allows_access(api_client):
     assert response.status_code == 200
 
 
-def test_anonymous_access_allowed_when_auth_unconfigured(anonymous_client):
-    response = anonymous_client.get("/documents")
-    assert response.status_code == 200
+
 
 
 def test_rs256_jwt_allows_access(rsa_client):

@@ -1,0 +1,15 @@
+2025-11-24 07:03:51.488769: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-11-24 07:03:54.057456: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Import successful
+
+Attempting individual imports:
+  theo.infrastructure.api.app.research.ai.rag.chat: FAILED - No module named 'theo.infrastructure.api.app.research.models'
+  theo.infrastructure.api.app.research.ai.rag.collaboration: FAILED - No module named 'theo.infrastructure.api.app.research.models'
+  theo.infrastructure.api.app.research.ai.rag.corpus: FAILED - No module named 'theo.infrastructure.api.app.research.models'
+  theo.infrastructure.api.app.research.ai.rag.deliverables: FAILED - No module named 'theo.infrastructure.api.app.research.models'
+  theo.infrastructure.api.app.research.ai.rag.guardrail_helpers: FAILED - No module named 'theo.infrastructure.api.app.research.models'
+  theo.infrastructure.api.app.research.ai.rag.guardrails: FAILED - No module named 'theo.infrastructure.api.app.research.models'
+  theo.infrastructure.api.app.research.ai.rag.refusals: FAILED - No module named 'theo.infrastructure.api.app.research.models'
+  theo.infrastructure.api.app.research.ai.rag.retrieval: FAILED - No module named 'theo.infrastructure.api.app.research.analytics'
+  theo.infrastructure.api.app.research.ai.rag.verse: FAILED - No module named 'theo.infrastructure.api.app.research.models'
+  theo.infrastructure.api.app.research.ai.rag.workflow: FAILED - Optional AI dependencies are not installed; only RAGCitation is available in the lightweight fallback.
