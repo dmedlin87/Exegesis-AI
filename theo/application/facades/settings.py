@@ -373,6 +373,13 @@ class Settings(BaseSettings):
         ),
         description="Allowed signing algorithms for validating JWTs",
     )
+    auth_allow_anonymous: bool = Field(
+        default=False,
+        validation_alias=AliasChoices(
+            "THEO_AUTH_ALLOW_ANONYMOUS", "AUTH_ALLOW_ANONYMOUS"
+        ),
+        description="Allow unauthenticated requests when no credentials are provided",
+    )
 
     cors_allowed_origins: str | list[str] = Field(
         default="http://127.0.0.1:3000,http://localhost:3000",

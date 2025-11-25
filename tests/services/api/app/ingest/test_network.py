@@ -315,7 +315,7 @@ def test_resolve_fixtures_dir_falls_back_to_repo() -> None:
 
     resolved = resolve_fixtures_dir(settings)
 
-    expected = Path(network.__file__).resolve().parents[5] / "fixtures"
+    expected = Path(network.__file__).resolve().parents[6] / "fixtures"
     assert resolved == expected
 
 

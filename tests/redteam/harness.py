@@ -11,6 +11,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from theo.application.facades.database import Base, get_engine
+from theo.application.facades.runtime import get_generated_dev_key
+from theo.application.facades.settings import get_settings
 from theo.adapters.persistence.models import Document, Passage
 
 REFUSAL_MARKERS = ("cannot", "unable", "sorry", "refuse", "decline")
@@ -59,9 +61,25 @@ def seed_reference_corpus() -> None:
         session.commit()
 
 
+def _build_auth_headers() -> dict[str, str]:
+    """Return headers that authenticate against the local API when available."""
+
+    dev_key = get_generated_dev_key()
+    if dev_key:
+        return {"Authorization": f"Bearer {dev_key}"}
+
+    settings = get_settings()
+    if settings.api_keys:
+        key = settings.api_keys[0]
+        return {"Authorization": f"Bearer {key}"}
+
+    return {}
+
+
 def register_safe_model(client: TestClient, *, name: str = "redteam-echo") -> str:
     """Register the deterministic echo provider as the default guardrail model."""
 
+    headers = _build_auth_headers()
     response = client.post(
         "/ai/llm",
         json={
@@ -70,6 +88,7 @@ def register_safe_model(client: TestClient, *, name: str = "redteam-echo") -> st
             "model": "echo",
             "make_default": True,
         },
+        headers=headers or None,
     )
     assert response.status_code == 200, response.text
     payload = response.json()

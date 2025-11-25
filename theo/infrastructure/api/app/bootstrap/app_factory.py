@@ -240,7 +240,7 @@ def register_trace_handlers(app: FastAPI) -> None:
 
         # Fallback to request header if context is empty
         if not trace_id:
-            from ..tracing import TRACE_ID_HEADER_NAME as HEADER_NAME
+            from ..core.tracing import TRACE_ID_HEADER_NAME as HEADER_NAME
             trace_id = request.headers.get(HEADER_NAME)
 
         # Re-invoke the principal resolver configuration hook so that

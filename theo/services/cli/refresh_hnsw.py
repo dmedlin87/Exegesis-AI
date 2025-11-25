@@ -22,7 +22,7 @@ def _bootstrap_application() -> None:
 
 def _load_refresh_task() -> Task:
     module = import_module("theo.infrastructure.api.app.workers.tasks")
-    task = getattr(module, "refresh_hnsw")
+    task = module.refresh_hnsw
     return cast(Task, task)
 
 

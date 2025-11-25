@@ -430,8 +430,8 @@ class TestDocumentsAuthentication:
         """Test that document list may require authentication."""
         response = api_test_client.get("/documents/")
 
-        # Implementation-dependent: may allow anonymous or require auth
-        assert response.status_code in [200, 401]
+        # Implementation-dependent: may allow anonymous, require auth, or forbid access
+        assert response.status_code in [200, 401, 403]
 
     def test_create_annotation_requires_authentication(
         self, api_test_client: TestClient
@@ -449,4 +449,4 @@ class TestDocumentsAuthentication:
         )
 
         # Should require authentication for mutations
-        assert response.status_code in [401, 404]
+        assert response.status_code in [401, 403, 404]

@@ -1,12 +1,11 @@
 # Theoria
 
-<p align="center">
-  <em>Your theological research, unified and verse-anchored.</em>
-</p>
+**Your theological research, unified and verse-anchored.**
 
 Stop losing citations in scattered notes and unreliable AI summaries. Theoria transforms your research library into a searchable, verse-aware knowledge graph where every automated insight traces back to canonical text. Index your sources, normalize Scripture references, and retrieve evidence with AI assistance you can trust.
 
 ## Table of Contents
+
 1. [Why Theoria](#why-theoria)
 2. [Core Capabilities](#core-capabilities)
 3. [System Requirements](#system-requirements)
@@ -25,6 +24,7 @@ Stop losing citations in scattered notes and unreliable AI summaries. Theoria tr
 Theoria unifies your theological research library—papers, notes, transcripts, and audio—into a single verse-aware knowledge graph. Every result is anchored to normalized OSIS references, so citations remain verifiable whether you are preparing sermons, running comparative studies, or drafting devotionals.
 
 **What you can expect:**
+
 - **Grounded answers** backed by deterministic retrieval with citations for every verse.
 - **Productivity workflows** that combine AI summarization with strict reference enforcement.
 - **Operational confidence** with observability, testing, and performance guardrails baked in.
@@ -77,26 +77,28 @@ GPU acceleration is optional. When available, configure the ML extras (see [`doc
 ### Phase 1: Environment Setup
 
 1. **Clone & prepare environment**
+
    ```bash
    git clone https://github.com/dmedlin87/theoria.git
    cd theoria
    python -m venv .venv && source .venv/bin/activate
    pip install ".[api]" -c constraints/prod.txt
    pip install ".[ml]" -c constraints/prod.txt
-   pip install ".[dev]" -c constraints/dev.txt
-
-Regenerate these lockfiles after changing dependency ranges with:
-
-```bash
-python scripts/update_constraints.py
-```
-
-To ensure the repository constraints are up to date during CI or reviews, run the script with `--check` to validate without rewriting the files.
-
-The production constraint set also pins a CPU-only PyTorch wheel by embedding the appropriate `--index-url`/`--extra-index-url` directives so builds avoid GPU-only Triton conflicts.
+   pip install "[dev]" -c constraints/dev.txt
    ```
 
+   Regenerate these lockfiles after changing dependency ranges with:
+
+   ```bash
+   python scripts/update_constraints.py
+   ```
+
+   To ensure the repository constraints are up to date during CI or reviews, run the script with `--check` to validate without rewriting the files.
+
+   The production constraint set also pins a CPU-only PyTorch wheel by embedding the appropriate `--index-url`/`--extra-index-url` directives so builds avoid GPU-only Triton conflicts.
+
 2. **Provision frontend tooling**
+
    ```bash
    cd theo/services/web
    npm install
@@ -108,61 +110,65 @@ The production constraint set also pins a CPU-only PyTorch wheel by embedding th
    In development mode (`THEORIA_ENVIRONMENT=development`), the API auto-generates an ephemeral API key when none is configured and prints it to the console. Just start the server and copy the key from the output.
 
    For persistent or production keys:
-   ```bash
-   # API key-based auth
-   export THEO_API_KEYS='["my-api-key"]'
 
-   # or JWT-based auth
-   export THEO_AUTH_JWT_SECRET=your-secret-key
+   ```bash
+   # Option A: API key (simple)
+   export THEO_API_KEY="your-key-here"
+
+   # Option B: JWT (for production)
+   export THEO_JWT_SECRET="your-jwt-secret"
+   # Generate JWT with: python -m theo.infrastructure.api.auth.token generate
    ```
 
-   Additional authentication strategies (OIDC, session-based, API tokens) are documented in [`SECURITY.md`](SECURITY.md) and highlighted through [`docs/INDEX.md`](docs/INDEX.md).
-
+   > **Development:** The API auto-generates a temporary key when none is configured.
    > **Production / staging:** Always configure API keys or JWT credentials. The
    > API exits during startup if authentication is not configured when the
    > runtime environment is anything other than development/testing.
 
 ### Phase 2: Launch Services
 
-4. **Launch background services**
-   ```bash
-   task db:start  # optional helper; defaults to local dockerized postgres
-   ```
-   The repository uses [go-task](https://taskfile.dev/) for orchestration. If you prefer raw commands or do not have `task` installed, set `DATABASE_URL` and start PostgreSQL manually—for example:
+1. **Launch background services**
+
    ```bash
    docker run --rm --name theoria-db -e POSTGRES_PASSWORD=theoria -e POSTGRES_USER=theoria -e POSTGRES_DB=theoria \
      -p 5432:5432 postgres:16
    export DATABASE_URL="postgresql://theoria:theoria@127.0.0.1:5432/theoria"
    ```
 
-5. **Launch API**
+2. **Launch API**
+
    ```bash
    uvicorn theo.infrastructure.api.app.main:app --reload --host 127.0.0.1 --port 8000
    ```
+
    Visit the interactive docs at <http://localhost:8000/docs>.
 
-6. **Launch Web UI**
+3. **Launch Web UI**
+
    ```bash
    cd theo/services/web
    export NEXT_PUBLIC_API_BASE_URL="http://127.0.0.1:8000"
    export THEO_SEARCH_API_KEY="Bearer local-dev-key"  # remove "Bearer" to send via X-API-Key header
    npm run dev
    ```
+
    Open <http://localhost:3000> and press ⌘K/CTRL+K to explore the command palette.
 
 ### Phase 3: Explore (Optional)
 
-7. **Seed demo content**
+1. **Seed demo content**
+
    ```bash
    ./scripts/reset_reseed_smoke.py --log-level INFO
    ```
+
    The command loads a small corpus of sample sermons, research snippets, and evaluation datasets for experimentation.
 
 ---
 
 ## Architecture Overview
 
-```
+```text
 ┌──────────────┐      ┌───────────────────────┐      ┌─────────────────────┐
 │ Ingestion    │──►──│ Retrieval Services     │──►──│ UI & Integrations   │
 │ (CLI & API)  │      │ (FastAPI + Workers)    │      │ (Next.js, REST/CLI) │
@@ -185,6 +191,7 @@ For detailed architecture patterns, see [`docs/architecture.md`](docs/architectu
 ## Local Development
 
 ### One command dev loop
+
 - **PowerShell**: `./scripts/dev.ps1`
 - **Bash**: `./scripts/run.sh`
 
@@ -193,11 +200,13 @@ Both scripts boot the API and Next.js app, wiring ports and environment variable
 Install the orchestration tooling with `brew install go-task/tap/go-task`, `scoop install task`, or download binaries from the [go-task releases](https://github.com/go-task/task/releases). All commands listed in this README include raw equivalents when Task is optional.
 
 ### Dependency management
+
 - Python extras live in `pyproject.toml` (`base`, `api`, `ml`, `dev`) with corresponding lockfiles under `constraints/`.
 - Install extras with `pip install .[api] -c constraints/prod.txt` plus `[ml]`/`[dev]` when ML features or tooling are required.
 - Run `task deps:lock` after editing dependency definitions to regenerate the pinned constraints via `pip-compile`.
 
 ### Testing & quality gates
+
 - **Python tests (fast)**: `task test:fast` or `pytest -m "not (slow or gpu or contract)"`
 - **Full Python suite**: `task test:full` or `pytest --schema --pgvector --contract`
 - **Regression & slow prerequisites**: [`docs/testing.md`](docs/testing.md)
@@ -206,16 +215,19 @@ Install the orchestration tooling with `brew install go-task/tap/go-task`, `scoo
 - **Performance baselines**: Lighthouse CI policy lives in [`docs/performance.md`](docs/performance.md)
 
 ### Database seeding
+
 - Unix/macOS: `./scripts/reset_reseed_smoke.py --log-level DEBUG`
 - PowerShell: `./scripts/reset-reseed-smoke.ps1 -LogLevel DEBUG`
 
 Override database URLs or API keys through the script flags when targeting Postgres or remote services. The scripts are idempotent and safe to run repeatedly as you iterate on ingestion pipelines.
 
 ### Docker Compose
+
 ```bash
 cd infra
 docker compose up --build -d
 ```
+
 - Web: <http://localhost:3000>
 - API: <http://localhost:8000/docs>
 

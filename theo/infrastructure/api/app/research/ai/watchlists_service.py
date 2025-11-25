@@ -9,6 +9,15 @@ from sqlalchemy.orm import Session
 from theo.infrastructure.api.app.persistence_models import UserWatchlist
 
 from ...analytics.service import AnalyticsService
+from ...analytics.watchlists import (
+    create_watchlist,
+    delete_watchlist,
+    get_watchlist,
+    list_watchlist_events,
+    list_watchlists,
+    run_watchlist,
+    update_watchlist,
+)
 from ...models.watchlists import (
     WatchlistCreateRequest,
     WatchlistResponse,

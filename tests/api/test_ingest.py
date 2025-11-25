@@ -45,7 +45,19 @@ def api_engine(tmp_path_factory: pytest.TempPathFactory):
 
 
 @pytest.fixture()
-def api_client(api_engine):
+def api_client(api_engine, monkeypatch):
+    # Disable migrations during app startup
+    from theo.infrastructure.api.app.db import run_sql_migrations as migrations_module
+
+    def _noop_migrations(*args, **kwargs):
+        return []
+
+    monkeypatch.setattr(migrations_module, "run_sql_migrations", _noop_migrations)
+    monkeypatch.setattr(
+        "theo.infrastructure.api.app.bootstrap.lifecycle.run_sql_migrations",
+        _noop_migrations,
+    )
+
     def _override_session():
         yield object()
 

@@ -322,11 +322,11 @@ def resolve_fixtures_dir(settings: Any) -> Path | None:
     if root:
         path = Path(root)
         if not path.is_absolute():
-            project_root = Path(__file__).resolve().parents[5]
+            project_root = Path(__file__).resolve().parents[6]
             path = (project_root / path).resolve()
         candidates.append(path)
 
-    candidates.append(Path(__file__).resolve().parents[5] / "fixtures")
+    candidates.append(Path(__file__).resolve().parents[6] / "fixtures")
 
     for candidate in candidates:
         if candidate.exists():

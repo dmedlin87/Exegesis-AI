@@ -37,6 +37,7 @@ def test_enforce_authentication_allows_insecure_override(monkeypatch):
 
 
 def test_enforce_authentication_blocks_anonymous_without_insecure(monkeypatch):
+    """Test that authentication is required when no keys can be generated."""
     settings = SimpleNamespace(
         api_keys=[],
         auth_allow_anonymous=True,
@@ -45,6 +46,8 @@ def test_enforce_authentication_blocks_anonymous_without_insecure(monkeypatch):
     monkeypatch.setattr(main_module, "get_settings", lambda: settings)
     monkeypatch.setattr(main_module, "allow_insecure_startup", lambda: False)
     monkeypatch.setattr(main_module, "current_runtime_environment", lambda: "development")
+    # Mock key generation to return None to trigger the error path
+    monkeypatch.setattr(main_module, "generate_ephemeral_dev_key", lambda: None)
 
     with pytest.raises(RuntimeError):
         main_module._enforce_authentication_requirements()

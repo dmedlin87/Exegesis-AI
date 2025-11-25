@@ -37,7 +37,7 @@ def _resolve_celery() -> "Celery" | None:
     if _celery_app is not None:
         return _celery_app
     try:
-        from ..workers.tasks import celery as celery_app
+        from ...workers.tasks import celery as celery_app
     except Exception:  # pragma: no cover - defensive import guard
         LOGGER.debug("Unable to import celery application", exc_info=True)
         return None
@@ -72,8 +72,8 @@ class TrailsMemoryBridge:
         message_text = self._compose_message_text(digest)
 
         try:
-            from ..ai.rag import RAGAnswer
-            from ..routes.ai.workflows import chat as chat_workflow
+            from .rag import RAGAnswer
+            from ...routes.ai.workflows import chat as chat_workflow
         except Exception:  # pragma: no cover - defensive import guard
             LOGGER.debug("Unable to load chat workflow helpers", exc_info=True)
             return

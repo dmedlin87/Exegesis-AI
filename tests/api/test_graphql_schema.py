@@ -76,7 +76,8 @@ def graphql_app_setup(monkeypatch: pytest.MonkeyPatch):
         stored_documents.append(document)
         return document.id
 
-    def _get_document(document_id: DocumentId) -> Document | None:
+    def _get_document(document_id: DocumentId, *, session=None) -> Document | None:
+        _ = session  # Unused in mock
         if document_id == sample_document.id:
             return sample_document
         for stored in stored_documents:
@@ -84,7 +85,7 @@ def graphql_app_setup(monkeypatch: pytest.MonkeyPatch):
                 return stored
         return None
 
-    def _list_documents(*, limit: int = 20) -> list[Document]:
+    def _list_documents(*, limit: int = 20, session=None) -> list[Document]:
         results = [sample_document] + stored_documents
         return results[:limit]
 

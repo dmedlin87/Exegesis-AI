@@ -21,7 +21,7 @@ class DigestService:
 
         digest = load_topic_digest(self._session)
         if digest is None or self._is_expired(digest):
-            from ..routes import ai as ai_module
+            from ...routes import ai as ai_module
 
             digest = ai_module.generate_topic_digest(self._session)
             ai_module.upsert_digest_document(self._session, digest)
@@ -36,7 +36,7 @@ class DigestService:
         """Force regeneration of the digest for the supplied lookback window."""
 
         since = datetime.now(UTC) - timedelta(hours=hours)
-        from ..routes import ai as ai_module
+        from ...routes import ai as ai_module
 
         digest = ai_module.generate_topic_digest(self._session, since)
         ai_module.upsert_digest_document(self._session, digest)

@@ -14,7 +14,7 @@ from ..models.search import HybridSearchFilters
 from .base import APIModel
 
 try:  # pragma: no cover - optional AI dependencies may be unavailable in tests
-    from ..ai.rag import (
+    from ..research.ai.rag.models import (
         RAGAnswer as _RAGAnswerRuntime,
         RAGCitation as _RAGCitationRuntime,
     )
@@ -38,7 +38,7 @@ except ModuleNotFoundError:  # pragma: no cover - lightweight fallback for tests
         fallacy_warnings: list[dict[str, str]] = Field(default_factory=list)
 
 if TYPE_CHECKING:  # pragma: no cover - import for static analysis only
-    from ..ai.rag import (
+    from ..research.ai.rag.models import (
         CollaborationResponse,
         ComparativeAnalysisResponse,
         DevotionalResponse,

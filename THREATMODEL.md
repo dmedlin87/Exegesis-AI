@@ -23,10 +23,10 @@ Theo Engine ingests theological content, normalizes scripture references, and ex
 
 ## Threat Actors
 
--   External attackers (anonymous)
--   Authenticated users with malicious intent
--   Compromised third-party API providers
--   Insider operators with elevated access
+- External attackers (anonymous)
+- Authenticated users with malicious intent
+- Compromised third-party API providers
+- Insider operators with elevated access
 
 ## Top Abuse Cases & Mitigations
 
@@ -42,12 +42,12 @@ Theo Engine ingests theological content, normalizes scripture references, and ex
 
 ## Residual Risks
 
--   Reliance on third-party LLM providers introduces potential data retention beyond our control; mitigate via provider agreements, anonymization, and local LLM alternatives (see Priority 5 in `docs/planning/PROJECT_IMPROVEMENTS_ROADMAP.md`).
--   Local deployments may disable authentication; ensure documentation warns this is dev-only and prefer auto-generated dev keys over fully disabled auth.
--   DAST coverage includes automated OWASP ZAP baseline scans of the staging API (`.github/workflows/security-zap.yml`). High-severity alerts block merges. Deeper authenticated scanning and API fuzzing are planned enhancements.
+- Reliance on third-party LLM providers introduces potential data retention beyond our control; mitigate via provider agreements, anonymization, and local LLM alternatives (see Priority 5 in `docs/planning/PROJECT_IMPROVEMENTS_ROADMAP.md`).
+- Local deployments may disable authentication; ensure documentation warns this is dev-only and prefer auto-generated dev keys over fully disabled auth.
+- DAST coverage includes automated OWASP ZAP baseline scans of the staging API (`.github/workflows/security-zap.yml`). High-severity alerts block merges. Deeper authenticated scanning and API fuzzing are planned enhancements.
 
 ## Mitigation Tracking
 
--   `docs/Repo-Health.md` records outstanding action items.
--   CI workflows block merges when architecture tests or security scans fail.
--   ADRs capture acceptance of residual risks and future improvements.
+- `docs/Repo-Health.md` records outstanding action items.
+- CI workflows block merges when architecture tests or security scans fail.
+- ADRs capture acceptance of residual risks and future improvements.
