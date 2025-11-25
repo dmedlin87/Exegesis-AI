@@ -42,10 +42,10 @@ class FakeCipher:
 
 
 def test_migrate_secret_settings_encrypts_plaintext(monkeypatch: pytest.MonkeyPatch) -> None:
-    store_module = reload_facade("theo.application.facades.settings_store")
+    store_module = reload_facade("exegesis.application.facades.settings_store")
     monkeypatch.setattr(store_module, "AppSetting", MemoryAppSetting)
 
-    secret_module = reload_facade("theo.application.facades.secret_migration")
+    secret_module = reload_facade("exegesis.application.facades.secret_migration")
     monkeypatch.setattr(secret_module, "AppSetting", MemoryAppSetting)
     monkeypatch.setattr(secret_module, "save_setting", store_module.save_setting)
 

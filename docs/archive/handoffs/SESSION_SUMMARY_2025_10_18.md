@@ -8,7 +8,7 @@
 
 ## 🎯 Mission Accomplished
 
-Conducted comprehensive architectural review of Theoria's hexagonal architecture and implemented all high-priority improvements. The system now has significantly stronger layer boundaries, improved testability, and better performance.
+Conducted comprehensive architectural review of Exegesis AI's hexagonal architecture and implemented all high-priority improvements. The system now has significantly stronger layer boundaries, improved testability, and better performance.
 
 ---
 
@@ -47,7 +47,7 @@ Conducted comprehensive architectural review of Theoria's hexagonal architecture
 22. ✅ `docs/tasks/TASK_CS_002_Wire_Cognitive_Gate_v0.md`
 23. ✅ `docs/tasks/TASK_CS_003_Ship_Debate_v0.md`
 24. ✅ `docs/tasks/README.md` - Task index
-25. ✅ `docs/tasks/theoria_feature_brainstorm_cognitive_scholar_v_1.md`
+25. ✅ `docs/tasks/EXEGESIS_feature_brainstorm_cognitive_scholar_v_1.md`
 
 ### Session Summaries (2 files)
 26. ✅ `NEXT_STEPS.md` - Clear guidance for next work

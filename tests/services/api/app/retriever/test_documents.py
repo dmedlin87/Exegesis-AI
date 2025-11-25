@@ -9,7 +9,7 @@ try:  # pragma: no cover - optional dependency for lightweight environments
 except ModuleNotFoundError:  # pragma: no cover - gracefully skip when SQLAlchemy missing
     pytest.skip("sqlalchemy not installed", allow_module_level=True)
 
-from theo.infrastructure.api.app.models.documents import (
+from exegesis.infrastructure.api.app.models.documents import (
     DocumentAnnotationCreate,
     DocumentAnnotationResponse,
     DocumentDetailResponse,
@@ -17,13 +17,13 @@ from theo.infrastructure.api.app.models.documents import (
     DocumentPassagesResponse,
     DocumentUpdateRequest,
 )
-from theo.infrastructure.api.app.persistence_models import (
+from exegesis.infrastructure.api.app.persistence_models import (
     Base,
     Document,
     DocumentAnnotation,
     Passage,
 )
-from theo.infrastructure.api.app.retrieval.retriever import documents
+from exegesis.infrastructure.api.app.retrieval.retriever import documents
 from tests.fixtures.pgvector import PGVectorDatabase, PGVectorClone
 
 

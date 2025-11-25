@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from theo.infrastructure.api.app.infra.health import (
+from exegesis.infrastructure.api.app.infra.health import (
     AdapterHealth,
     HealthProbeError,
     HealthService,

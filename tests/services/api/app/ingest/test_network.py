@@ -9,8 +9,8 @@ from typing import Any, Callable
 import pytest
 from hypothesis import given, settings, strategies as st
 
-from theo.infrastructure.api.app.library.ingest import network
-from theo.infrastructure.api.app.library.ingest.network import (
+from exegesis.infrastructure.api.app.library.ingest import network
+from exegesis.infrastructure.api.app.library.ingest.network import (
     LoopDetectingRedirectHandler,
     UnsupportedSourceError,
     _parse_blocked_networks,

@@ -6,7 +6,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from theo.adapters.persistence.base_repository import BaseRepository
+from exegesis.adapters.persistence.base_repository import BaseRepository
 
 
 class DummyModel:

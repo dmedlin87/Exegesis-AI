@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 
 import pytest
 
-from theo.domain.discoveries.models import (
+from exegesis.domain.discoveries.models import (
     CorpusSnapshotSummary,
     DiscoveryType,
     DocumentEmbedding,

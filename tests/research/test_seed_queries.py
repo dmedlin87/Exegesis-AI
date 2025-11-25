@@ -7,16 +7,16 @@ from contextlib import contextmanager
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session
 
-from theo.adapters.persistence.models import (
+from exegesis.adapters.persistence.models import (
     Base,
     CommentaryExcerptSeed,
     ContradictionSeed,
     HarmonySeed,
 )
-from theo.infrastructure.api.app.db.verse_graph import load_seed_relationships
-from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference
-from theo.infrastructure.api.app.research.commentaries import search_commentaries
-from theo.infrastructure.api.app.research.contradictions import search_contradictions
+from exegesis.infrastructure.api.app.db.verse_graph import load_seed_relationships
+from exegesis.infrastructure.api.app.library.ingest.osis import expand_osis_reference
+from exegesis.infrastructure.api.app.research.commentaries import search_commentaries
+from exegesis.infrastructure.api.app.research.contradictions import search_contradictions
 
 
 def _range(osis: str) -> tuple[int | None, int | None]:

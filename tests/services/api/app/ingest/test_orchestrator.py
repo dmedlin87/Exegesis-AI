@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 import pytest
 
-from theo.infrastructure.api.app.library.ingest.orchestrator import IngestOrchestrator, OrchestratorResult, StageExecution
-from theo.infrastructure.api.app.library.ingest.stages import (
+from exegesis.infrastructure.api.app.library.ingest.orchestrator import IngestOrchestrator, OrchestratorResult, StageExecution
+from exegesis.infrastructure.api.app.library.ingest.stages import (
     DefaultErrorPolicy,
     ErrorDecision,
     ErrorPolicy,

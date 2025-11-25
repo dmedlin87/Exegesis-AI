@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from theo.infrastructure.api.app.analytics import watchlists
-from theo.adapters.persistence.models import WatchlistEvent
+from exegesis.infrastructure.api.app.analytics import watchlists
+from exegesis.adapters.persistence.models import WatchlistEvent
 
 
 def test_repro_watchlist_normalises_none_entries() -> None:

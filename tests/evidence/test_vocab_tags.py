@@ -3,7 +3,7 @@
 import pytest
 
 try:
-    from theo.infrastructure.api.app.research.evidence_cards import _normalize_tags
+    from exegesis.infrastructure.api.app.research.evidence_cards import _normalize_tags
 except ModuleNotFoundError as exc:  # pragma: no cover - dependency missing in CI
     pytest.skip(f"dependency not available: {exc}", allow_module_level=True)
 except ImportError as exc:  # pragma: no cover - dependency missing in CI

@@ -6,10 +6,10 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from theo.adapters.persistence.models import Base, CommentaryExcerptSeed
-from theo.infrastructure.api.app.library.ingest.osis import ResolvedCommentaryAnchor
-import theo.infrastructure.api.app.library.ingest.persistence as persistence
-from theo.infrastructure.api.app.library.ingest.persistence import (
+from exegesis.adapters.persistence.models import Base, CommentaryExcerptSeed
+from exegesis.infrastructure.api.app.library.ingest.osis import ResolvedCommentaryAnchor
+import exegesis.infrastructure.api.app.library.ingest.persistence as persistence
+from exegesis.infrastructure.api.app.library.ingest.persistence import (
     IngestContext,
     _dedupe_preserve_order,
     persist_commentary_entries,

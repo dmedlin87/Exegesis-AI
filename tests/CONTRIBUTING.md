@@ -14,7 +14,7 @@ pytest -q -k "not slow and not e2e" --ff --maxfail=1
 
 ### Lightweight dependency mode
 
-Set `THEORIA_SKIP_HEAVY_FIXTURES=1` when iterating on the ingest and worker
+Set `EXEGESIS_SKIP_HEAVY_FIXTURES=1` when iterating on the ingest and worker
 pipelines to skip optional third-party fixtures (FastAPI, Opentelemetry, etc.)
 that are not required for those suites. This trims import time and avoids
 installing large stacks while preserving default behaviour for the broader

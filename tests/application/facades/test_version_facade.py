@@ -3,7 +3,7 @@ import subprocess
 
 import pytest
 
-from theo.application.facades import version as version_module
+from exegesis.application.facades import version as version_module
 
 
 @pytest.fixture(autouse=True)

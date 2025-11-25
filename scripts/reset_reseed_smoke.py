@@ -22,20 +22,20 @@ def _configure_environment(database_url: str | None, api_key: str) -> None:
     """Ensure settings-dependent environment variables are initialised."""
 
     os.environ.setdefault("SETTINGS_SECRET_KEY", "local-reset-secret")
-    os.environ.setdefault("THEO_DISABLE_AI_SETTINGS", "1")
+    os.environ.setdefault("EXEGESIS_DISABLE_AI_SETTINGS", "1")
     api_key_payload = f'["{api_key}"]'
-    os.environ["THEO_API_KEYS"] = api_key_payload
+    os.environ["EXEGESIS_API_KEYS"] = api_key_payload
     os.environ["API_KEYS"] = api_key_payload
     if database_url:
         os.environ["DATABASE_URL"] = database_url
 
-    from theo.application.facades import settings as settings_module
+    from exegesis.application.facades import settings as settings_module
 
     settings_module.get_settings.cache_clear()
 
 
 def _load_settings():
-    from theo.application.facades.settings import get_settings
+    from exegesis.application.facades.settings import get_settings
 
     return get_settings()
 
@@ -43,7 +43,7 @@ def _load_settings():
 def _ensure_models_loaded() -> None:
     """Import model modules so SQLAlchemy metadata is populated."""
 
-    import theo.adapters.persistence.models  # noqa: F401  (side-effect import)
+    import exegesis.adapters.persistence.models  # noqa: F401  (side-effect import)
 
 
 def _run_sql_migrations(engine: Engine, migrations_dir: Path) -> None:
@@ -76,14 +76,14 @@ def _run_sql_migrations(engine: Engine, migrations_dir: Path) -> None:
 
 
 def _seed_reference_data(engine: Engine) -> None:
-    from theo.infrastructure.api.app.db.seeds import seed_reference_data
+    from exegesis.infrastructure.api.app.db.seeds import seed_reference_data
 
     with Session(bind=engine) as session:
         seed_reference_data(session)
 
 
 def _reset_schema(engine: Engine) -> None:
-    from theo.application.facades.database import Base
+    from exegesis.application.facades.database import Base
 
     logging.info("Dropping existing tables")
     Base.metadata.drop_all(bind=engine)
@@ -92,7 +92,7 @@ def _reset_schema(engine: Engine) -> None:
 
 
 def _run_smoke_test(api_key: str, osis_reference: str) -> None:
-    from theo.infrastructure.api.app.bootstrap import create_app
+    from exegesis.infrastructure.api.app.bootstrap import create_app
 
     logging.info("Running smoke test against /research/contradictions")
     with TestClient(create_app()) as client:
@@ -154,7 +154,7 @@ def main() -> None:
     _configure_environment(args.database_url, args.api_key)
     settings = _load_settings()
 
-    from theo.application.facades.database import configure_engine
+    from exegesis.application.facades.database import configure_engine
 
     engine = configure_engine(settings.database_url)
 

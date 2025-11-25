@@ -10,10 +10,10 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
-from theo.adapters import AdapterRegistry
-from theo.adapters.persistence import models
-from theo.domain import Document, DocumentId, DocumentMetadata
-from theo.application.services import bootstrap as application_module
+from exegesis.adapters import AdapterRegistry
+from exegesis.adapters.persistence import models
+from exegesis.domain import Document, DocumentId, DocumentMetadata
+from exegesis.application.services import bootstrap as application_module
 
 
 @pytest.fixture

@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from theo.application.retrieval.embeddings.rebuild_service import EmbeddingRebuildService
-from theo.adapters import AdapterRegistry
-from theo.domain import Document, DocumentId, DocumentMetadata
-from theo.application.services import bootstrap as bootstrap_module
+from exegesis.application.retrieval.embeddings.rebuild_service import EmbeddingRebuildService
+from exegesis.adapters import AdapterRegistry
+from exegesis.domain import Document, DocumentId, DocumentMetadata
+from exegesis.application.services import bootstrap as bootstrap_module
 
 
 class DummyResearchService:
@@ -76,7 +76,7 @@ def test_resolve_application_wires_container(
 
     fetch_marker = object()
     monkeypatch.setattr(
-        "theo.domain.research.fetch_dss_links", lambda: fetch_marker
+        "exegesis.domain.research.fetch_dss_links", lambda: fetch_marker
     )
 
     container, registry = bootstrap_module.resolve_application()

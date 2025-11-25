@@ -8,9 +8,9 @@
 
 ## 🎯 Mission
 
-Transform Theoria into an autonomous, context-aware "super-scholar" that forms, tests, and refines theories with transparent reasoning while remaining user-steerable.
+Transform Exegesis AI into an autonomous, context-aware "super-scholar" that forms, tests, and refines theories with transparent reasoning while remaining user-steerable.
 
-**Master Spec**: `docs/tasks/theoria_feature_brainstorm_cognitive_scholar_v_1.md` (332 lines)
+**Master Spec**: `docs/tasks/EXEGESIS_feature_brainstorm_cognitive_scholar_v_1.md` (332 lines)
 
 ---
 
@@ -242,7 +242,7 @@ class SQLAlchemyHypothesisRepository(HypothesisRepository):
 
 ## 📚 Documentation Reference
 
-- **Master Spec**: `docs/tasks/theoria_feature_brainstorm_cognitive_scholar_v_1.md`
+- **Master Spec**: `docs/tasks/EXEGESIS_feature_brainstorm_cognitive_scholar_v_1.md`
 - **Execution Plan**: `docs/tasks/TASK_005_Cognitive_Scholar_MVP_Tickets.md`
 - **Integration Map**: `docs/tasks/COGNITIVE_SCHOLAR_INTEGRATION_MAP.md`
 - **Architecture Guide**: `docs/ARCHITECTURE_IMPROVEMENTS.md`

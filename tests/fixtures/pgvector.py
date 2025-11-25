@@ -155,9 +155,9 @@ def _parse_connection_details(url: str) -> _ConnectionDetails:
 
 
 def _prepare_template(url: str) -> None:
-    from theo.adapters.persistence import Base
-    from theo.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
-    from theo.infrastructure.api.app.db.seeds import seed_reference_data
+    from exegesis.adapters.persistence import Base
+    from exegesis.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
+    from exegesis.infrastructure.api.app.db.seeds import seed_reference_data
 
     engine = create_engine(url, future=True)
     try:
@@ -194,7 +194,7 @@ def provision_pgvector_database(
                 POSTGRES_STARTUP_TIMEOUT
             )
         )
-    container.with_env("POSTGRES_DB", "theo_template")
+    container.with_env("POSTGRES_DB", "EXEGESIS_template")
     container.with_env("POSTGRES_USER", "postgres")
     container.with_env("POSTGRES_PASSWORD", "postgres")
 

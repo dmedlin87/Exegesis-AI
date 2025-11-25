@@ -1,7 +1,7 @@
 import pytest
 
-from theo.domain.research.entities import ResearchNote, ResearchNoteEvidence
-from theo.domain.research.overview import (
+from exegesis.domain.research.entities import ResearchNote, ResearchNoteEvidence
+from exegesis.domain.research.overview import (
     _extract_citations,
     _first_sentence,
     _manuscript_bullets,
@@ -9,7 +9,7 @@ from theo.domain.research.overview import (
     _summarize_manuscript,
     build_reliability_overview,
 )
-from theo.domain.research.variants import VariantEntry
+from exegesis.domain.research.variants import VariantEntry
 
 
 def _make_note(

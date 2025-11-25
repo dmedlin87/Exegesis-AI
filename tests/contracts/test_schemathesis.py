@@ -25,15 +25,15 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from schemathesis.schemas import BaseSchema
 
-from theo.adapters.persistence import models as persistence_models  # noqa: E402
+from exegesis.adapters.persistence import models as persistence_models  # noqa: E402
 
-from theo.infrastructure.api.app.analytics.topics import (  # noqa: E402
+from exegesis.infrastructure.api.app.analytics.topics import (  # noqa: E402
     TopicCluster,
     TopicDigest,
 )
-from theo.infrastructure.api.app.research.ai.rag import RAGAnswer  # noqa: E402
-from theo.infrastructure.api.app.research.ai.trails import TrailReplayResult  # noqa: E402
-from theo.infrastructure.api.app.models.ai import (  # noqa: E402
+from exegesis.infrastructure.api.app.research.ai.rag import RAGAnswer  # noqa: E402
+from exegesis.infrastructure.api.app.research.ai.trails import TrailReplayResult  # noqa: E402
+from exegesis.infrastructure.api.app.models.ai import (  # noqa: E402
     ChatGoalState,
     ChatMemoryEntry,
     ChatSessionMessage,
@@ -43,57 +43,57 @@ from theo.infrastructure.api.app.models.ai import (  # noqa: E402
     CitationExportResponse,
     ExportDeliverableResponse,
 )
-from theo.infrastructure.api.app.models.trails import (  # noqa: E402
+from exegesis.infrastructure.api.app.models.trails import (  # noqa: E402
     TrailReplayDiff,
     TrailReplayResponse,
 )
-from theo.infrastructure.api.app.models.watchlists import (  # noqa: E402
+from exegesis.infrastructure.api.app.models.watchlists import (  # noqa: E402
     WatchlistResponse,
     WatchlistRunResponse,
 )
-from theo.infrastructure.api.app.models.research import (  # noqa: E402
+from exegesis.infrastructure.api.app.models.research import (  # noqa: E402
     ResearchNote,
     ResearchNotesResponse,
 )
-from theo.infrastructure.api.app.models.search import (  # noqa: E402
+from exegesis.infrastructure.api.app.models.search import (  # noqa: E402
     HybridSearchResponse,
     HybridSearchResult,
 )
-from theo.infrastructure.api.app.models.verses import (  # noqa: E402
+from exegesis.infrastructure.api.app.models.verses import (  # noqa: E402
     VerseTimelineBucket,
     VerseTimelineResponse,
 )
-from theo.infrastructure.api.app.models.documents import (  # noqa: E402
+from exegesis.infrastructure.api.app.models.documents import (  # noqa: E402
     DocumentListResponse,
     DocumentSummary,
 )
-from theo.application.facades.settings import get_settings  # noqa: E402
+from exegesis.application.facades.settings import get_settings  # noqa: E402
 
-os.environ.setdefault("THEO_DISABLE_AI_SETTINGS", "1")
-os.environ.setdefault("THEO_AUTH_ALLOW_ANONYMOUS", "1")
-os.environ.setdefault("THEO_ALLOW_INSECURE_STARTUP", "1")
+os.environ.setdefault("EXEGESIS_DISABLE_AI_SETTINGS", "1")
+os.environ.setdefault("EXEGESIS_AUTH_ALLOW_ANONYMOUS", "1")
+os.environ.setdefault("EXEGESIS_ALLOW_INSECURE_STARTUP", "1")
 os.environ.setdefault("SETTINGS_SECRET_KEY", "contract-test-secret")
-os.environ.setdefault("THEORIA_ENVIRONMENT", "development")
+os.environ.setdefault("EXEGESIS_ENVIRONMENT", "development")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-pytest.importorskip("theo.adapters.persistence.models")
+pytest.importorskip("exegesis.adapters.persistence.models")
 
-from theo.infrastructure.api.app.research.ai.registry import (  # noqa: E402
+from exegesis.infrastructure.api.app.research.ai.registry import (  # noqa: E402
     LLMModel,
     LLMRegistry,
     save_llm_registry,
 )
-from theo.application.facades.database import (  # noqa: E402
+from exegesis.application.facades.database import (  # noqa: E402
     Base,
     configure_engine,
     get_engine,
     get_session,
 )
-from theo.infrastructure.api.app.main import app  # noqa: E402
-from theo.infrastructure.api.app.adapters.security import require_principal  # noqa: E402
+from exegesis.infrastructure.api.app.main import app  # noqa: E402
+from exegesis.infrastructure.api.app.adapters.security import require_principal  # noqa: E402
 
 CONFIG_PATH = PROJECT_ROOT / "contracts" / "schemathesis.toml"
 with CONFIG_PATH.open("rb") as config_file:
@@ -248,28 +248,28 @@ def _optimise_lifespan():
         return None
 
     patcher.setattr(
-        "theo.infrastructure.api.app.db.run_sql_migrations.run_sql_migrations",
+        "exegesis.infrastructure.api.app.db.run_sql_migrations.run_sql_migrations",
         _noop_migrations,
     )
     patcher.setattr(
-        "theo.infrastructure.api.app.bootstrap.lifecycle.run_sql_migrations",
+        "exegesis.infrastructure.api.app.bootstrap.lifecycle.run_sql_migrations",
         _noop_migrations,
     )
     patcher.setattr(
-        "theo.infrastructure.api.app.bootstrap.lifecycle.seed_reference_data",
+        "exegesis.infrastructure.api.app.bootstrap.lifecycle.seed_reference_data",
         _noop_seed,
     )
     patcher.setattr(
-        "theo.infrastructure.api.app.db.seeds.seed_reference_data",
+        "exegesis.infrastructure.api.app.db.seeds.seed_reference_data",
         _noop_seed,
     )
     patcher.setattr(
-        "theo.infrastructure.api.app.workers.discovery_scheduler.start_discovery_scheduler",
+        "exegesis.infrastructure.api.app.workers.discovery_scheduler.start_discovery_scheduler",
         lambda: None,
         raising=False,
     )
     patcher.setattr(
-        "theo.infrastructure.api.app.workers.discovery_scheduler.stop_discovery_scheduler",
+        "exegesis.infrastructure.api.app.workers.discovery_scheduler.stop_discovery_scheduler",
         lambda: None,
         raising=False,
     )
@@ -403,11 +403,11 @@ def _stub_external_services(contract_context: ContractTestContext):
         )
 
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.ai.workflows.chat.run_guarded_chat",
+        "exegesis.infrastructure.api.app.routes.ai.workflows.chat.run_guarded_chat",
         _fake_run_guarded_chat,
     )
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.ai.workflows.chat.ensure_completion_safe",
+        "exegesis.infrastructure.api.app.routes.ai.workflows.chat.ensure_completion_safe",
         lambda *_args, **_kwargs: None,
     )
 
@@ -482,7 +482,7 @@ def _stub_external_services(contract_context: ContractTestContext):
         return manifest, records, csl_entries
 
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.ai.workflows.exports.build_citation_export",
+        "exegesis.infrastructure.api.app.routes.ai.workflows.exports.build_citation_export",
         _fake_build_citation_export,
     )
 
@@ -515,7 +515,7 @@ def _stub_external_services(contract_context: ContractTestContext):
         return _StubPackage()
 
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.ai.workflows.exports.build_sermon_deliverable",
+        "exegesis.infrastructure.api.app.routes.ai.workflows.exports.build_sermon_deliverable",
         _fake_build_sermon_deliverable,
     )
 
@@ -531,7 +531,7 @@ def _stub_external_services(contract_context: ContractTestContext):
         return response()
 
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.ai.workflows.exports.generate_sermon_prep_outline",
+        "exegesis.infrastructure.api.app.routes.ai.workflows.exports.generate_sermon_prep_outline",
         _fake_generate_sermon_prep_outline,
     )
 
@@ -543,7 +543,7 @@ def _stub_external_services(contract_context: ContractTestContext):
         return _StubAuditLogger()
 
     patcher.setattr(
-        "theo.infrastructure.api.app.research.ai.audit_logging.AuditLogWriter.from_session",
+        "exegesis.infrastructure.api.app.research.ai.audit_logging.AuditLogWriter.from_session",
         classmethod(_fake_audit_from_session),
     )
 
@@ -568,7 +568,7 @@ def _stub_external_services(contract_context: ContractTestContext):
             return self._digest
 
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.ai.digest.DigestService",
+        "exegesis.infrastructure.api.app.routes.ai.digest.DigestService",
         _StubDigestService,
     )
 
@@ -634,12 +634,12 @@ def _stub_external_services(contract_context: ContractTestContext):
             return watchlist
 
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.ai.watchlists._service",
+        "exegesis.infrastructure.api.app.routes.ai.watchlists._service",
         lambda _session: _StubWatchlistsService(_session),
     )
 
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.analytics.record_feedback_from_payload",
+        "exegesis.infrastructure.api.app.routes.analytics.record_feedback_from_payload",
         lambda _session, _payload: None,
     )
 
@@ -660,7 +660,7 @@ def _stub_external_services(contract_context: ContractTestContext):
         return DocumentListResponse(items=[summary], total=1, limit=limit, offset=offset)
 
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.documents.list_documents",
+        "exegesis.infrastructure.api.app.routes.documents.list_documents",
         _fake_list_documents,
     )
 
@@ -683,7 +683,7 @@ def _stub_external_services(contract_context: ContractTestContext):
             ]
 
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.research.get_research_service",
+        "exegesis.infrastructure.api.app.routes.research.get_research_service",
         lambda _session=None: _StubResearchService(),
     )
 
@@ -715,7 +715,7 @@ def _stub_external_services(contract_context: ContractTestContext):
             return ([result], None)
 
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.search.get_retrieval_service",
+        "exegesis.infrastructure.api.app.routes.search.get_retrieval_service",
         lambda *_args, **_kwargs: _StubRetrievalService(),
     )
 
@@ -742,7 +742,7 @@ def _stub_external_services(contract_context: ContractTestContext):
         )
 
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.verses.get_verse_timeline",
+        "exegesis.infrastructure.api.app.routes.verses.get_verse_timeline",
         _fake_get_verse_timeline,
     )
 
@@ -755,11 +755,11 @@ def _stub_external_services(contract_context: ContractTestContext):
         provider_store[key] = value
 
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.ai.workflows.settings.load_setting",
+        "exegesis.infrastructure.api.app.routes.ai.workflows.settings.load_setting",
         _fake_load_setting,
     )
     patcher.setattr(
-        "theo.infrastructure.api.app.routes.ai.workflows.settings.save_setting",
+        "exegesis.infrastructure.api.app.routes.ai.workflows.settings.save_setting",
         _fake_save_setting,
     )
 
@@ -778,7 +778,7 @@ def _stub_external_services(contract_context: ContractTestContext):
         )
 
     patcher.setattr(
-        "theo.infrastructure.api.app.research.ai.trails.TrailService.replay_trail",
+        "exegesis.infrastructure.api.app.research.ai.trails.TrailService.replay_trail",
         _fake_replay_trail,
         raising=False,
     )

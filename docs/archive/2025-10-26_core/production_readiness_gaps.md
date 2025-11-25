@@ -2,7 +2,7 @@
 
 # Production Readiness Gaps
 
-This document captures the highest-risk items currently blocking a production-ready release of Theoria. Each issue lists the impact, supporting evidence, and recommended next steps.
+This document captures the highest-risk items currently blocking a production-ready release of Exegesis AI. Each issue lists the impact, supporting evidence, and recommended next steps.
 
 ## 1. Inflight ledger restart handling fails concurrency test
 - **Impact:** High – Deduplication ledger loses completed generations after a router restart. Waiters can block indefinitely and the shared output is never replayed, breaking request fan-out and causing user-visible timeouts.
@@ -16,7 +16,7 @@ This document captures the highest-risk items currently blocking a production-re
 
 ## 3. Security contact GPG key is missing
 - **Impact:** Medium – Coordinated disclosure cannot be encrypted as promised in the security policy, eroding trust with external reporters.
-- **Evidence:** `SECURITY.md` references a pending `docs/keys/security.asc` artifact for the `security@Theoria.com` address, but the key directory is absent from the repository.【F:SECURITY.md†L12-L28】【c9db24†L1-L3】
+- **Evidence:** `SECURITY.md` references a pending `docs/keys/security.asc` artifact for the `security@Exegesis AI.com` address, but the key directory is absent from the repository.【F:SECURITY.md†L12-L28】【c9db24†L1-L3】
 - **Remediation:** Publish the referenced ASCII-armored GPG key (or update the policy with an alternate secure channel) and ensure the disclosure process is verifiable.
 
 ## Next Steps

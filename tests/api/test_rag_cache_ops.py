@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 
-from theo.infrastructure.api.app.research.ai.rag.cache_ops import build_cache_key, load_cached_answer, store_cached_answer
-from theo.infrastructure.api.app.research.ai.rag.models import RAGAnswer
+from exegesis.infrastructure.api.app.research.ai.rag.cache_ops import build_cache_key, load_cached_answer, store_cached_answer
+from exegesis.infrastructure.api.app.research.ai.rag.models import RAGAnswer
 
 
 class _FakeCache:

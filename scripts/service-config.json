@@ -2,7 +2,7 @@
   "services": [
     {
       "key": "Api",
-      "name": "Theoria API",
+      "name": "Exegesis AI API",
       "processName": "python",
       "healthEndpoint": "http://127.0.0.1:{Port}/health",
       "healthIntervalSeconds": 10,
@@ -23,7 +23,7 @@
     },
     {
       "key": "Web",
-      "name": "Theoria Web",
+      "name": "Exegesis AI Web",
       "processName": "node",
       "healthEndpoint": "http://127.0.0.1:{Port}",
       "healthIntervalSeconds": 15,
@@ -46,7 +46,7 @@
   "alerts": {
     "email": {
       "enabled": false,
-      "from": "theoria@localhost",
+      "from": "Exegesis AI@localhost",
       "recipients": [],
       "smtpServer": "localhost",
       "port": 25

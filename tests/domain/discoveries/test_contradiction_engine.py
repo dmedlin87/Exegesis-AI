@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from theo.domain.discoveries.contradiction_engine import (
+from exegesis.domain.discoveries.contradiction_engine import (
     ContradictionDiscoveryEngine,
 )
-from theo.domain.discoveries.models import DocumentEmbedding
+from exegesis.domain.discoveries.models import DocumentEmbedding
 
 
 def _has_transformers() -> bool:

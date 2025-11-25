@@ -25,18 +25,18 @@ def refresh_cli_module(
     monkeypatch.setitem(sys.modules, "celery", celery_module)
     monkeypatch.setitem(sys.modules, "celery.app", celery_app_module)
     monkeypatch.setitem(sys.modules, "celery.app.task", celery_task_module)
-    fake_tasks_module = ModuleType("theo.infrastructure.api.app.workers.tasks")
+    fake_tasks_module = ModuleType("exegesis.infrastructure.api.app.workers.tasks")
     fake_tasks_module.refresh_hnsw = SimpleNamespace(
         delay=lambda *args, **kwargs: SimpleNamespace(id=None),
         run=lambda *args, **kwargs: {},
     )
     monkeypatch.setitem(
-        sys.modules, "theo.infrastructure.api.app.workers.tasks", fake_tasks_module
+        sys.modules, "exegesis.infrastructure.api.app.workers.tasks", fake_tasks_module
     )
     monkeypatch.delitem(
-        sys.modules, "theo.services.cli.refresh_hnsw", raising=False
+        sys.modules, "exegesis.services.cli.refresh_hnsw", raising=False
     )
-    module = importlib.import_module("theo.services.cli.refresh_hnsw")
+    module = importlib.import_module("exegesis.services.cli.refresh_hnsw")
     module = importlib.reload(module)
     module.configure_refresh_hnsw_cli(bootstrapper=lambda: None)
     try:

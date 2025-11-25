@@ -24,8 +24,8 @@ if "fastapi" not in sys.modules:
 
 pytest.importorskip("pythonbible")
 
-legacy_services = importlib.import_module("theo.services")
-osis_module = importlib.import_module("theo.infrastructure.api.app.library.ingest.osis")
+legacy_services = importlib.import_module("exegesis.services")
+osis_module = importlib.import_module("exegesis.infrastructure.api.app.library.ingest.osis")
 
 
 def _register_legacy_submodule(name: str, module: types.ModuleType) -> None:
@@ -33,30 +33,30 @@ def _register_legacy_submodule(name: str, module: types.ModuleType) -> None:
 
     api_pkg = getattr(legacy_services, "api", None)
     if api_pkg is None:
-        api_pkg = types.ModuleType("theo.services.api")
+        api_pkg = types.ModuleType("exegesis.services.api")
         api_pkg.__path__ = []  # type: ignore[attr-defined]
         setattr(legacy_services, "api", api_pkg)
-        sys.modules["theo.services.api"] = api_pkg
+        sys.modules["exegesis.services.api"] = api_pkg
     app_pkg = getattr(api_pkg, "app", None)
     if app_pkg is None:
-        app_pkg = types.ModuleType("theo.services.api.app")
+        app_pkg = types.ModuleType("exegesis.services.api.app")
         app_pkg.__path__ = []  # type: ignore[attr-defined]
         setattr(api_pkg, "app", app_pkg)
-        sys.modules["theo.services.api.app"] = app_pkg
+        sys.modules["exegesis.services.api.app"] = app_pkg
     ingest_pkg = getattr(app_pkg, "ingest", None)
     if ingest_pkg is None:
-        ingest_pkg = types.ModuleType("theo.services.api.app.ingest")
+        ingest_pkg = types.ModuleType("exegesis.services.api.app.ingest")
         ingest_pkg.__path__ = []  # type: ignore[attr-defined]
         setattr(app_pkg, "ingest", ingest_pkg)
-        sys.modules["theo.services.api.app.ingest"] = ingest_pkg
+        sys.modules["exegesis.services.api.app.ingest"] = ingest_pkg
 
     setattr(ingest_pkg, name, module)
-    sys.modules[f"theo.services.api.app.ingest.{name}"] = module
+    sys.modules[f"exegesis.services.api.app.ingest.{name}"] = module
 
 
 _register_legacy_submodule("osis", osis_module)
 
-from theo.services.api.app.ingest import osis as legacy_osis  # noqa: E402
+from exegesis.services.api.app.ingest import osis as legacy_osis  # noqa: E402
 
 
 @given(normalized_osis_references())

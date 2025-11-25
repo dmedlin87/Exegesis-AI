@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 
-from theo.infrastructure.api.app.research.ai import digest_service as digest_service_module
-from theo.infrastructure.api.app.research.ai.digest_service import DigestService
-from theo.infrastructure.api.app.analytics.topics import TopicCluster, TopicDigest
+from exegesis.infrastructure.api.app.research.ai import digest_service as digest_service_module
+from exegesis.infrastructure.api.app.research.ai.digest_service import DigestService
+from exegesis.infrastructure.api.app.analytics.topics import TopicCluster, TopicDigest
 
 
 def _build_digest(*, generated_at: datetime) -> TopicDigest:
@@ -66,7 +66,7 @@ def test_ensure_latest_regenerates_when_expired(monkeypatch):
         digest_service_module, "load_topic_digest", lambda session: expired
     )
 
-    from theo.infrastructure.api.app.routes import ai as ai_module
+    from exegesis.infrastructure.api.app.routes import ai as ai_module
 
     def _generate(session):
         calls.append("generate")
@@ -100,7 +100,7 @@ def test_ensure_latest_generates_when_cache_missing(monkeypatch):
         digest_service_module, "load_topic_digest", lambda session: None
     )
 
-    from theo.infrastructure.api.app.routes import ai as ai_module
+    from exegesis.infrastructure.api.app.routes import ai as ai_module
 
     def _generate(session):
         calls.append("generate")
@@ -140,7 +140,7 @@ def test_refresh_generates_with_requested_lookback(monkeypatch):
     regenerated = _build_digest(generated_at=fixed_now)
     captured: dict[str, object] = {}
 
-    from theo.infrastructure.api.app.routes import ai as ai_module
+    from exegesis.infrastructure.api.app.routes import ai as ai_module
 
     def _generate(session, since):
         captured["since"] = since

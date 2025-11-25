@@ -1,4 +1,4 @@
-# UI/UX Review Summary - Theoria
+# UI/UX Review Summary - Exegesis AI
 
 **TL;DR:** Your app has excellent architecture but needs execution on the refactoring plan you already documented.
 

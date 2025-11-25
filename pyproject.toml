@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "theoria"
+name = "exegesis-ai"
 version = "0.0.0"
 description = "Theo application"
 readme = "README.md"
@@ -55,7 +55,7 @@ api = [
     "pythonbible>=0.13.1,<0.14",
     "PyYAML>=6.0,<7",
     "sqlalchemy>=2.0.44,<2.1",
-    "strawberry-graphql[fastapi]>=0.220.0,<0.221",
+    "strawberry-graphql[fastapi]>=0.220.0,<0.300",
     "typing-extensions>=4.9,<5",
     "uvicorn[standard]>=0.38.0,<0.39",
     "webvtt-py>=0.5.1,<0.6",
@@ -100,11 +100,11 @@ dev = [
 include-package-data = true
 
 [tool.setuptools.package-data]
-"theo.data.research" = ["*.json"]
+"exegesis.data.research" = ["*.json"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["theo*"]
+include = ["exegesis*"]
 exclude = ["tests*", "fixtures*", "data*", "infra*", "metrics*", "ranking*", "contracts*", "dashboard*"]
 
 # Configure uv to use unsafe-best-match strategy for PyTorch dependencies
@@ -129,14 +129,14 @@ target-version = ["py311"]
 [tool.isort]
 profile = "black"
 line_length = 88
-known_first_party = ["theo"]
+known_first_party = ["exegesis"]
 combine_as_imports = true
 
 [tool.mypy]
 python_version = "3.11"
 files = [
-    "theo/infrastructure/api/app",
-    "theo/infrastructure/api/tests",
+    "exegesis/infrastructure/api/app",
+    "exegesis/infrastructure/api/tests",
     "tests/export",
 ]
 ignore_missing_imports = true
@@ -146,11 +146,12 @@ follow_imports = "skip"
 
 [tool.pytest.ini_options]
 # Coverage disabled by default for faster test discovery
-# To run with coverage: pytest --cov=theo --cov-report=term-missing --cov-report=xml --cov-fail-under=80
+# To run with coverage: pytest --cov=exegesis --cov-report=term-missing --cov-report=xml --cov-fail-under=80
 addopts = [
     "-ra",
     "--strict-markers",
     "--import-mode=importlib",
+    "--cov=exegesis",
     "--durations=50",
     "--durations-min=0.05",
 ]
@@ -170,6 +171,7 @@ markers = [
     "no_auth_override: disable authentication override fixture for security assertions",
     "integration: integration tests",
     "slow: long-running tests that require opt-in",
+    "allow_sleep: opt-out of global time.sleep mock for tests requiring real delays",
     "enable_migrations: allow database migrations to execute in tests",
     "pgvector: tests that require the pgvector/Postgres testcontainer",
     "celery: tests exercising Celery worker integrations and retry semantics",

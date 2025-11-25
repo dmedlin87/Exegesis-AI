@@ -30,8 +30,8 @@ regression-focused portions of the Python test suite.
 * **Scope** – `tests/redteam/test_ai_redteam.py` exercises refusal and citation guardrails across chat, verse, and sermon
   workflows using the `RedTeamHarness`. 【F:tests/redteam/test_ai_redteam.py†L1-L119】
 * **Database** – The harness seeds a lightweight SQLite schema on demand; no Postgres container is required. 【F:tests/redteam/harness.py†L19-L62】
-* **Environment** – API defaults (`SETTINGS_SECRET_KEY`, `THEO_API_KEYS`, `THEO_ALLOW_INSECURE_STARTUP`,
-  `THEO_FORCE_EMBEDDING_FALLBACK`) are injected by `tests/api/conftest.py`, so only custom local overrides need to set them
+* **Environment** – API defaults (`SETTINGS_SECRET_KEY`, `EXEGESIS_API_KEYS`, `EXEGESIS_ALLOW_INSECURE_STARTUP`,
+  `EXEGESIS_FORCE_EMBEDDING_FALLBACK`) are injected by `tests/api/conftest.py`, so only custom local overrides need to set them
   manually. 【F:tests/api/conftest.py†L1-L33】
 * **Suggested command** – `pytest tests/redteam/test_ai_redteam.py`
 
@@ -97,12 +97,12 @@ outside pytest:
 
 | Variable | Default | Source |
 | --- | --- | --- |
-| `THEO_ALLOW_INSECURE_STARTUP` | `1` | `tests/conftest.py`【F:tests/conftest.py†L225-L263】 |
-| `THEORIA_ENVIRONMENT` | `development` | `tests/conftest.py`【F:tests/conftest.py†L225-L263】 |
-| `THEORIA_TESTING` | `1` | `tests/conftest.py`【F:tests/conftest.py†L229-L263】 |
+| `EXEGESIS_ALLOW_INSECURE_STARTUP` | `1` | `tests/conftest.py`【F:tests/conftest.py†L225-L263】 |
+| `EXEGESIS_ENVIRONMENT` | `development` | `tests/conftest.py`【F:tests/conftest.py†L225-L263】 |
+| `EXEGESIS_TESTING` | `1` | `tests/conftest.py`【F:tests/conftest.py†L229-L263】 |
 | `SETTINGS_SECRET_KEY` | `test-secret-key` | `tests/api/conftest.py`【F:tests/api/conftest.py†L1-L33】 |
-| `THEO_API_KEYS` | `["pytest-default-key"]` | `tests/api/conftest.py`【F:tests/api/conftest.py†L1-L33】 |
-| `THEO_FORCE_EMBEDDING_FALLBACK` | `1` | `tests/api/conftest.py`【F:tests/api/conftest.py†L1-L33】 |
+| `EXEGESIS_API_KEYS` | `["pytest-default-key"]` | `tests/api/conftest.py`【F:tests/api/conftest.py†L1-L33】 |
+| `EXEGESIS_FORCE_EMBEDDING_FALLBACK` | `1` | `tests/api/conftest.py`【F:tests/api/conftest.py†L1-L33】 |
 
 Export these values (or suitable overrides) before running CLI tools or manual smoke tests that depend on the same assumptions.
 

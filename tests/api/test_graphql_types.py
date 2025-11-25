@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from theo.domain import Document, DocumentId, DocumentMetadata
-from theo.domain.research.overview import OverviewBullet
-from theo.domain.research.scripture import Verse as DomainVerse
-from theo.infrastructure.api.app.graphql import types as graphql_types
+from exegesis.domain import Document, DocumentId, DocumentMetadata
+from exegesis.domain.research.overview import OverviewBullet
+from exegesis.domain.research.scripture import Verse as DomainVerse
+from exegesis.infrastructure.api.app.graphql import types as graphql_types
 
 
 def test_document_metadata_type_from_domain() -> None:

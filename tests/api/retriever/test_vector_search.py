@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from theo.infrastructure.api.app.models.documents import DocumentAnnotationResponse
-from theo.infrastructure.api.app.models.search import HybridSearchRequest
-from theo.infrastructure.api.app.retrieval.retriever import hybrid
+from exegesis.infrastructure.api.app.models.documents import DocumentAnnotationResponse
+from exegesis.infrastructure.api.app.models.search import HybridSearchRequest
+from exegesis.infrastructure.api.app.retrieval.retriever import hybrid
 
 from tests.api.retriever.conftest import DummyDocument, DummyPassage
 

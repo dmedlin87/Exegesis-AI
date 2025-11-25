@@ -4,8 +4,8 @@ import json
 from dataclasses import dataclass
 from typing import List
 
-from theo.adapters.biblical_ai_processor import BiblicalAIProcessor
-from theo.domain.biblical_texts import (
+from exegesis.adapters.biblical_ai_processor import BiblicalAIProcessor
+from exegesis.domain.biblical_texts import (
     BibleVersion,
     BiblicalBook,
     Language,

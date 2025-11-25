@@ -132,7 +132,7 @@ python test_chat_timeline.py
 
 **Step 1: Start Backend**
 ```bash
-cd c:\Users\dmedl\Projects\Theoria
+cd c:\Users\dmedl\Projects\Exegesis AI
 uvicorn theo.services.api.app.main:app --reload --port 8000
 ```
 

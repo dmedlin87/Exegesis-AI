@@ -2,7 +2,7 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from theo.application import graph
+from exegesis.application import graph
 
 
 def test_graph_document_projection_defaults_and_fields():

@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
-version = importlib.import_module("theo.application.facades.version")
+version = importlib.import_module("exegesis.application.facades.version")
 
 
 @pytest.fixture(scope="session")

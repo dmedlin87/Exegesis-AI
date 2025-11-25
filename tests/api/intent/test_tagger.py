@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from theo.infrastructure.api.app.intent import tagger as intent_tagger
+from exegesis.infrastructure.api.app.intent import tagger as intent_tagger
 
 
 class _StubPipeline:

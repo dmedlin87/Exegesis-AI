@@ -2,7 +2,7 @@
 
 > **Last Updated:** 2025-10-26
 
-This index highlights the current source-of-truth documents for Theoria. Anything marked as legacy now lives in `docs/archive/2025-10-26_core/` with an archive banner.
+This index highlights the current source-of-truth documents for Exegesis AI. Anything marked as legacy now lives in `docs/archive/2025-10-26_core/` with an archive banner.
 
 ## Quick Navigation
 
@@ -19,7 +19,7 @@ This index highlights the current source-of-truth documents for Theoria. Anythin
 
 - **API & Agent Surface**
   - [API.md](API.md) — REST surface area and integration requirements.
-  - [theoria_instruction_prompt.md](theoria_instruction_prompt.md) — System prompt contract for AI agents interfacing with Theoria.
+  - [EXEGESIS_instruction_prompt.md](EXEGESIS_instruction_prompt.md) — System prompt contract for AI agents interfacing with Exegesis AI.
   - [AGENT_CONFINEMENT.md](AGENT_CONFINEMENT.md) — Guardrails for agent execution and sandboxing.
 
 - **User Research & Strategy**

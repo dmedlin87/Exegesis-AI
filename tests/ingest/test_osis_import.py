@@ -14,17 +14,17 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades.database import (  # noqa: E402
+from exegesis.application.facades.database import (  # noqa: E402
     configure_engine,
     get_engine,
     get_settings,
 )
-from theo.adapters.persistence.models import CommentaryExcerptSeed  # noqa: E402
-from theo.infrastructure.api.app.library.ingest.pipeline import (  # noqa: E402
+from exegesis.adapters.persistence.models import CommentaryExcerptSeed  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest.pipeline import (  # noqa: E402
     PipelineDependencies,
     import_osis_commentary,
 )
-from theo.services.cli import ingest_osis as cli  # noqa: E402
+from exegesis.services.cli import ingest_osis as cli  # noqa: E402
 
 
 pytestmark = pytest.mark.pgvector

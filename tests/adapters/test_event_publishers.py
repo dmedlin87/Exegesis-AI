@@ -5,16 +5,16 @@ from types import SimpleNamespace
 
 import pytest
 
-from theo.adapters.events import build_event_publisher
-from theo.adapters.events.kafka import KafkaEventPublisher
-from theo.adapters.events.redis import RedisStreamEventPublisher
-from theo.application.facades.settings import KafkaEventSink, RedisStreamEventSink
-from theo.application.ports.events import DomainEvent
+from exegesis.adapters.events import build_event_publisher
+from exegesis.adapters.events.kafka import KafkaEventPublisher
+from exegesis.adapters.events.redis import RedisStreamEventPublisher
+from exegesis.application.facades.settings import KafkaEventSink, RedisStreamEventSink
+from exegesis.application.ports.events import DomainEvent
 
 
 def test_kafka_event_publisher_uses_factory() -> None:
     sink = KafkaEventSink(
-        topic="theo.events",
+        topic="exegesis.events",
         bootstrap_servers="kafka:9092",
         producer_config={"acks": "all"},
     )
@@ -52,7 +52,7 @@ def test_kafka_event_publisher_uses_factory() -> None:
         return producer
 
     publisher = KafkaEventPublisher(sink, producer_factory=_factory)
-    event = DomainEvent(type="theo.example", payload={"id": "123"}, key="123")
+    event = DomainEvent(type="exegesis.example", payload={"id": "123"}, key="123")
 
     publisher.publish(event)
 
@@ -63,10 +63,10 @@ def test_kafka_event_publisher_uses_factory() -> None:
     }
     assert len(producer.calls) == 1
     call = producer.calls[0]
-    assert call["topic"] == "theo.events"
+    assert call["topic"] == "exegesis.events"
     assert call["key"] == "123"
     payload = json.loads(call["value"].decode("utf-8"))
-    assert payload["type"] == "theo.example"
+    assert payload["type"] == "exegesis.example"
     assert payload["payload"] == {"id": "123"}
     assert producer.polls == [0]
     assert producer.flushes == [sink.flush_timeout_seconds]
@@ -85,7 +85,7 @@ def test_redis_stream_event_publisher_appends_messages() -> None:
 
     client = _Client()
     publisher = RedisStreamEventPublisher(sink, redis_client=client)
-    event = DomainEvent(type="theo.example", payload={"id": "abc"})
+    event = DomainEvent(type="exegesis.example", payload={"id": "abc"})
 
     publisher.publish(event)
 
@@ -108,7 +108,7 @@ def test_build_event_publisher_resolves_sink_configuration(monkeypatch: pytest.M
         def publish(self, event: DomainEvent) -> None:  # pragma: no cover - stub
             pass
 
-    monkeypatch.setattr("theo.adapters.events.RedisStreamEventPublisher", _StubPublisher)
+    monkeypatch.setattr("exegesis.adapters.events.RedisStreamEventPublisher", _StubPublisher)
 
     publisher = build_event_publisher(sink, settings=settings)  # type: ignore[arg-type]
 

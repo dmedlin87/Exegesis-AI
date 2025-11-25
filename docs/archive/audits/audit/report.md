@@ -1,4 +1,4 @@
-# Theoria Code Audit Report
+# Exegesis AI Code Audit Report
 
 ## Executive Summary
 

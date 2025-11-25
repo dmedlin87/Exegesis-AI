@@ -22,9 +22,9 @@ except (ImportError, AttributeError):  # pragma: no cover
 
     StaticPool = _sa_pool.StaticPool  # type: ignore[attr-defined]
 
-from theo.adapters.persistence.models import Document
-from theo.application.facades.database import Base, configure_engine, get_engine
-from theo.infrastructure.api.app.workers import tasks
+from exegesis.adapters.persistence.models import Document
+from exegesis.application.facades.database import Base, configure_engine, get_engine
+from exegesis.infrastructure.api.app.workers import tasks
 
 
 @pytest.fixture(scope="session")
@@ -99,23 +99,23 @@ def mock_heavy_operations(monkeypatch):
     mock_snapshot.edges = []
     mock_snapshot.generated_at = None
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.analytics.topic_map.TopicMapBuilder.build",
+        "exegesis.infrastructure.api.app.analytics.topic_map.TopicMapBuilder.build",
         MagicMock(return_value=mock_snapshot)
     )
     
     # Mock vector operations
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.workers.tasks._format_vector", 
+        "exegesis.infrastructure.api.app.workers.tasks._format_vector", 
         lambda x: [0.1] * 10
     )
     
     # Mock telemetry to reduce overhead
     monkeypatch.setattr(
-        "theo.application.facades.telemetry.log_workflow_event", 
+        "exegesis.application.facades.telemetry.log_workflow_event", 
         MagicMock()
     )
     monkeypatch.setattr(
-        "theo.application.facades.telemetry.record_counter", 
+        "exegesis.application.facades.telemetry.record_counter", 
         MagicMock()
     )
 

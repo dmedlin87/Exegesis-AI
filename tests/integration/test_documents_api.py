@@ -7,12 +7,12 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from theo.application.facades.database import get_session
-from theo.domain import Document, DocumentId, DocumentMetadata
-from theo.application.services.bootstrap import resolve_application
-from theo.infrastructure.api.app.main import app
-from theo.infrastructure.api.app.retrieval.retriever import documents as documents_retriever
-from theo.infrastructure.api.app.routes import documents as documents_route
+from exegesis.application.facades.database import get_session
+from exegesis.domain import Document, DocumentId, DocumentMetadata
+from exegesis.application.services.bootstrap import resolve_application
+from exegesis.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.retrieval.retriever import documents as documents_retriever
+from exegesis.infrastructure.api.app.routes import documents as documents_route
 
 
 @pytest.mark.integration
@@ -34,7 +34,7 @@ def test_documents_api_with_real_database_transaction(
     monkeypatch.setattr(documents_route, "get_document", _get_document_with_missing)
 
     # Ensure no auto-generated dev key interferes with our configured test API key
-    from theo.application.facades.runtime import clear_generated_dev_key
+    from exegesis.application.facades.runtime import clear_generated_dev_key
     clear_generated_dev_key()
 
     container, registry = resolve_application()
@@ -53,7 +53,7 @@ def test_documents_api_with_real_database_transaction(
         checksum="abc123",
     )
     # Patch get_session so the service layer uses our transaction-bound session
-    monkeypatch.setattr("theo.application.facades.database.get_session", lambda: sqlite_session)
+    monkeypatch.setattr("exegesis.application.facades.database.get_session", lambda: sqlite_session)
 
     # Patch _session_scope to use our session and prevent commits
     from contextlib import contextmanager
@@ -64,7 +64,7 @@ def test_documents_api_with_real_database_transaction(
         with patch.object(sqlite_session, "commit"):
             yield sqlite_session
 
-    monkeypatch.setattr("theo.application.services.bootstrap._session_scope", _mock_session_scope)
+    monkeypatch.setattr("exegesis.application.services.bootstrap._session_scope", _mock_session_scope)
 
     container.ingest_document(document)
 

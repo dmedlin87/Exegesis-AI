@@ -1,4 +1,4 @@
-# Theoria - Next Phase Development Plan
+# Exegesis AI - Next Phase Development Plan
 
 > **Status:** Ready for implementation
 > **Last Updated:** 2025-02-10
@@ -152,6 +152,6 @@ pytest tests/safety/test_prompt_guardrails.py -v
 ## Communication Plan
 
 - Weekly demo cadence showcasing gate decisions, TMS session replays, and debate transcripts.
-- Async updates in `#theoria-research` summarizing gate metrics, hypothesis counts, and debate outcomes.
+- Async updates in `#Exegesis AI-research` summarizing gate metrics, hypothesis counts, and debate outcomes.
 - Mid-cycle retrospective after Phase 3 to adjust scope for Beta hardening.
 

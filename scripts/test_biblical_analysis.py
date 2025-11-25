@@ -8,7 +8,7 @@ from pathlib import Path
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from theo.domain.biblical_texts import (
+from exegesis.domain.biblical_texts import (
     Reference,
     TextContent,
     BiblicalVerse,
@@ -221,7 +221,7 @@ def test_search_capabilities(bible_version):
 def main():
     """Main test function."""
     
-    print("🚀 Theoria Biblical Text Analysis Demo")
+    print("🚀 Exegesis AI Biblical Text Analysis Demo")
     print("=" * 50)
     
     # Test basic analysis

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from theo.domain import errors
+from exegesis.domain import errors
 
 
 def test_domain_error_defaults():

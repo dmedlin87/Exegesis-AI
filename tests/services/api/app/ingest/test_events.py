@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from theo.infrastructure.api.app.library.ingest import events
+from exegesis.infrastructure.api.app.library.ingest import events
 
 
 class _StubPassage(SimpleNamespace):

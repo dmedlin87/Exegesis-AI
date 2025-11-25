@@ -10,18 +10,18 @@ from uuid import UUID
 import pytest
 from fastapi.testclient import TestClient
 
-from theo.infrastructure.api.app.research.ai import SermonPrepResponse, VerseCopilotResponse
-from theo.infrastructure.api.app.research.ai.rag import RAGAnswer
-from theo.application.facades.database import get_session
-from theo.infrastructure.api.app.main import app
-from theo.infrastructure.api.app.models.ai import (
+from exegesis.infrastructure.api.app.research.ai import SermonPrepResponse, VerseCopilotResponse
+from exegesis.infrastructure.api.app.research.ai.rag import RAGAnswer
+from exegesis.application.facades.database import get_session
+from exegesis.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.models.ai import (
     ChatSessionMessage,
     ChatSessionRequest,
     SermonPrepRequest,
     VerseCopilotRequest,
 )
-from theo.infrastructure.api.app.routes.ai.workflows import chat as chat_module
-from theo.infrastructure.api.app.routes.ai.workflows import flows as flows_module
+from exegesis.infrastructure.api.app.routes.ai.workflows import chat as chat_module
+from exegesis.infrastructure.api.app.routes.ai.workflows import flows as flows_module
 
 
 class _DummySession:

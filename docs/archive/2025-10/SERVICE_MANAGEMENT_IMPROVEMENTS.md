@@ -24,7 +24,7 @@ Comprehensive improvements to the TheoEngine service management and health monit
 - Increases success rate for transient failures
 - Better resource management
 
-**Implementation**: Lines 564-566 in `start-theoria.ps1`
+**Implementation**: Lines 564-566 in `start-Exegesis AI.ps1`
 
 ```powershell
 $backoffMultiplier = [math]::Pow(2, [math]::Min($service.RestartCount, 4))
@@ -47,7 +47,7 @@ $currentCooldown = $script:RestartCooldown * $backoffMultiplier
 - Integration with log aggregation tools
 - Audit trail for production issues
 
-**Implementation**: Lines 114-169 in `start-theoria.ps1`
+**Implementation**: Lines 114-169 in `start-Exegesis AI.ps1`
 
 **Example JSON Log Entry**:
 
@@ -55,7 +55,7 @@ $currentCooldown = $script:RestartCooldown * $backoffMultiplier
 {
   "timestamp": "2025-10-12 12:34:56.789",
   "level": "Warning",
-  "message": "Theoria API health check failed: Connection timeout",
+  "message": "Exegesis AI API health check failed: Connection timeout",
   "metadata": {
     "service": "Api",
     "status_code": 0,
@@ -68,7 +68,7 @@ $currentCooldown = $script:RestartCooldown * $backoffMultiplier
 **Usage**:
 
 ```powershell
-.\start-theoria.ps1 -LogToFile
+.\start-Exegesis AI.ps1 -LogToFile
 ```
 
 ### 3. Service Metrics Collection & Reporting
@@ -91,7 +91,7 @@ $currentCooldown = $script:RestartCooldown * $backoffMultiplier
 - Early warning of degradation
 - Data-driven optimization
 
-**Implementation**: Lines 451-472 in `start-theoria.ps1`
+**Implementation**: Lines 451-472 in `start-Exegesis AI.ps1`
 
 **Service State Enhancement**:
 
@@ -122,7 +122,7 @@ LastError = $null
 - Detailed error reporting
 - Better debugging information
 
-**Implementation**: Lines 225-255 in `start-theoria.ps1`
+**Implementation**: Lines 225-255 in `start-Exegesis AI.ps1`
 
 **Diagnostic Structure**:
 
@@ -166,7 +166,7 @@ if ($service.AverageResponseTime -eq 0) {
 - Performance visibility
 - Proactive issue detection
 
-**Implementation**: Lines 474-513 in `start-theoria.ps1`
+**Implementation**: Lines 474-513 in `start-Exegesis AI.ps1`
 
 **Dashboard Example**:
 
@@ -174,9 +174,9 @@ if ($service.AverageResponseTime -eq 0) {
 ╔══════════════════════════════════════════════════════════╗
 ║               SERVICE STATUS DASHBOARD                  ║
 ╠══════════════════════════════════════════════════════════╣
-║ Theoria API [Running]                                    ║
+║ Exegesis AI API [Running]                                    ║
 ║   Uptime: 01:23:45 | Health: 98.5% | Avg Response: 45.2ms║
-║ Theoria Web [Running]                                    ║
+║ Exegesis AI Web [Running]                                    ║
 ║   Uptime: 01:23:40 | Health: 100.0% | Avg Response: 12.3ms║
 ╠══════════════════════════════════════════════════════════╣
 ║ Total Runtime: 01:23:45                                  ║
@@ -188,7 +188,7 @@ if ($service.AverageResponseTime -eq 0) {
 **Usage**:
 
 ```powershell
-.\start-theoria.ps1 -ShowMetrics
+.\start-Exegesis AI.ps1 -ShowMetrics
 ```
 
 ### 6. Graceful Shutdown Improvements
@@ -211,7 +211,7 @@ if ($service.AverageResponseTime -eq 0) {
 - Development feedback loop
 - Historical record
 
-**Implementation**: Lines 724-767 in `start-theoria.ps1`
+**Implementation**: Lines 724-767 in `start-Exegesis AI.ps1`
 
 **Session Summary Example**:
 
@@ -220,10 +220,10 @@ if ($service.AverageResponseTime -eq 0) {
 ║                   SESSION SUMMARY                        ║
 ╠══════════════════════════════════════════════════════════╣
 ║ Total Runtime: 02:45:30                                  ║
-║ Theoria API:                                             ║
+║ Exegesis AI API:                                             ║
 ║   Uptime: 02:45:25                                       ║
 ║   Health Checks: 990 (99.2% success)                     ║
-║ Theoria Web:                                             ║
+║ Exegesis AI Web:                                             ║
 ║   Uptime: 02:45:20                                       ║
 ║   Health Checks: 990 (100.0% success)                    ║
 ║   Restarts: 1                                            ║
@@ -249,7 +249,7 @@ if ($service.AverageResponseTime -eq 0) {
 - `-LogToFile`: Enable structured JSON logging
 - `-ShowMetrics`: Display real-time status dashboard
 
-**Implementation**: Lines 48-54, 632-637, 698-706 in `start-theoria.ps1`
+**Implementation**: Lines 48-54, 632-637, 698-706 in `start-Exegesis AI.ps1`
 
 ## Technical Improvements
 
@@ -277,7 +277,7 @@ if ($service.AverageResponseTime -eq 0) {
 ```powershell
 # Lines 326, 340
 $script:Services.Api.StartTime = Get-Date
-Write-TheoriaLog "Theoria API is ready (startup time: ${waited}s)"
+Write-Exegesis AILog "Exegesis AI API is ready (startup time: ${waited}s)"
 ```
 
 ### Resilience Enhancements
@@ -287,7 +287,7 @@ Write-TheoriaLog "Theoria API is ready (startup time: ${waited}s)"
 ```powershell
 # Lines 599-601
 $remainingCooldown = [int]($currentCooldown - $timeSinceLastRestart.TotalSeconds)
-Write-TheoriaLog "$($service.Name) in cooldown period (${remainingCooldown}s remaining)"
+Write-Exegesis AILog "$($service.Name) in cooldown period (${remainingCooldown}s remaining)"
 ```
 
 **Failure Recovery Detection**:
@@ -295,7 +295,7 @@ Write-TheoriaLog "$($service.Name) in cooldown period (${remainingCooldown}s rem
 ```powershell
 # Lines 608-611
 if ($service.HealthCheckFailures -gt 0) {
-    Write-TheoriaLog "$($service.Name) recovered (response: $($diagnostics.ResponseTime)ms)"
+    Write-Exegesis AILog "$($service.Name) recovered (response: $($diagnostics.ResponseTime)ms)"
 }
 ```
 
@@ -306,7 +306,7 @@ if ($service.HealthCheckFailures -gt 0) {
 | Variable | Value | Purpose |
 |----------|-------|---------|
 | `$script:LogsDir` | `logs/` | Log file directory |
-| `$script:LogFile` | `logs/theoria-launcher.log` | Structured log file |
+| `$script:LogFile` | `logs/Exegesis AI-launcher.log` | Structured log file |
 | `$script:HealthCheckTimeout` | 5s | HTTP request timeout |
 | `$script:StartTime` | Session start | Total runtime tracking |
 
@@ -326,27 +326,27 @@ Each service now tracks 6 additional metrics:
 ### Basic Development
 
 ```powershell
-.\start-theoria.ps1
+.\start-Exegesis AI.ps1
 ```
 
 ### Full Monitoring Mode
 
 ```powershell
-.\start-theoria.ps1 -Verbose -LogToFile -ShowMetrics
+.\start-Exegesis AI.ps1 -Verbose -LogToFile -ShowMetrics
 ```
 
 ### Production Debugging
 
 ```powershell
-.\start-theoria.ps1 -LogToFile
+.\start-Exegesis AI.ps1 -LogToFile
 # Review logs after session
-Get-Content logs/theoria-launcher.log | ConvertFrom-Json | Where-Object { $_.level -eq "Error" }
+Get-Content logs/Exegesis AI-launcher.log | ConvertFrom-Json | Where-Object { $_.level -eq "Error" }
 ```
 
 ### Performance Analysis
 
 ```powershell
-.\start-theoria.ps1 -ShowMetrics
+.\start-Exegesis AI.ps1 -ShowMetrics
 # Watch dashboard for response time trends
 ```
 
@@ -364,7 +364,7 @@ Get-Content logs/theoria-launcher.log | ConvertFrom-Json | Where-Object { $_.lev
 ### 1. Basic Functionality
 
 ```powershell
-.\start-theoria.ps1
+.\start-Exegesis AI.ps1
 # Verify both services start
 # Press Ctrl+C and verify session summary
 ```
@@ -372,7 +372,7 @@ Get-Content logs/theoria-launcher.log | ConvertFrom-Json | Where-Object { $_.lev
 ### 2. Auto-Recovery
 
 ```powershell
-.\start-theoria.ps1 -Verbose -ShowMetrics
+.\start-Exegesis AI.ps1 -Verbose -ShowMetrics
 # Kill API process manually
 # Verify automatic restart with backoff
 ```
@@ -380,15 +380,15 @@ Get-Content logs/theoria-launcher.log | ConvertFrom-Json | Where-Object { $_.lev
 ### 3. Structured Logging
 
 ```powershell
-.\start-theoria.ps1 -LogToFile
-# Verify logs/theoria-launcher.log creation
+.\start-Exegesis AI.ps1 -LogToFile
+# Verify logs/Exegesis AI-launcher.log creation
 # Check JSON format validity
 ```
 
 ### 4. Metrics Dashboard
 
 ```powershell
-.\start-theoria.ps1 -ShowMetrics
+.\start-Exegesis AI.ps1 -ShowMetrics
 # Wait for 60 seconds
 # Verify dashboard display
 ```
@@ -396,7 +396,7 @@ Get-Content logs/theoria-launcher.log | ConvertFrom-Json | Where-Object { $_.lev
 ### 5. Graceful Shutdown
 
 ```powershell
-.\start-theoria.ps1
+.\start-Exegesis AI.ps1
 # Run for several minutes
 # Press Ctrl+C
 # Verify session summary accuracy
@@ -455,7 +455,7 @@ Get-Content logs/theoria-launcher.log | ConvertFrom-Json | Where-Object { $_.lev
 
 **Updated Files**:
 
-- `start-theoria.ps1` - Core implementation (500+ lines)
+- `start-Exegesis AI.ps1` - Core implementation (500+ lines)
 
 ## Migration Guide
 

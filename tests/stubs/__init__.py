@@ -47,7 +47,7 @@ def build_sqlalchemy_stub_modules() -> dict[str, types.ModuleType]:
     def _raise(*_args: object, **_kwargs: object) -> _Placeholder:
         raise NotImplementedError("sqlalchemy placeholder accessed")
 
-    sqlalchemy_stub.__theoria_sqlalchemy_stub__ = True
+    sqlalchemy_stub.__EXEGESIS_sqlalchemy_stub__ = True
     sqlalchemy_stub.func = _FuncProxy()
     sqlalchemy_stub.select = _raise
     sqlalchemy_stub.create_engine = _raise
@@ -400,7 +400,7 @@ def build_cachetools_stub_module() -> types.ModuleType:
 
 
 def build_settings_stub_module() -> types.ModuleType:
-    module_name = "theo.application.facades.settings"
+    module_name = "exegesis.application.facades.settings"
     settings_module = types.ModuleType(module_name)
 
     class Settings:  # pragma: no cover - placeholder

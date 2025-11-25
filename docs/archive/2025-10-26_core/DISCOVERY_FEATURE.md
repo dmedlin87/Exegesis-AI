@@ -4,9 +4,9 @@
 
 ## Overview
 
-The Discovery Feed is Theoria's **intelligent auto-discovery engine** that automatically analyzes your research corpus and surfaces valuable insights, patterns, contradictions, and connections without requiring manual queries.
+The Discovery Feed is Exegesis AI's **intelligent auto-discovery engine** that automatically analyzes your research corpus and surfaces valuable insights, patterns, contradictions, and connections without requiring manual queries.
 
-**Key Concept**: Transform Theoria from a search tool into a **proactive research companion** that works for you in the background.
+**Key Concept**: Transform Exegesis AI from a search tool into a **proactive research companion** that works for you in the background.
 
 **Current Implementation (January 2025)**
 
@@ -533,7 +533,7 @@ Replace mock data in `app/api/discoveries/route.ts`:
 ```typescript
 export async function GET() {
   const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
-  const apiKey = process.env.THEO_SEARCH_API_KEY;
+  const apiKey = process.env.EXEGESIS_SEARCH_API_KEY;
   
   const response = await fetch(`${backendUrl}/api/discoveries`, {
     headers: {
@@ -623,7 +623,7 @@ Track these metrics:
 
 ## Conclusion
 
-The Discovery Feed transforms Theoria into a **proactive research assistant** that:
+The Discovery Feed transforms Exegesis AI into a **proactive research assistant** that:
 
 ✨ Surfaces insights you wouldn't find manually  
 🔄 Connects disparate parts of your corpus  

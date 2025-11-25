@@ -3,7 +3,7 @@ from __future__ import annotations
 import click
 import pytest
 
-from theo.commands import database_ops, embedding_rebuild, import_export, register_commands
+from exegesis.commands import database_ops, embedding_rebuild, import_export, register_commands
 
 
 def test_register_commands_adds_embedding_command(

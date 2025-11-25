@@ -1,11 +1,11 @@
 > **Archived on 2025-10-26**
 
-# Theoria Audit and Verification System Specification
+# Exegesis AI Audit and Verification System Specification
 
 > **Status:** Deferred concept. The workflow described in this document has not been implemented. The only production audit functionality today is basic request/response logging via `AuditLogWriter`. This specification is retained as future-looking design material and should not be interpreted as describing live capabilities.
 
 ## 1. Purpose and Context
-Theoria currently relies on retrieval-augmented generation (RAG) to synthesize responses for domains that are rich in neuroscience and reasoning-heavy content. Because the product owners may not always have deep subject-matter expertise, they need an automated way to judge whether answers are faithful to trusted sources before presenting them to end users. This specification describes a multi-mode audit subsystem that adds layered verification, structured provenance logging, and human escalation paths without requiring a permanent human-in-the-loop.
+Exegesis AI currently relies on retrieval-augmented generation (RAG) to synthesize responses for domains that are rich in neuroscience and reasoning-heavy content. Because the product owners may not always have deep subject-matter expertise, they need an automated way to judge whether answers are faithful to trusted sources before presenting them to end users. This specification describes a multi-mode audit subsystem that adds layered verification, structured provenance logging, and human escalation paths without requiring a permanent human-in-the-loop.
 
 ## 2. High-Level Goals
 - **Replace ad-hoc manual vetting** with an agentic workflow that self-checks answers before they reach users.
@@ -181,7 +181,7 @@ All SLA clocks and state transitions surface in the reporting layer dashboards, 
 - **Storage backend decision (resolved)**: Claim Cards and audit telemetry persist in PostgreSQL alongside existing Theo schemas. This ensures transactional writes across answers, claims, evidence slices, and escalation events while reusing SQLAlchemy infrastructure and BI exports (`run_sql_migrations.py`, Alembic migrations).
 - **Document store evaluation**: MongoDB/Cosmos-style stores were rejected because they fragment provenance queries and weaken compliance controls that rely on relational constraints and retention policies.
 - **Audit-Web latency budget (resolved 2025-10-18)**: Audit-Web escalation overhead is capped at ≤3.0 s p95 to keep total response time within 3.5 s while respecting UX guardrails (heavy operations <5 s, primary content visible by 2.5 s).
-- **Audit-Web external API access (resolved 2025-10-21)**: External lookups target PubMed, arXiv, and ACL Anthology. PubMed uses service principal–scoped API keys (`THEO_AUDIT_PUBMED_API_KEY`), rotated every 90 days, injected via environment variables, and governed by `docs/security/secret-scanning.md` procedures.
+- **Audit-Web external API access (resolved 2025-10-21)**: External lookups target PubMed, arXiv, and ACL Anthology. PubMed uses service principal–scoped API keys (`EXEGESIS_AUDIT_PUBMED_API_KEY`), rotated every 90 days, injected via environment variables, and governed by `docs/security/secret-scanning.md` procedures.
 - **Monitoring & observability for external connectors (resolved 2025-10-21)**: Outbound requests emit structured metrics via `theo.services.api.app.ai.audit_logging`; alerts trigger on PubMed quota depletion (<20% hourly) or 5xx rates >2% over 5 minutes, supplemented by nightly heartbeat probes.
 - **Implementation follow-ups for `theo/infrastructure/api/app/ai/` connectors**: Extend `clients.py` with dedicated PubMed/Arxiv/AclAnthology clients, update `rag/retrieval.py` selection logic, wire configuration in `registry.py`, and add masked-auth tests under `theo/infrastructure/api/app/ai/tests/` with VCR fixtures.
 

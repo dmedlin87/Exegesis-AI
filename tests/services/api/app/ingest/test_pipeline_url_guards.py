@@ -5,9 +5,9 @@ from ipaddress import ip_address, ip_network
 
 import pytest
 
-from theo.infrastructure.api.app.library.ingest import network as ingest_network
-from theo.infrastructure.api.app.library.ingest.exceptions import UnsupportedSourceError
-from theo.infrastructure.api.app.library.ingest.pipeline import ensure_url_allowed
+from exegesis.infrastructure.api.app.library.ingest import network as ingest_network
+from exegesis.infrastructure.api.app.library.ingest.exceptions import UnsupportedSourceError
+from exegesis.infrastructure.api.app.library.ingest.pipeline import ensure_url_allowed
 
 
 @dataclass
@@ -37,7 +37,7 @@ def test_allowlisted_host_with_dns_failure_is_permitted(monkeypatch: pytest.Monk
 
     monkeypatch.setattr(ingest_network, "ensure_url_allowed", failing_ensure)
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.library.ingest.pipeline._resolve_host_addresses",
+        "exegesis.infrastructure.api.app.library.ingest.pipeline._resolve_host_addresses",
         failing_resolve,
     )
 
@@ -60,7 +60,7 @@ def test_allowlisted_host_blocked_by_network_ranges(monkeypatch: pytest.MonkeyPa
 
     monkeypatch.setattr(ingest_network, "ensure_url_allowed", failing_ensure)
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.library.ingest.pipeline._resolve_host_addresses",
+        "exegesis.infrastructure.api.app.library.ingest.pipeline._resolve_host_addresses",
         lambda host: (ip_address("8.8.8.8"),),
     )
     monkeypatch.setattr(

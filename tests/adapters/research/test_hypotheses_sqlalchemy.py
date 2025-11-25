@@ -5,13 +5,13 @@ import pytest
 from sqlalchemy import Column, MetaData, String, Table, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.adapters.persistence.models import Hypothesis as HypothesisModel
-from theo.adapters.research.hypotheses_sqlalchemy import (
+from exegesis.adapters.persistence.models import Hypothesis as HypothesisModel
+from exegesis.adapters.research.hypotheses_sqlalchemy import (
     SqlAlchemyHypothesisRepository,
     _apply_changes,
     _normalize_list,
 )
-from theo.domain.research import HypothesisDraft, HypothesisNotFoundError
+from exegesis.domain.research import HypothesisDraft, HypothesisNotFoundError
 
 
 class TrackingSession(Session):

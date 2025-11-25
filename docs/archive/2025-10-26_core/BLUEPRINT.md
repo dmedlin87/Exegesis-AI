@@ -1,6 +1,6 @@
 > **Archived on 2025-10-26**
 
-# Theoria — Final Build Spec (Standalone)
+# Exegesis AI — Final Build Spec (Standalone)
 
 ## 0) Mission & MVP
 
@@ -142,7 +142,7 @@ EMBEDDING_MODEL=BAAI/bge-m3
 EMBEDDING_DIM=1024
 MAX_CHUNK_TOKENS=900
 DOC_MAX_PAGES=5000
-USER_AGENT="Theoria/1.0"
+USER_AGENT="Exegesis AI/1.0"
 
 services/api/requirements.txt
 fastapi[all]==0.115.*
@@ -211,7 +211,7 @@ CREATE INDEX ix_passages_doc ON passages (document_id);
 
 ### Research reference datasets (seeded)
 
-Theoria bundles a lightweight catalogue of verse-level tensions, harmonies, and commentary excerpts to keep the research panels deterministic in fresh deployments:
+Exegesis AI bundles a lightweight catalogue of verse-level tensions, harmonies, and commentary excerpts to keep the research panels deterministic in fresh deployments:
 
 * `data/seeds/contradictions.json`, `data/seeds/contradictions_additional.json`, and `data/seeds/contradictions_catalog.yaml` populate the `contradiction_seeds` table. Entries are normalised to OSIS pairs and tagged with an explicit `perspective` (skeptical or apologetic) so the UI can filter skeptical critiques separately from harmonisation notes.
 * `data/seeds/harmonies.yaml` and `data/seeds/harmonies_additional.yaml` feed the `harmony_seeds` table. These harmonies are tagged `apologetic` and surfaced alongside contradictions with toggleable filters in the reader.

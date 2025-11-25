@@ -22,15 +22,15 @@ if "FlagEmbedding" not in sys.modules:
     flag_module.FlagModel = _StubFlagModel  # type: ignore[attr-defined]
     sys.modules["FlagEmbedding"] = flag_module
 
-from theo.infrastructure.api.app.bootstrap.middleware import (
+from exegesis.infrastructure.api.app.bootstrap.middleware import (
     configure_cors,
     get_security_dependencies,
     install_error_reporting,
     register_trace_handlers,
 )
-from theo.infrastructure.api.app.debug import ErrorReportingMiddleware
-from theo.infrastructure.api.app.core.errors import TheoError
-from theo.infrastructure.api.app.library.ingest.exceptions import UnsupportedSourceError
+from exegesis.infrastructure.api.app.debug import ErrorReportingMiddleware
+from exegesis.infrastructure.api.app.core.errors import TheoError
+from exegesis.infrastructure.api.app.library.ingest.exceptions import UnsupportedSourceError
 
 
 def test_configure_cors_adds_middleware():

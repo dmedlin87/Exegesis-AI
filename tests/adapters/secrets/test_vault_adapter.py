@@ -4,8 +4,8 @@ from __future__ import annotations
 import pytest
 from types import SimpleNamespace
 
-from theo.adapters.secrets.vault import VaultSecretsAdapter
-from theo.application.ports.secrets import SecretRequest, SecretRetrievalError
+from exegesis.adapters.secrets.vault import VaultSecretsAdapter
+from exegesis.application.ports.secrets import SecretRequest, SecretRetrievalError
 
 
 class DummyVaultClient:
@@ -61,7 +61,7 @@ def test_vault_adapter_detects_malformed_payload() -> None:
 
 
 def test_vault_adapter_from_config_requires_hvac(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("theo.adapters.secrets.vault.hvac", None)
+    monkeypatch.setattr("exegesis.adapters.secrets.vault.hvac", None)
 
     with pytest.raises(RuntimeError):
         VaultSecretsAdapter.from_config(url="http://vault", token="token")
@@ -80,7 +80,7 @@ def test_vault_adapter_from_config_with_wrapper(monkeypatch: pytest.MonkeyPatch)
                         captured["mount_point"] = mount_point
                         return {"data": {"data": {"token": "value"}}}
 
-    monkeypatch.setattr("theo.adapters.secrets.vault.hvac", SimpleNamespace(Client=lambda **_: _Client()))
+    monkeypatch.setattr("exegesis.adapters.secrets.vault.hvac", SimpleNamespace(Client=lambda **_: _Client()))
 
     adapter = VaultSecretsAdapter.from_config(
         url="http://vault",

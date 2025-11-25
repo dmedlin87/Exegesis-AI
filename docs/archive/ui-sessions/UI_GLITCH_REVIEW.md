@@ -1,4 +1,4 @@
-# UI Glitch & Issue Review - Theoria Web Application
+# UI Glitch & Issue Review - Exegesis AI Web Application
 
 **Review Date:** October 14, 2025  
 **Focus:** Identifying current UI glitches, bugs, and inconsistencies
@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-Based on comprehensive analysis of the Theoria UI codebase, I've identified **486 instances of inline styles** across 36 files, which creates inconsistent styling, breaks dark mode support, and makes maintenance difficult. While the foundation is strong (design system, animations, theme support), there are several critical issues that need attention.
+Based on comprehensive analysis of the Exegesis AI UI codebase, I've identified **486 instances of inline styles** across 36 files, which creates inconsistent styling, breaks dark mode support, and makes maintenance difficult. While the foundation is strong (design system, animations, theme support), there are several critical issues that need attention.
 
 ### Overall UI Health: 7/10
 
@@ -567,7 +567,7 @@ grep -rn "color.*#[0-9a-f]" app/
 
 ## Conclusion
 
-The Theoria UI has **excellent foundations** (design system, theme support, animations), but suffers from **incomplete adoption**. The main issue is **486 inline styles** that should use the existing design system.
+The Exegesis AI UI has **excellent foundations** (design system, theme support, animations), but suffers from **incomplete adoption**. The main issue is **486 inline styles** that should use the existing design system.
 
 ### Key Findings
 1. ✅ Design system is well-architected

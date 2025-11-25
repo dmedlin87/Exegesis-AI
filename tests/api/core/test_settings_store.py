@@ -46,7 +46,7 @@ class FakeCipher:
 
 
 def _load_store(monkeypatch: pytest.MonkeyPatch):
-    module = reload_facade("theo.application.facades.settings_store")
+    module = reload_facade("exegesis.application.facades.settings_store")
     monkeypatch.setattr(module, "AppSetting", MemoryAppSetting)
     return module
 

@@ -20,7 +20,7 @@ if "cachetools" not in sys.modules:
 
 import pytest
 
-from theo.infrastructure.api.app.routes.ai.workflows import chat
+from exegesis.infrastructure.api.app.routes.ai.workflows import chat
 
 
 @dataclass

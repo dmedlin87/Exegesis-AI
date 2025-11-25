@@ -1,8 +1,8 @@
 import pytest
 
-from theo.application.research import service as service_module
-from theo.application.research.service import ResearchService
-from theo.domain import (
+from exegesis.application.research import service as service_module
+from exegesis.application.research.service import ResearchService
+from exegesis.domain import (
     Hypothesis,
     HypothesisDraft,
     ResearchNote,

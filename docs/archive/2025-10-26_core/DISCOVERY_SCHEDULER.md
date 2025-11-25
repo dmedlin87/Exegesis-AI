@@ -129,16 +129,16 @@ Every 30 minutes:
 
 ```bash
 # Discovery scheduler interval (minutes)
-THEORIA_DISCOVERY_INTERVAL=30
+EXEGESIS_DISCOVERY_INTERVAL=30
 
 # Minimum cluster size for pattern detection
-THEORIA_DISCOVERY_MIN_CLUSTER=3
+EXEGESIS_DISCOVERY_MIN_CLUSTER=3
 
 # DBSCAN epsilon (cosine distance threshold)
-THEORIA_DISCOVERY_EPS=0.35
+EXEGESIS_DISCOVERY_EPS=0.35
 
 # Activity window for periodic refresh (days)
-THEORIA_DISCOVERY_ACTIVITY_WINDOW=7
+EXEGESIS_DISCOVERY_ACTIVITY_WINDOW=7
 ```
 
 ### Disabling Scheduler
@@ -147,7 +147,7 @@ To disable the periodic scheduler (e.g., in development):
 
 ```bash
 # Set environment variable
-THEORIA_DISABLE_DISCOVERY_SCHEDULER=true
+EXEGESIS_DISABLE_DISCOVERY_SCHEDULER=true
 ```
 
 Or modify `main.py`:
@@ -235,7 +235,7 @@ pytest tests/api/test_discovery_integration.py -v
 
 ### Manual Testing
 
-1. Start the API: `.\start-theoria.ps1`
+1. Start the API: `.\start-Exegesis AI.ps1`
 2. Upload a document: POST `/api/ingest/file`
 3. Wait ~5 seconds for background task
 4. Check discoveries: GET `/api/discoveries`
@@ -297,13 +297,13 @@ curl -X POST http://localhost:8000/api/discoveries/refresh \
 **Solution:**
 ```bash
 # Increase refresh interval
-export THEORIA_DISCOVERY_INTERVAL=60  # 1 hour
+export EXEGESIS_DISCOVERY_INTERVAL=60  # 1 hour
 
 # Reduce cluster size threshold
-export THEORIA_DISCOVERY_MIN_CLUSTER=5
+export EXEGESIS_DISCOVERY_MIN_CLUSTER=5
 
 # Disable periodic refresh (keep upload-triggered only)
-export THEORIA_DISABLE_DISCOVERY_SCHEDULER=true
+export EXEGESIS_DISABLE_DISCOVERY_SCHEDULER=true
 ```
 
 ## Future Enhancements
@@ -317,7 +317,7 @@ For production deployments with multiple workers:
 from celery import Celery
 from celery.schedules import crontab
 
-app = Celery('theoria')
+app = Celery('Exegesis AI')
 
 @app.task
 def refresh_all_discoveries():
@@ -375,4 +375,4 @@ Expand beyond pattern detection:
 
 **Document Status:** v1.0  
 **Last Updated:** 2025-01-15  
-**Maintainer:** Theoria Development Team
+**Maintainer:** Exegesis AI Development Team

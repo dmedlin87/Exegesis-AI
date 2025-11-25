@@ -7,8 +7,8 @@ import pytest
 try:
     from sqlalchemy import create_engine
     from sqlalchemy.orm import Session, sessionmaker
-    from theo.infrastructure.api.app.persistence_models import Base, EvidenceCard
-    from theo.infrastructure.api.app.research.evidence_cards import (
+    from exegesis.infrastructure.api.app.persistence_models import Base, EvidenceCard
+    from exegesis.infrastructure.api.app.research.evidence_cards import (
         create_evidence_card,
         preview_evidence_card,
     )

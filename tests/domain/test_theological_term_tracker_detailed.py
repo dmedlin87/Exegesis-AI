@@ -3,7 +3,7 @@ from typing import Optional
 
 import pytest
 
-from theo.domain.biblical_texts import (
+from exegesis.domain.biblical_texts import (
     BiblicalBook,
     BiblicalVerse,
     BibleVersion,

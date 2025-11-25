@@ -7,7 +7,7 @@ from importlib import resources
 import pytest
 
 research = pytest.importorskip(
-    "theo.data.research", reason="theo.data.research package is not available"
+    "exegesis.data.research", reason="exegesis.data.research package is not available"
 )
 
 RESOURCE_ROOT = research.files()

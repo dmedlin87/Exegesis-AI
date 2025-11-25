@@ -3,8 +3,8 @@ from pathlib import Path
 
 from sqlalchemy.orm import Session
 
-from theo.application.facades.database import configure_engine, get_engine
-from theo.infrastructure.api.app.db.seeds import _DATASET_TABLES, _add_missing_column
+from exegesis.application.facades.database import configure_engine, get_engine
+from exegesis.infrastructure.api.app.db.seeds import _DATASET_TABLES, _add_missing_column
 
 path = Path('temp_test.db')
 if path.exists():

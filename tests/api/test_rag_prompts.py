@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from theo.infrastructure.api.app.research.ai.rag.prompts import PromptContext
+from exegesis.infrastructure.api.app.research.ai.rag.prompts import PromptContext
 
 
 @pytest.fixture

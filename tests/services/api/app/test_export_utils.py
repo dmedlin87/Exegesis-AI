@@ -10,8 +10,8 @@ import pytest
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.adapters.persistence import Base
-from theo.adapters.persistence.models import Document, Passage
+from exegesis.adapters.persistence import Base
+from exegesis.adapters.persistence.models import Document, Passage
 
 _MODULE_PATH = (
     Path(__file__).resolve().parents[4]
@@ -23,7 +23,7 @@ _MODULE_PATH = (
     / "export"
     / "utils.py"
 )
-_EXPORT_PACKAGE = "theo.infrastructure.api.app.routes.export"
+_EXPORT_PACKAGE = "exegesis.infrastructure.api.app.routes.export"
 if _EXPORT_PACKAGE not in sys.modules:
     export_module = types.ModuleType(_EXPORT_PACKAGE)
     export_module.__path__ = [str(_MODULE_PATH.parent)]  # type: ignore[attr-defined]

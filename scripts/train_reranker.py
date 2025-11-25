@@ -61,7 +61,7 @@ except ModuleNotFoundError:  # pragma: no cover - exercised via subprocess in te
     HAS_SKLEARN = False
 
 
-FORCE_FALLBACK = os.getenv("THEO_FORCE_MINIMAL_RERANKER") == "1"
+FORCE_FALLBACK = os.getenv("EXEGESIS_FORCE_MINIMAL_RERANKER") == "1"
 
 
 Record = Dict[str, object]
@@ -266,7 +266,7 @@ def train_model(dataset: Dataset, random_state: int) -> object:
         print("scikit-learn not available; using minimal reranker.", file=sys.stderr)
     elif FORCE_FALLBACK:
         print(
-            "THEO_FORCE_MINIMAL_RERANKER=1 set; using minimal reranker instead of scikit-learn.",
+            "EXEGESIS_FORCE_MINIMAL_RERANKER=1 set; using minimal reranker instead of scikit-learn.",
             file=sys.stderr,
         )
     return _train_minimal_model(dataset)

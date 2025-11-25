@@ -6,8 +6,8 @@ import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 
-from theo.adapters.persistence import Base, dispose_sqlite_engine
-from theo.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
+from exegesis.adapters.persistence import Base, dispose_sqlite_engine
+from exegesis.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
 
 pytestmark = pytest.mark.schema
 

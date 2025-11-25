@@ -11,21 +11,21 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
-from theo.infrastructure.api.app.research.ai.clients import GenerationError
-from theo.infrastructure.api.app.research.ai.ledger import CacheRecord, SharedLedger
-from theo.infrastructure.api.app.research.ai.registry import LLMModel, LLMRegistry
-from theo.infrastructure.api.app.research.ai.router import (
+from exegesis.infrastructure.api.app.research.ai.clients import GenerationError
+from exegesis.infrastructure.api.app.research.ai.ledger import CacheRecord, SharedLedger
+from exegesis.infrastructure.api.app.research.ai.registry import LLMModel, LLMRegistry
+from exegesis.infrastructure.api.app.research.ai.router import (
     LLMRouterService,
     RoutedGeneration,
     reset_router_state,
 )
-from theo.infrastructure.api.app.research.ai import router as router_module
+from exegesis.infrastructure.api.app.research.ai import router as router_module
 
 
 @pytest.fixture(autouse=True)
 def _reset_router_state(monkeypatch):
     # Set shorter timeout for tests to avoid hanging
-    monkeypatch.setenv("THEO_ROUTER_INFLIGHT_TIMEOUT", "10.0")
+    monkeypatch.setenv("EXEGESIS_ROUTER_INFLIGHT_TIMEOUT", "10.0")
     reset_router_state()
     yield
     reset_router_state()
@@ -1261,8 +1261,75 @@ def test_wait_for_inflight_handles_restart_requeue(tmp_path, sleep_stub):
     assert outputs == ["after-restart"]
 
 
+def _thread_budget_run(ledger_path: str) -> dict:
+    """Thread-safe version of _process_budget_run for fast cross-connection testing."""
+    registry = LLMRegistry()
+    registry.add_model(
+        LLMModel(
+            name="primary",
+            provider="echo",
+            model="echo",
+            config={"suffix": "[primary]"},
+            pricing={"per_call": 0.6},
+            routing={"spend_ceiling": 1.0, "weight": 10.0},
+        ),
+        make_default=True,
+    )
+    registry.add_model(
+        LLMModel(
+            name="backup",
+            provider="echo",
+            model="echo",
+            config={"suffix": "[backup]"},
+            pricing={"per_call": 0.4},
+            routing={"weight": 1.0},
+        )
+    )
+    # Create fresh ledger instance (new connection to same DB)
+    router = LLMRouterService(registry, ledger=SharedLedger(ledger_path))
+    result = _run_generation(router)
+    return {
+        "model": result.model.name,
+        "primary_spend": router.get_spend("primary"),
+        "backup_spend": router.get_spend("backup"),
+    }
+
+
+@pytest.mark.timeout(2.0)
+def test_router_shared_spend_across_connections(tmp_path, sleep_stub):
+    """Fast test: verifies spend sharing via SQLite WAL across separate connections.
+
+    This tests the same state-sharing behavior as the multiprocessing test but
+    uses threads with separate router/ledger instances, avoiding Windows spawn
+    overhead (~8-9s per process).
+    """
+    ledger_path = tmp_path / "shared-ledger.db"
+    ledger = SharedLedger(str(ledger_path))
+    ledger.reset()
+    del ledger
+    _wait_for_wal_cleanup(ledger_path, sleep_fn=sleep_stub)
+
+    # Run first "isolated" router instance
+    first_result = _thread_budget_run(str(ledger_path))
+    assert first_result["model"] == "primary"
+    assert first_result["primary_spend"] == pytest.approx(0.6, rel=1e-2)
+    assert first_result["backup_spend"] == pytest.approx(0.0, rel=1e-2)
+
+    # Run second "isolated" router instance - should see first's state
+    second_result = _thread_budget_run(str(ledger_path))
+    assert second_result["model"] == "backup"
+    assert second_result["primary_spend"] == pytest.approx(1.0, rel=1e-2)
+    assert second_result["backup_spend"] > 0.0
+
+
+@pytest.mark.slow
 @pytest.mark.timeout(120)
 def test_router_shared_spend_across_processes(tmp_path, sleep_stub):
+    """Slow test: verifies spend sharing via SQLite WAL across OS processes.
+
+    On Windows, this takes ~18s due to spawn overhead. Use
+    test_router_shared_spend_across_connections for CI.
+    """
     ledger_path = tmp_path / "shared-ledger.db"
     # Reset in a context to ensure cleanup
     ledger = SharedLedger(str(ledger_path))
@@ -1300,8 +1367,94 @@ def test_router_shared_spend_across_processes(tmp_path, sleep_stub):
     assert second_result["backup_spend"] > 0.0
 
 
+def _thread_latency_run(ledger_path: str, *, delay: float) -> dict:
+    """Thread-safe version of _process_latency_run for fast cross-connection testing."""
+    registry = LLMRegistry()
+    registry.add_model(
+        LLMModel(
+            name="slow",
+            provider="echo",
+            model="echo",
+            config={"suffix": "[slow]"},
+            routing={"latency_threshold_ms": 30.0, "weight": 5.0},
+        ),
+        make_default=True,
+    )
+    registry.add_model(
+        LLMModel(
+            name="fast",
+            provider="echo",
+            model="echo",
+            config={"suffix": "[fast]"},
+            routing={"weight": 1.0},
+        )
+    )
+
+    slow_calls = 0
+
+    class _SlowClient:
+        def generate(self, **_: object) -> str:
+            nonlocal slow_calls
+            slow_calls += 1
+            time.sleep(delay)
+            return "slow-response"
+
+    class _FastClient:
+        def generate(self, **_: object) -> str:
+            return "fast-response"
+
+    registry.models["slow"].build_client = lambda: _SlowClient()
+    registry.models["fast"].build_client = lambda: _FastClient()
+
+    # Create fresh ledger instance (new connection to same DB)
+    router = LLMRouterService(registry, ledger=SharedLedger(ledger_path))
+    result = _run_generation(router)
+    return {
+        "model": result.model.name,
+        "slow_calls": slow_calls,
+        "slow_latency": router.get_latency("slow"),
+    }
+
+
+@pytest.mark.allow_sleep
+@pytest.mark.timeout(2.0)
+def test_router_shared_latency_across_connections(tmp_path, sleep_stub):
+    """Fast test: verifies latency sharing via SQLite WAL across separate connections.
+
+    This tests the same state-sharing behavior as the multiprocessing test but
+    uses sequential calls with separate router/ledger instances, avoiding Windows
+    spawn overhead (~8-9s per process).
+    """
+    ledger_path = tmp_path / "latency-ledger.db"
+    ledger = SharedLedger(str(ledger_path))
+    ledger.reset()
+    del ledger
+    _wait_for_wal_cleanup(ledger_path, sleep_fn=sleep_stub)
+
+    # First "isolated" router - slow model gets called, records high latency
+    first_result = _thread_latency_run(str(ledger_path), delay=0.05)
+    assert first_result["model"] == "fast"  # Falls back after slow exceeds threshold
+    assert first_result["slow_calls"] == 1
+    assert first_result["slow_latency"] is not None
+    assert first_result["slow_latency"] > 0.0
+
+    # Second "isolated" router - should see latency and skip slow model
+    second_result = _thread_latency_run(str(ledger_path), delay=0.05)
+    assert second_result["model"] == "fast"
+    assert second_result["slow_calls"] == 0  # Skipped due to recorded latency
+    assert second_result["slow_latency"] == pytest.approx(
+        first_result["slow_latency"], rel=1e-2
+    )
+
+
+@pytest.mark.slow
 @pytest.mark.timeout(120)
 def test_router_shared_latency_across_processes(tmp_path, sleep_stub):
+    """Slow test: verifies latency sharing via SQLite WAL across OS processes.
+
+    On Windows, this takes ~18s due to spawn overhead. Use
+    test_router_shared_latency_across_connections for CI.
+    """
     ledger_path = tmp_path / "latency-ledger.db"
     # Reset in a context to ensure cleanup
     ledger = SharedLedger(str(ledger_path))

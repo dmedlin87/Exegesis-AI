@@ -1,10 +1,10 @@
-from theo.infrastructure.api.app.research.ai.rag.revisions import (
+from exegesis.infrastructure.api.app.research.ai.rag.revisions import (
     critique_to_schema,
     revision_to_schema,
     should_attempt_revision,
 )
-from theo.infrastructure.api.app.research.ai.reasoning.fallacies import FallacyWarning
-from theo.infrastructure.api.app.research.ai.reasoning.metacognition import Critique, RevisionResult
+from exegesis.infrastructure.api.app.research.ai.reasoning.fallacies import FallacyWarning
+from exegesis.infrastructure.api.app.research.ai.reasoning.metacognition import Critique, RevisionResult
 
 
 def test_should_attempt_revision_triggers_on_fallacies() -> None:

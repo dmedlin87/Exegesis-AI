@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from theo.infrastructure.api.app.research.ai.rag import retrieval
-from theo.infrastructure.api.app.research.ai.rag.models import RAGCitation
-from theo.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
+from exegesis.infrastructure.api.app.research.ai.rag import retrieval
+from exegesis.infrastructure.api.app.research.ai.rag.models import RAGCitation
+from exegesis.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
 
 
 def _result(*, identifier: str, osis: str | None, rank: int = 1) -> HybridSearchResult:

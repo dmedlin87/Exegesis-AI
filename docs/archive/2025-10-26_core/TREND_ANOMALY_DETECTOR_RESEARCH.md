@@ -1,17 +1,17 @@
 > **Archived on 2025-10-26**
 
-# Maturing Trend & Anomaly Detectors for Theoria
+# Maturing Trend & Anomaly Detectors for Exegesis AI
 
 > **Status:** Research blueprint (2025-10-18)
 
-This document distills the research plan for elevating Theoria's timeline-focused discovery engines—specifically the **trend** and **anomaly** detectors—so they reach parity with the mature **pattern** and **contradiction** detectors.
+This document distills the research plan for elevating Exegesis AI's timeline-focused discovery engines—specifically the **trend** and **anomaly** detectors—so they reach parity with the mature **pattern** and **contradiction** detectors.
 
 ## Objective
 
 Deliver reliable, explainable time-based theological insights by:
 
 - Understanding the current discovery baseline and identifying the pain points affecting temporal analysis.
-- Surveying temporal modelling and anomaly detection techniques that fit Theoria's hybrid symbolic/ML architecture.
+- Surveying temporal modelling and anomaly detection techniques that fit Exegesis AI's hybrid symbolic/ML architecture.
 - Designing experiments that measure accuracy, latency, and user trust for candidate approaches.
 - Charting the integration path into the DiscoveryService pipeline, storage model, and frontend discovery cards.
 - Enumerating risks (bias, performance, drift) with mitigation strategies and monitoring plans.

@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-Successfully enhanced **10 components** with **context-aware animations** across the Theoria application. All animations are CSS-based (zero performance cost), accessibility-compliant, and follow consistent patterns.
+Successfully enhanced **10 components** with **context-aware animations** across the Exegesis AI application. All animations are CSS-based (zero performance cost), accessibility-compliant, and follow consistent patterns.
 
 ---
 

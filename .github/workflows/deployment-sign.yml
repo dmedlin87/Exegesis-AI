@@ -33,7 +33,7 @@ jobs:
         id: meta
         run: |
           OWNER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
-          IMAGE_REF="${REGISTRY}/${OWNER}/theoria-api"
+          IMAGE_REF="${REGISTRY}/${OWNER}/Exegesis AI-api"
           VERSION_TAG="${GITHUB_REF_NAME:-manual-${GITHUB_RUN_ID}}"
           VERSION_TAG=$(echo "${VERSION_TAG}" | tr '[:upper:]' '[:lower:]' | tr '/' '-')
           echo "image=${IMAGE_REF}" >> "$GITHUB_OUTPUT"
@@ -105,7 +105,7 @@ jobs:
             "builder": {
               "id": "https://github.com/${GITHUB_REPOSITORY}/.github/workflows/deployment-sign.yml"
             },
-            "buildType": "https://theoria.dev/attestations/container-build",
+            "buildType": "https://Exegesis AI.dev/attestations/container-build",
             "buildConfig": {
               "workflow": "${{ github.workflow }}",
               "run_id": "${{ github.run_id }}",
@@ -149,7 +149,7 @@ jobs:
         run: |
           cosign attest \
             --predicate build-attestation.json \
-            --type https://theoria.dev/attestations/container-build \
+            --type https://Exegesis AI.dev/attestations/container-build \
             ${{ steps.meta.outputs.image }}@${{ steps.build.outputs.digest }}
 
       - name: Verify image signature
@@ -168,7 +168,7 @@ jobs:
           EXPECTED_IDENTITY: https://github.com/${{ github.repository }}/.github/workflows/deployment-sign.yml@${{ github.ref }}
         run: |
           cosign verify-attestation \
-            --type https://theoria.dev/attestations/container-build \
+            --type https://Exegesis AI.dev/attestations/container-build \
             --certificate-identity "${EXPECTED_IDENTITY}" \
             --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
             ${{ steps.meta.outputs.image }}@${{ steps.build.outputs.digest }}

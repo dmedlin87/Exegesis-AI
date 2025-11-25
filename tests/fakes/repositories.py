@@ -25,7 +25,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from theo.domain import (
+    from exegesis.domain import (
         Hypothesis,
         HypothesisDraft,
         ResearchNote,
@@ -83,7 +83,7 @@ class RecordingNotesRepository:
     """Repository fake implementing ResearchNoteRepository Protocol.
 
     Records all method calls and returns pre-configured results.
-    Implements the Protocol contract from theo.domain.repositories.research_notes.
+    Implements the Protocol contract from exegesis.domain.repositories.research_notes.
 
     Attributes:
         list_calls: Recorded list_for_osis invocations.
@@ -206,7 +206,7 @@ class RecordingHypothesisRepository:
     """Repository fake implementing HypothesisRepository Protocol.
 
     Records all method calls and returns pre-configured results.
-    Implements the Protocol contract from theo.domain.repositories.hypotheses.
+    Implements the Protocol contract from exegesis.domain.repositories.hypotheses.
 
     Attributes:
         list_calls: Recorded list invocations.

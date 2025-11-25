@@ -1,4 +1,4 @@
-# ✅ Theoria UX Improvements - Implementation Complete
+# ✅ Exegesis AI UX Improvements - Implementation Complete
 
 **Date:** October 15, 2025  
 **Status:** All priorities implemented and ready for testing
@@ -240,7 +240,7 @@ All new components follow the established patterns:
 
 ## ✨ Summary
 
-This implementation transforms Theoria's first-time user experience from **confusing and broken** to **guided and professional**. Users now have:
+This implementation transforms Exegesis AI's first-time user experience from **confusing and broken** to **guided and professional**. Users now have:
 
 1. ✅ Clear onboarding (welcome modal)
 2. ✅ Visible configuration (settings page)

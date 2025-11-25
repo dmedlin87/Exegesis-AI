@@ -19,7 +19,7 @@ This inventory reflects the streamlined documentation set after the October 26 a
 ## Active `docs/` References
 
 - **Architecture:** [`architecture.md`](architecture.md) (archived reviews live in [`docs/archive/2025-10-26_core/`](archive/2025-10-26_core/))
-- **API & Agents:** [`API.md`](API.md), [`theoria_instruction_prompt.md`](theoria_instruction_prompt.md), [`AGENT_CONFINEMENT.md`](AGENT_CONFINEMENT.md)
+- **API & Agents:** [`API.md`](API.md), [`EXEGESIS_instruction_prompt.md`](EXEGESIS_instruction_prompt.md), [`AGENT_CONFINEMENT.md`](AGENT_CONFINEMENT.md)
 - **Quality:** [`testing.md`](testing.md), [`tests/utils/query_profiler.py`](../tests/utils/query_profiler.py)
 - **Navigation:** [`INDEX.md`](INDEX.md), [`document_inventory.md`](document_inventory.md)
 - **Research & Strategy:** [`research/adjacent_user_needs.md`](research/adjacent_user_needs.md)

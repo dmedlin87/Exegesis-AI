@@ -7,12 +7,12 @@ import pytest
 from click.testing import CliRunner
 from sqlalchemy.orm import Session
 
-from theo.application.facades.settings import get_settings
-from theo.cli import rebuild_embeddings_cmd
-from theo.application.services.bootstrap import resolve_application
-from theo.infrastructure.api.app.persistence_models import Document as DocumentRecord
-from theo.infrastructure.api.app.persistence_models import Passage
-from theo.adapters.persistence import dispose_sqlite_engine
+from exegesis.application.facades.settings import get_settings
+from exegesis.cli import rebuild_embeddings_cmd
+from exegesis.application.services.bootstrap import resolve_application
+from exegesis.infrastructure.api.app.persistence_models import Document as DocumentRecord
+from exegesis.infrastructure.api.app.persistence_models import Passage
+from exegesis.adapters.persistence import dispose_sqlite_engine
 
 from tests.integration._db import configure_temporary_engine
 

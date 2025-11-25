@@ -1,10 +1,10 @@
 > **Archived on 2025-10-26**
 
-# Theoria Memory System Upgrade — Product & Engineering Spec
+# Exegesis AI Memory System Upgrade — Product & Engineering Spec
 
 ## Goal
 
-Evolve Theoria's chat memory into a resilient, user-controlled system that behaves like a modern assistant by replacing flat caps with scored retention, adding hybrid retrieval with reciprocal rank fusion (RRF), deduplicating near-duplicates, exposing pin/forget/incognito workflows, enriching metadata, and asynchronously backfilling embeddings.
+Evolve Exegesis AI's chat memory into a resilient, user-controlled system that behaves like a modern assistant by replacing flat caps with scored retention, adding hybrid retrieval with reciprocal rank fusion (RRF), deduplicating near-duplicates, exposing pin/forget/incognito workflows, enriching metadata, and asynchronously backfilling embeddings.
 
 ## Scope & Delivery Sequence
 

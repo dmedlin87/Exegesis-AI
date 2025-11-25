@@ -20,29 +20,29 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades import database as database_module  # noqa: E402
-from theo.application.facades.database import (  # noqa: E402
+from exegesis.application.facades import database as database_module  # noqa: E402
+from exegesis.application.facades.database import (  # noqa: E402
     Base,
     configure_engine,
     get_engine,
     get_session,
 )
-from theo.adapters.persistence.models import UserWatchlist  # noqa: E402
-from theo.infrastructure.api.app.main import app  # noqa: E402
-from theo.infrastructure.api.app.adapters.security import require_principal  # noqa: E402
-from theo.infrastructure.api.app.routes.ai import watchlists as watchlists_module  # noqa: E402
-from theo.infrastructure.api.app.routes.ai.watchlists import (  # noqa: E402
+from exegesis.adapters.persistence.models import UserWatchlist  # noqa: E402
+from exegesis.infrastructure.api.app.main import app  # noqa: E402
+from exegesis.infrastructure.api.app.adapters.security import require_principal  # noqa: E402
+from exegesis.infrastructure.api.app.routes.ai import watchlists as watchlists_module  # noqa: E402
+from exegesis.infrastructure.api.app.routes.ai.watchlists import (  # noqa: E402
     WatchlistNotFoundError,
 )
-from theo.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations  # noqa: E402
-from theo.infrastructure.api.app.db.seeds import seed_reference_data  # noqa: E402
+from exegesis.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations  # noqa: E402
+from exegesis.infrastructure.api.app.db.seeds import seed_reference_data  # noqa: E402
 
 
 from contextlib import contextmanager
 
 @contextmanager
 def skip_performance_indexes():
-    migrations_module = import_module("theo.infrastructure.api.app.db.run_sql_migrations")
+    migrations_module = import_module("exegesis.infrastructure.api.app.db.run_sql_migrations")
     original = getattr(migrations_module, "_ensure_performance_indexes", None)
     try:
         if original is not None:

@@ -1,8 +1,8 @@
 """Tests for the :mod:`theo.application.services` module."""
 from __future__ import annotations
 
-from theo.application.services import ApplicationContainer
-from theo.domain import Document, DocumentId, DocumentMetadata
+from exegesis.application.services import ApplicationContainer
+from exegesis.domain import Document, DocumentId, DocumentMetadata
 
 
 def _make_document(identifier: str = "doc-1") -> Document:

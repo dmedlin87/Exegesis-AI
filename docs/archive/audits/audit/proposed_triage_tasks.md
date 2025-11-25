@@ -44,7 +44,7 @@
 
 ## Align ingest UI hint with CLI defaults
 - **Location**: `theo/services/web/app/upload/components/SimpleIngestForm.tsx`
-- **Issue**: The hint text tells users the CLI defaults to the “Theoria” author, but the CLI actually sets `DEFAULT_AUTHOR = "Theo Engine"`, so the help copy is wrong.
+- **Issue**: The hint text tells users the CLI defaults to the “Exegesis AI” author, but the CLI actually sets `DEFAULT_AUTHOR = "Theo Engine"`, so the help copy is wrong.
 - **Why it matters**: Accurate guidance prevents confusion when users compare UI output with CLI runs.
 - **Suggested fix**: Update the hint (or the CLI default) so both surfaces agree on the default author label.
 - **References**: [`SimpleIngestForm.tsx`](../theo/services/web/app/upload/components/SimpleIngestForm.tsx) lines 186-188 and [`ingest_folder.py`](../theo/services/cli/ingest_folder.py) lines 56-58. 【F:theo/services/web/app/upload/components/SimpleIngestForm.tsx†L186-L188】【F:theo/services/cli/ingest_folder.py†L56-L58】

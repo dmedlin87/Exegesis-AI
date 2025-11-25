@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from theo.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.main import app
 
-from theo.infrastructure.api.app.infra import health as health_module
+from exegesis.infrastructure.api.app.infra import health as health_module
 
 
 def test_health_service_propagates_degraded_status() -> None:

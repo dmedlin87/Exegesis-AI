@@ -2,7 +2,7 @@
 
 import pytest
 
-from theo.infrastructure.api.app.models.ai import (
+from exegesis.infrastructure.api.app.models.ai import (
     MAX_CHAT_MESSAGE_CONTENT_LENGTH,
     ChatSessionMessage,
     ChatSessionRequest,

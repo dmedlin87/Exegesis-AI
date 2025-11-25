@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Theoria Evidence Card",
+  "title": "Exegesis AI Evidence Card",
   "type": "object",
   "required": [
     "id", "title", "claim", "scope", "mode", "stability", "confidence",

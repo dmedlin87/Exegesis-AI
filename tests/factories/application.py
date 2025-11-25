@@ -6,9 +6,9 @@ from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from typing import Callable, Tuple, TypeVar, overload
 
-from theo.adapters import AdapterRegistry
-from theo.application import ApplicationContainer
-from theo.application.services.bootstrap import resolve_application as _resolve_application
+from exegesis.adapters import AdapterRegistry
+from exegesis.application import ApplicationContainer
+from exegesis.application.services.bootstrap import resolve_application as _resolve_application
 
 FactoryValue = TypeVar("FactoryValue")
 FactoryOverride = Callable[[], FactoryValue] | FactoryValue

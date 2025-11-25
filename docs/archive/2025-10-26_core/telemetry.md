@@ -2,7 +2,7 @@
 
 # Telemetry Quickstart
 
-Theoria workflows now emit traces, metrics, and structured logs so you can
+Exegesis AI workflows now emit traces, metrics, and structured logs so you can
 observe each run end-to-end. This guide walks through enabling the local
 console exporter, generating a sample workflow run, and inspecting the emitted
 signals.
@@ -21,7 +21,7 @@ Set the environment variable that enables the console span exporter when the
 FastAPI app boots:
 
 ```bash
-export THEO_ENABLE_CONSOLE_TRACES=1
+export EXEGESIS_ENABLE_CONSOLE_TRACES=1
 ```
 
 When this flag is set the application calls
@@ -64,11 +64,11 @@ metrics.
 Prometheus metrics are available from the same server:
 
 ```bash
-curl http://localhost:8000/metrics | grep theo_workflow
+curl http://localhost:8000/metrics | grep EXEGESIS_workflow
 ```
 
-You should see counters such as `theo_workflow_runs_total` and the latency
-histogram `theo_workflow_latency_seconds`.
+You should see counters such as `EXEGESIS_workflow_runs_total` and the latency
+histogram `EXEGESIS_workflow_latency_seconds`.
 
 ## 6. Next steps
 
@@ -82,7 +82,7 @@ histogram `theo_workflow_latency_seconds`.
   [End-to-End Debugging Guide](./debugging-guide.md) for step-by-step tracing
   instructions that build on the new trace propagation hooks.
 
-With these steps you can locally validate that Theoria workflows expose
+With these steps you can locally validate that Exegesis AI workflows expose
 healthy telemetry before wiring them into a full observability stack.
 
 ## MLflow defaults for CI and development
@@ -91,10 +91,10 @@ Reranker training and evaluation scripts now emit metrics and artifacts to
 MLflow when it is available. Two optional environment variables control the
 client configuration:
 
-- `THEO_MLFLOW_TRACKING_URI` – points the CLI utilities and the API service at
+- `EXEGESIS_MLFLOW_TRACKING_URI` – points the CLI utilities and the API service at
   a tracking server. When unset, MLflow falls back to the local `mlruns`
   directory, which is suitable for developer laptops and ephemeral CI jobs.
-- `THEO_MLFLOW_REGISTRY_URI` – overrides the model registry host. Leave this
+- `EXEGESIS_MLFLOW_REGISTRY_URI` – overrides the model registry host. Leave this
   unset in local workflows so MLflow reuses the tracking URI's default
   registry. Production deployments can bind it to a remote registry service if
   one is available.

@@ -6,10 +6,10 @@ from collections.abc import Sequence
 
 import pytest
 
-from theo.domain.discoveries.connection_engine import (
+from exegesis.domain.discoveries.connection_engine import (
     ConnectionDiscoveryEngine,
 )
-from theo.domain.discoveries.models import DocumentEmbedding
+from exegesis.domain.discoveries.models import DocumentEmbedding
 
 
 def make_document(

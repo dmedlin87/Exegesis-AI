@@ -1,9 +1,9 @@
 import pytest
 from sqlalchemy.orm import Session
 
-from theo.application.facades.database import get_settings
-from theo.infrastructure.api.app.library.ingest import pipeline
-from theo.infrastructure.api.app.library.ingest import persistence as ingest_persistence
+from exegesis.application.facades.database import get_settings
+from exegesis.infrastructure.api.app.library.ingest import pipeline
+from exegesis.infrastructure.api.app.library.ingest import persistence as ingest_persistence
 
 
 pytestmark = pytest.mark.pgvector

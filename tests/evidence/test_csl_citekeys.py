@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from theo.infrastructure.api.app.export.citations import CitationSource, format_citation
+from exegesis.infrastructure.api.app.export.citations import CitationSource, format_citation
 
 
 def test_citation_source_uses_document_id_for_csl_citekey() -> None:

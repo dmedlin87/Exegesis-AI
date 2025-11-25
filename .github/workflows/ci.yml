@@ -73,22 +73,22 @@ jobs:
               with:
                   node-version: "20"
                   cache: "npm"
-                  cache-dependency-path: theo/services/web/package-lock.json
+                  cache-dependency-path: exegesis/services/web/package-lock.json
 
             - name: Install Node.js dependencies
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npm ci
 
             - name: Cache Playwright browsers
               uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
               with:
                   path: ~/.cache/ms-playwright
-                  key: ${{ runner.os }}-playwright-${{ hashFiles('theo/services/web/package-lock.json') }}
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('exegesis/services/web/package-lock.json') }}
                   restore-keys: |
                       ${{ runner.os }}-playwright-
 
             - name: Install Playwright browsers
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npx playwright install --with-deps
 
             - name: Run Ruff
@@ -98,11 +98,11 @@ jobs:
               run: mypy --config-file mypy.ini
 
             - name: Run ESLint and TypeScript checks
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npm run lint
 
             - name: Enforce UI quality gates
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npm run quality:gates
 
             - name: Run architecture tests
@@ -112,41 +112,41 @@ jobs:
               run: lint-imports --config importlinter.ini
 
             - name: Run Jest unit tests
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npm test
 
             - name: Run Vitest unit tests with coverage
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npm run test:vitest
 
             - name: Verify Vitest coverage thresholds
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: node scripts/ci/verify-vitest-coverage.mjs
 
             - name: Show Vitest output tree
               if: always()
               run: |
-                  ls -la theo/services/web || true
-                  ls -la theo/services/web/coverage || true
+                  ls -la exegesis/services/web || true
+                  ls -la exegesis/services/web/coverage || true
 
             - name: Run Playwright smoke suite
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npm run test:e2e:smoke
 
             - name: Run Playwright E2E suite
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npm run test:e2e:full
 
             - name: Show Playwright outputs
               if: always()
               run: |
-                  ls -la theo/services/web/playwright-report || true
-                  ls -la theo/services/web/playwright-artifacts || true
+                  ls -la exegesis/services/web/playwright-report || true
+                  ls -la exegesis/services/web/playwright-artifacts || true
 
             - name: Run pytest suite (fast)
               run: |
                   pytest -m "not (slow or gpu or contract)" \
-                    --cov=theo \
+                    --cov=exegesis \
                     --cov=tests \
                     --cov-report=xml:coverage.xml \
                     --cov-report=html:coverage-html \
@@ -190,7 +190,7 @@ jobs:
                     constraints-ci.txt
 
             - name: Generate Node SBOM
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npx --yes @cyclonedx/cyclonedx-npm@1.12.0 --output-format json --output-file ../../sbom-node.json
 
             - name: Upload SBOM artifacts
@@ -207,7 +207,7 @@ jobs:
               uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v4
               with:
                   name: vitest-coverage
-                  path: theo/services/web/coverage
+                  path: exegesis/services/web/coverage
                   if-no-files-found: warn
 
             - name: Upload Playwright artifacts
@@ -216,8 +216,8 @@ jobs:
               with:
                   name: playwright-artifacts
                   path: |
-                      theo/services/web/playwright-report
-                      theo/services/web/playwright-artifacts
+                      exegesis/services/web/playwright-report
+                      exegesis/services/web/playwright-artifacts
 
     heavy-tests:
         name: Heavy pytest suites
@@ -300,30 +300,30 @@ jobs:
               with:
                   node-version: "20"
                   cache: "npm"
-                  cache-dependency-path: theo/services/web/package-lock.json
+                  cache-dependency-path: exegesis/services/web/package-lock.json
 
             - name: Install Node.js dependencies
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npm ci
 
             - name: Cache Playwright browsers
               uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
               with:
                   path: ~/.cache/ms-playwright
-                  key: ${{ runner.os }}-playwright-${{ hashFiles('theo/services/web/package-lock.json') }}
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('exegesis/services/web/package-lock.json') }}
                   restore-keys: |
                       ${{ runner.os }}-playwright-
 
             - name: Install Playwright browsers
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npx playwright install --with-deps
 
             - name: Run axe accessibility scans
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               env:
                   NEXT_PUBLIC_API_BASE_URL: "http://127.0.0.1:8000"
-                  THEO_ALLOW_INSECURE_STARTUP: "1"
-                  THEO_AUTH_ALLOW_ANONYMOUS: "1"
+                  EXEGESIS_ALLOW_INSECURE_STARTUP: "1"
+                  EXEGESIS_AUTH_ALLOW_ANONYMOUS: "1"
               run: npm run test:a11y
 
             - name: Upload accessibility artifacts
@@ -332,8 +332,8 @@ jobs:
               with:
                   name: axe-playwright-artifacts
                   path: |
-                      theo/services/web/playwright-report
-                      theo/services/web/playwright-artifacts
+                      exegesis/services/web/playwright-report
+                      exegesis/services/web/playwright-artifacts
                   if-no-files-found: warn
 
     web_visual_regression:
@@ -366,11 +366,11 @@ jobs:
               with:
                   node-version: "20"
                   cache: "npm"
-                  cache-dependency-path: theo/services/web/package-lock.json
+                  cache-dependency-path: exegesis/services/web/package-lock.json
 
             - name: Install Node.js dependencies
               if: steps.verify-token.outputs.skip != 'true'
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npm ci
 
             - name: Cache Playwright browsers
@@ -378,22 +378,22 @@ jobs:
               uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
               with:
                   path: ~/.cache/ms-playwright
-                  key: ${{ runner.os }}-playwright-${{ hashFiles('theo/services/web/package-lock.json') }}
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('exegesis/services/web/package-lock.json') }}
                   restore-keys: |
                       ${{ runner.os }}-playwright-
 
             - name: Install Playwright browsers
               if: steps.verify-token.outputs.skip != 'true'
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npx playwright install --with-deps
 
             - name: Run Percy visual regression suite
               if: steps.verify-token.outputs.skip != 'true'
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               env:
                   NEXT_PUBLIC_API_BASE_URL: "http://127.0.0.1:8000"
-                  THEO_ALLOW_INSECURE_STARTUP: "1"
-                  THEO_AUTH_ALLOW_ANONYMOUS: "1"
+                  EXEGESIS_ALLOW_INSECURE_STARTUP: "1"
+                  EXEGESIS_AUTH_ALLOW_ANONYMOUS: "1"
               run: npm run test:e2e:visual
 
             - name: Upload Percy artifacts
@@ -402,8 +402,8 @@ jobs:
               with:
                   name: percy-visual-artifacts
                   path: |
-                      theo/services/web/playwright-report
-                      theo/services/web/playwright-artifacts
+                      exegesis/services/web/playwright-report
+                      exegesis/services/web/playwright-artifacts
                   if-no-files-found: warn
 
     web_lighthouse:
@@ -449,28 +449,28 @@ jobs:
               with:
                   node-version: "20"
                   cache: "npm"
-                  cache-dependency-path: theo/services/web/package-lock.json
+                  cache-dependency-path: exegesis/services/web/package-lock.json
 
             - name: Install Node.js dependencies
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               run: npm ci
 
             - name: Start backend API
               env:
                   DATABASE_URL: sqlite:///./lighthouse.db
               run: |
-                  uvicorn theo.infrastructure.api.app.main:app --host 127.0.0.1 --port 8000 &
+                  uvicorn exegesis.infrastructure.api.app.main:app --host 127.0.0.1 --port 8000 &
                   sleep 5
                   curl --retry 5 --retry-delay 2 --retry-connrefused http://127.0.0.1:8000/health || echo "Backend health check failed but continuing"
 
             - name: Run Lighthouse smoke tests
-              working-directory: theo/services/web
+              working-directory: exegesis/services/web
               env:
                   APP_ORIGIN: http://127.0.0.1:3000
                   NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:8000
                   NEXT_TELEMETRY_DISABLED: "1"
-                  THEO_ALLOW_INSECURE_STARTUP: "1"
-                  THEO_AUTH_ALLOW_ANONYMOUS: "1"
+                  EXEGESIS_ALLOW_INSECURE_STARTUP: "1"
+                  EXEGESIS_AUTH_ALLOW_ANONYMOUS: "1"
               run: npm run test:lighthouse:smoke
 
             - name: Upload Lighthouse artifacts
@@ -479,4 +479,4 @@ jobs:
               with:
                   name: lighthouse-smoke
                   path: |
-                      theo/services/web/.lighthouseci
+                      exegesis/services/web/.lighthouseci

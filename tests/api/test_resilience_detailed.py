@@ -6,13 +6,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from theo.infrastructure.api.app.adapters import resilience as resilience_adapter
-from theo.infrastructure.api.app.adapters.resilience import (
+from exegesis.infrastructure.api.app.adapters import resilience as resilience_adapter
+from exegesis.infrastructure.api.app.adapters.resilience import (
     CircuitBreakerResiliencePolicy,
     _CircuitState,
     _categorise_exception,
 )
-from theo.application.core.resilience import ResilienceSettings, ResilienceError
+from exegesis.application.core.resilience import ResilienceSettings, ResilienceError
 
 
 class TestResilienceInternals:

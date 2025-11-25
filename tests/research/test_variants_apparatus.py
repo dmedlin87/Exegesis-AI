@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from theo.domain.research.variants import _expand_osis, variants_apparatus
+from exegesis.domain.research.variants import _expand_osis, variants_apparatus
 
 
 _STUB_DATASET = {

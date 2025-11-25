@@ -6,8 +6,8 @@ from typing import Iterable
 
 import pytest
 
-from theo.domain.research import crossrefs, scripture
-from theo.domain.research import datasets as research_datasets
+from exegesis.domain.research import crossrefs, scripture
+from exegesis.domain.research import datasets as research_datasets
 
 
 _DATASET_LOADERS = (

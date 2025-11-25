@@ -2,7 +2,7 @@
 
 # Red-team guardrail regression suite
 
-The Theoria API ships with an automated OWASP-inspired red-team harness that
+The Exegesis AI API ships with an automated OWASP-inspired red-team harness that
 exercises the critical `/ai/*` workflows. The suite lives under
 [`tests/redteam`](../tests/redteam) and is designed to be run as an explicit
 pytest marker so it can execute as a dedicated CI job:
@@ -52,5 +52,5 @@ When a red-team probe fails:
    logic if new classes of attacks are discovered, and ensure the red-team suite
    passes before merging.
 
-Keeping this suite green ensures Theoria continually resists prompt
+Keeping this suite green ensures Exegesis AI continually resists prompt
 injection, data exfiltration, and harmful-content requests.

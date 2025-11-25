@@ -5,9 +5,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.application.facades.database import Base
-from theo.adapters.persistence.models import GeoModernLocation
-from theo.infrastructure.api.app.research.geo import lookup_geo_places
+from exegesis.application.facades.database import Base
+from exegesis.adapters.persistence.models import GeoModernLocation
+from exegesis.infrastructure.api.app.research.geo import lookup_geo_places
 
 
 class DummyResult:

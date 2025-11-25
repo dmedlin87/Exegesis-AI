@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-Implemented critical UI/UX fixes identified in comprehensive design review, focusing on **readability, accessibility, and visual hierarchy**. These improvements address the top-priority issues affecting scholarly research workflows and bring Theoria closer to WCAG 2.1 AA compliance.
+Implemented critical UI/UX fixes identified in comprehensive design review, focusing on **readability, accessibility, and visual hierarchy**. These improvements address the top-priority issues affecting scholarly research workflows and bring Exegesis AI closer to WCAG 2.1 AA compliance.
 
 ---
 

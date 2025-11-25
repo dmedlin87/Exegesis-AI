@@ -9,7 +9,7 @@ from tests.api.core import reload_facade
 
 
 def test_get_git_sha_invokes_git_binary(monkeypatch: pytest.MonkeyPatch) -> None:
-    module = reload_facade("theo.application.facades.version")
+    module = reload_facade("exegesis.application.facades.version")
     module.get_git_sha.cache_clear()
 
     monkeypatch.setattr("shutil.which", lambda _: "/usr/bin/git")

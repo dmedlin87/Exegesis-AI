@@ -3,10 +3,10 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
-from theo.application.facades.database import get_session
-from theo.infrastructure.api.app.main import app
-from theo.infrastructure.api.app.routes import export as export_route
-from theo.infrastructure.api.app.models.search import HybridSearchRequest
+from exegesis.application.facades.database import get_session
+from exegesis.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.routes import export as export_route
+from exegesis.infrastructure.api.app.models.search import HybridSearchRequest
 
 
 def _override_session():

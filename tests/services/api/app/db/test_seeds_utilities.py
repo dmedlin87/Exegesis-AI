@@ -10,8 +10,8 @@ import pytest
 from sqlalchemy import Column, Integer, MetaData, Table, create_engine
 from sqlalchemy.orm import Session
 
-from theo.infrastructure.api.app.db import seeds
-from theo.adapters.persistence import sqlite as sqlite_utils
+from exegesis.infrastructure.api.app.db import seeds
+from exegesis.adapters.persistence import sqlite as sqlite_utils
 
 
 @pytest.fixture

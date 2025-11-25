@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from theo.application.facades import events as events_module
-from theo.application.facades.events import get_event_publisher, reset_event_publisher_cache
-from theo.application.facades.settings import KafkaEventSink, RedisStreamEventSink, Settings
-from theo.application.ports.events import CompositeEventPublisher, NullEventPublisher
+from exegesis.application.facades import events as events_module
+from exegesis.application.facades.events import get_event_publisher, reset_event_publisher_cache
+from exegesis.application.facades.settings import KafkaEventSink, RedisStreamEventSink, Settings
+from exegesis.application.ports.events import CompositeEventPublisher, NullEventPublisher
 
 
 @pytest.fixture(autouse=True)
@@ -34,7 +34,7 @@ def test_get_event_publisher_returns_null_for_empty_configuration() -> None:
 
 
 def test_get_event_publisher_returns_single_configured_sink(monkeypatch: pytest.MonkeyPatch) -> None:
-    sink = KafkaEventSink(name="primary", topic="theoria", bootstrap_servers="localhost:9092")
+    sink = KafkaEventSink(name="primary", topic="Exegesis AI", bootstrap_servers="localhost:9092")
     settings = _settings_with_sinks(sink)
     created_publishers: list[object] = []
 
@@ -54,8 +54,8 @@ def test_get_event_publisher_returns_single_configured_sink(monkeypatch: pytest.
 
 
 def test_get_event_publisher_composes_multiple_sinks(monkeypatch: pytest.MonkeyPatch) -> None:
-    kafka_sink = KafkaEventSink(name="kafka", topic="theoria", bootstrap_servers="localhost:9092")
-    redis_sink = RedisStreamEventSink(name="redis", stream="theoria", redis_url="redis://example")
+    kafka_sink = KafkaEventSink(name="kafka", topic="Exegesis AI", bootstrap_servers="localhost:9092")
+    redis_sink = RedisStreamEventSink(name="redis", stream="Exegesis AI", redis_url="redis://example")
     settings = _settings_with_sinks(kafka_sink, redis_sink)
     publisher_mapping: dict[int, object] = {}
 
@@ -78,7 +78,7 @@ def test_get_event_publisher_composes_multiple_sinks(monkeypatch: pytest.MonkeyP
 
 
 def test_get_event_publisher_uses_cached_settings(monkeypatch: pytest.MonkeyPatch) -> None:
-    sink = KafkaEventSink(name="cached", topic="theoria", bootstrap_servers="localhost:9092")
+    sink = KafkaEventSink(name="cached", topic="Exegesis AI", bootstrap_servers="localhost:9092")
     settings = _settings_with_sinks(sink)
     constructed: list[object] = []
 

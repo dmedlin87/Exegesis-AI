@@ -8,7 +8,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from theo.adapters.persistence.models import Base
+from exegesis.adapters.persistence.models import Base
 
 
 @pytest.fixture(scope="module")

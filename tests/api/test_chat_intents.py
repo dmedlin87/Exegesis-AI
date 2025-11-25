@@ -9,11 +9,11 @@ from fastapi.testclient import TestClient
 
 from datetime import UTC, datetime
 
-from theo.infrastructure.api.app.research.ai.rag import RAGAnswer
-from theo.application.facades.database import get_session
-from theo.infrastructure.api.app.intent.tagger import IntentTag
-from theo.infrastructure.api.app.main import app
-from theo.infrastructure.api.app.routes.ai.workflows import chat as chat_module
+from exegesis.infrastructure.api.app.research.ai.rag import RAGAnswer
+from exegesis.application.facades.database import get_session
+from exegesis.infrastructure.api.app.intent.tagger import IntentTag
+from exegesis.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.routes.ai.workflows import chat as chat_module
 
 
 class DummySession:

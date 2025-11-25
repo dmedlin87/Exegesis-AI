@@ -2,7 +2,7 @@
 
 # UI Quality Gates Reference
 
-Theoria's web CI now enforces multiple automated guards. Use this page to interpret failures and plan remediation work.
+Exegesis AI's web CI now enforces multiple automated guards. Use this page to interpret failures and plan remediation work.
 
 ## Inline Style & Component Size Gates
 

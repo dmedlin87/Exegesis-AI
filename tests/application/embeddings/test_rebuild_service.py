@@ -7,7 +7,7 @@ from typing import Iterable, Sequence
 import pytest
 from sqlalchemy.exc import SQLAlchemyError
 
-from theo.application.retrieval.embeddings import (
+from exegesis.application.retrieval.embeddings import (
     EmbeddingRebuildError,
     EmbeddingRebuildOptions,
     EmbeddingRebuildProgress,
@@ -15,8 +15,8 @@ from theo.application.retrieval.embeddings import (
     EmbeddingRebuildStart,
     EmbeddingRebuildState,
 )
-from theo.application.interfaces import SessionProtocol
-from theo.application.repositories.embedding_repository import (
+from exegesis.application.interfaces import SessionProtocol
+from exegesis.application.repositories.embedding_repository import (
     EmbeddingUpdate,
     PassageEmbeddingRepository,
     PassageForEmbedding,

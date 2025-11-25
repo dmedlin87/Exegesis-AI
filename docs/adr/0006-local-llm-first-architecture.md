@@ -5,7 +5,7 @@
 
 ## Context
 
-Theoria handles sensitive theological research data including:
+Exegesis AI handles sensitive theological research data including:
 - Counseling notes with private congregation details
 - Prayer journals
 - Draft sermons

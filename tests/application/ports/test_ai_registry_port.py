@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from theo.application.ports import ai_registry
+from exegesis.application.ports import ai_registry
 
 
 class DummyCipher:

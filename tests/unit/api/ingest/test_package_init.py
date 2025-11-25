@@ -6,7 +6,7 @@ import types
 
 import pytest
 
-import theo.infrastructure.api.app.library.ingest as ingest
+import exegesis.infrastructure.api.app.library.ingest as ingest
 
 
 def test_ingest_package_exports_are_loaded_lazily(monkeypatch: pytest.MonkeyPatch) -> None:

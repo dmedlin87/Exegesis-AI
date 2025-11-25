@@ -2,7 +2,7 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from theo.application.graph import GraphDocumentProjection, GraphProjector, NullGraphProjector
+from exegesis.application.graph import GraphDocumentProjection, GraphProjector, NullGraphProjector
 
 
 def test_graph_document_projection_defaults_and_immutability() -> None:

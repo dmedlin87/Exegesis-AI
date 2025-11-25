@@ -8,15 +8,15 @@ import pytest
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.application.facades import settings as settings_module
-from theo.application.facades.database import Base
-from theo.infrastructure.api.app.analytics.topic_map import TopicMapBuilder
-from theo.adapters.persistence.models import (
+from exegesis.application.facades import settings as settings_module
+from exegesis.application.facades.database import Base
+from exegesis.infrastructure.api.app.analytics.topic_map import TopicMapBuilder
+from exegesis.adapters.persistence.models import (
     AnalyticsTopicMapSnapshot,
     Document,
     Passage,
 )
-from theo.infrastructure.api.app.workers import tasks
+from exegesis.infrastructure.api.app.workers import tasks
 
 
 @pytest.fixture()

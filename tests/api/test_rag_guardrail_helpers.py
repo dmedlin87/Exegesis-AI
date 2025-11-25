@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from theo.infrastructure.api.app.research.ai.rag.guardrail_helpers import derive_snippet, format_anchor
+from exegesis.infrastructure.api.app.research.ai.rag.guardrail_helpers import derive_snippet, format_anchor
 
 
 def test_format_anchor_prefers_page_numbers() -> None:

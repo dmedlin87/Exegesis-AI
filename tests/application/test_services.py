@@ -1,7 +1,7 @@
 import pytest
 
-from theo.application.services import ApplicationContainer
-from theo.domain import Document, DocumentId, DocumentMetadata
+from exegesis.application.services import ApplicationContainer
+from exegesis.domain import Document, DocumentId, DocumentMetadata
 
 
 @pytest.fixture

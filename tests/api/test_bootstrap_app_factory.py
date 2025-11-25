@@ -20,8 +20,8 @@ if "FlagEmbedding" not in sys.modules:
     flag_module.FlagModel = _StubFlagModel  # type: ignore[attr-defined]
     sys.modules["FlagEmbedding"] = flag_module
 
-from theo.infrastructure.api.app.bootstrap import app_factory
-from theo.infrastructure.api.app.bootstrap.lifecycle import lifespan as bootstrap_lifespan
+from exegesis.infrastructure.api.app.bootstrap import app_factory
+from exegesis.infrastructure.api.app.bootstrap.lifecycle import lifespan as bootstrap_lifespan
 
 
 class DummySettings:
@@ -39,7 +39,7 @@ def test_create_app_uses_provided_settings(monkeypatch):
     def fail_get_settings():
         raise AssertionError("should not call get_settings when settings provided")
 
-    monkeypatch.setenv("THEO_ENABLE_CONSOLE_TRACES", "1")
+    monkeypatch.setenv("EXEGESIS_ENABLE_CONSOLE_TRACES", "1")
     monkeypatch.setattr(app_factory, "get_settings", fail_get_settings)
     monkeypatch.setattr(app_factory, "allow_insecure_startup", lambda: False)
     monkeypatch.setattr(app_factory, "get_settings_secret", lambda: "secret")

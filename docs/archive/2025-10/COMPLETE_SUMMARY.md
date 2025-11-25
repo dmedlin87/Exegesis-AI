@@ -1,4 +1,4 @@
-# Complete Summary: Theoria Improvements
+# Complete Summary: Exegesis AI Improvements
 
 ## What We Fixed Today
 
@@ -67,7 +67,7 @@ Manual process of starting two services led to:
 - Confusing for new users
 
 **Solution:**
-Created `start-theoria.ps1` - an intelligent all-in-one launcher with:
+Created `start-Exegesis AI.ps1` - an intelligent all-in-one launcher with:
 
 #### Features
 
@@ -101,37 +101,37 @@ Created `start-theoria.ps1` - an intelligent all-in-one launcher with:
 
 ```powershell
 # Simple start
-.\start-theoria.ps1
+.\start-Exegesis AI.ps1
 
 # Custom ports
-.\start-theoria.ps1 -ApiPort 8010 -WebPort 3100
+.\start-Exegesis AI.ps1 -ApiPort 8010 -WebPort 3100
 
 # Verbose logging
-.\start-theoria.ps1 -Verbose
+.\start-Exegesis AI.ps1 -Verbose
 
 # Skip health monitoring
-.\start-theoria.ps1 -SkipHealthChecks
+.\start-Exegesis AI.ps1 -SkipHealthChecks
 ```
 
 **Files Created:**
 
-- `start-theoria.ps1` - Main intelligent launcher (565 lines)
+- `start-Exegesis AI.ps1` - Main intelligent launcher (565 lines)
 - `START_HERE.md` - Comprehensive user guide
 - `QUICK_FIX.md` - Quick troubleshooting guide
 - `API_CONNECTION_FIX.md` - Technical details
 
 ---
 
-### 4. ✅ **Branding Update** (TheoEngine → Theoria)
+### 4. ✅ **Branding Update** (TheoEngine → Exegesis AI)
 
 **Changed:**
 
-- Navigation header: "Theo Engine" → "Theoria"
-- Page title: "Theo Engine" → "Theoria"
-- Chat interface: "Theo Engine Copilot" → "Theoria Copilot"
-- Input labels: "Ask Theo Engine" → "Ask Theoria"
-- Footer: "Theo Engine" → "Theoria"
-- Default author in uploads: "Theo Engine" → "Theoria"
+- Navigation header: "Theo Engine" → "Exegesis AI"
+- Page title: "Theo Engine" → "Exegesis AI"
+- Chat interface: "Theo Engine Copilot" → "Exegesis AI Copilot"
+- Input labels: "Ask Theo Engine" → "Ask Exegesis AI"
+- Footer: "Theo Engine" → "Exegesis AI"
+- Default author in uploads: "Theo Engine" → "Exegesis AI"
 - All documentation files
 
 **Files Modified:**
@@ -149,7 +149,7 @@ Created `start-theoria.ps1` - an intelligent all-in-one launcher with:
 ### New Files Created
 
 ```text
-start-theoria.ps1              565 lines    Intelligent service launcher
+start-Exegesis AI.ps1              565 lines    Intelligent service launcher
 START_HERE.md                  340 lines    Comprehensive getting started guide
 NAVIGATION_IMPROVEMENTS.md     180 lines    Navigation fixes documentation
 API_CONNECTION_FIX.md          150 lines    API connection troubleshooting
@@ -179,7 +179,7 @@ theo/services/web/app/upload/components/SimpleIngestForm.tsx  +1 line  Branding
 **Just run this:**
 
 ```powershell
-.\start-theoria.ps1
+.\start-Exegesis AI.ps1
 ```
 
 Then open <http://localhost:3000> in your browser. Everything else is handled automatically!
@@ -188,7 +188,7 @@ Then open <http://localhost:3000> in your browser. Everything else is handled au
 
 **Development workflow:**
 
-1. Run `.\start-theoria.ps1 -Verbose` for detailed logs
+1. Run `.\start-Exegesis AI.ps1 -Verbose` for detailed logs
 2. Edit code (hot reload works for both API and Web)
 3. Services auto-restart on failures
 4. Press Ctrl+C to stop everything
@@ -197,10 +197,10 @@ Then open <http://localhost:3000> in your browser. Everything else is handled au
 
 ```powershell
 # Custom ports
-.\start-theoria.ps1 -ApiPort 8010 -WebPort 3100
+.\start-Exegesis AI.ps1 -ApiPort 8010 -WebPort 3100
 
 # Skip health monitoring for faster iteration
-.\start-theoria.ps1 -SkipHealthChecks
+.\start-Exegesis AI.ps1 -SkipHealthChecks
 ```
 
 ---
@@ -220,7 +220,7 @@ Then open <http://localhost:3000> in your browser. Everything else is handled au
 ### Branding
 
 - **Before**: Mixed "Theo Engine" and "TheoEngine" naming
-- **After**: Consistent "Theoria" everywhere
+- **After**: Consistent "Exegesis AI" everywhere
 
 ### Navigation
 
@@ -245,7 +245,7 @@ Then open <http://localhost:3000> in your browser. Everything else is handled au
 - [x] Creates .env if missing
 - [x] Starts both services
 - [x] Health checks pass
-- [x] Shows "THEORIA IS READY" banner
+- [x] Shows "Exegesis AI IS READY" banner
 - [x] Services respond at correct URLs
 - [x] Ctrl+C stops everything cleanly
 
@@ -259,10 +259,10 @@ Then open <http://localhost:3000> in your browser. Everything else is handled au
 
 ### ✅ Branding
 
-- [x] Header shows "Theoria"
-- [x] Page title is "Theoria"
-- [x] Chat shows "Theoria Copilot"
-- [x] Footer shows "Theoria"
+- [x] Header shows "Exegesis AI"
+- [x] Page title is "Exegesis AI"
+- [x] Chat shows "Exegesis AI Copilot"
+- [x] Footer shows "Exegesis AI"
 
 ---
 
@@ -270,7 +270,7 @@ Then open <http://localhost:3000> in your browser. Everything else is handled au
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                    start-theoria.ps1                        │
+│                    start-Exegesis AI.ps1                        │
 │                  (Intelligent Launcher)                      │
 │                                                              │
 │  ┌──────────────────────────────────────────────────────┐  │
@@ -318,7 +318,7 @@ Then open <http://localhost:3000> in your browser. Everything else is handled au
 
 | Issue | Solution |
 |-------|----------|
-| TypeErrors in console | Start API with `.\start-theoria.ps1` |
+| TypeErrors in console | Start API with `.\start-Exegesis AI.ps1` |
 | Port already in use | Use custom port: `-ApiPort 8010` |
 | Services won't start | Run with `-Verbose` flag |
 | Python not found | Install from python.org |
@@ -346,7 +346,7 @@ npm run dev
 **New way:**
 
 ```powershell
-.\start-theoria.ps1
+.\start-Exegesis AI.ps1
 ```
 
 That's it! Everything else is automatic.
@@ -357,7 +357,7 @@ That's it! Everything else is automatic.
 
 ### Recommended Actions
 
-1. **Test the launcher**: Run `.\start-theoria.ps1` and verify everything works
+1. **Test the launcher**: Run `.\start-Exegesis AI.ps1` and verify everything works
 2. **Refresh your browser**: See the branding changes and navigation improvements
 3. **Share with team**: Update any documentation pointing to old startup methods
 4. **Bookmark**: <http://localhost:3000> and <http://127.0.0.1:8000/docs>
@@ -396,7 +396,7 @@ The launcher could be extended to:
 - Intelligent service launcher with health monitoring
 - Navigation improvements with loading states
 - API connection error handling
-- Branding update to Theoria
+- Branding update to Exegesis AI
 - Comprehensive documentation suite
 
 **Impact:**
@@ -420,4 +420,4 @@ If you encounter any issues:
 
 ---
 
-## Theoria is now smarter, faster, and more reliable! 🚀
+## Exegesis AI is now smarter, faster, and more reliable! 🚀

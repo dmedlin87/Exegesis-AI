@@ -11,11 +11,11 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from theo.application.facades.database import get_session
-from theo.infrastructure.api.app.research.ai.research_loop import ResearchLoopController
-from theo.infrastructure.api.app.main import app
-from theo.infrastructure.api.app.models.research_plan import ResearchPlanStepStatus
-from theo.infrastructure.api.app.persistence_models import ChatSession
+from exegesis.application.facades.database import get_session
+from exegesis.infrastructure.api.app.research.ai.research_loop import ResearchLoopController
+from exegesis.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.models.research_plan import ResearchPlanStepStatus
+from exegesis.infrastructure.api.app.persistence_models import ChatSession
 
 
 _ujson_spec = importlib.util.find_spec("ujson")

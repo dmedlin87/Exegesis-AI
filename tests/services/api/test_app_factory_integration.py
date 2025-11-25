@@ -6,10 +6,10 @@ import pytest
 from fastapi import APIRouter, Header, HTTPException, Request
 from fastapi.testclient import TestClient
 
-from theo.application.facades.settings import Settings
-from theo.infrastructure.api.app.bootstrap.app_factory import create_app
-from theo.infrastructure.api.app.core.errors import TheoError
-from theo.infrastructure.api.app.infra.registry import RouterRegistration
+from exegesis.application.facades.settings import Settings
+from exegesis.infrastructure.api.app.bootstrap.app_factory import create_app
+from exegesis.infrastructure.api.app.core.errors import TheoError
+from exegesis.infrastructure.api.app.infra.registry import RouterRegistration
 
 
 @pytest.fixture()
@@ -29,19 +29,19 @@ def patched_app_environment(monkeypatch: pytest.MonkeyPatch):
         return provider
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.ApiTelemetryProvider",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.ApiTelemetryProvider",
         fake_telemetry_provider,
     )
 
     registered_providers: list[SimpleNamespace] = []
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.set_telemetry_provider",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.set_telemetry_provider",
         registered_providers.append,
     )
 
     resilience_factories: list[object] = []
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.set_resilience_policy_factory",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.set_resilience_policy_factory",
         lambda factory: resilience_factories.append(factory),
     )
 
@@ -58,7 +58,7 @@ def patched_app_environment(monkeypatch: pytest.MonkeyPatch):
         principal_configured.append(True)
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.configure_principal_resolver",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.configure_principal_resolver",
         fake_principal,
     )
 
@@ -68,12 +68,12 @@ def patched_app_environment(monkeypatch: pytest.MonkeyPatch):
         application_resolvers.append(resolver)
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.set_application_resolver",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.set_application_resolver",
         save_application_resolver,
     )
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.create_dependency_container",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.create_dependency_container",
         lambda: stub_container,
     )
 
@@ -83,7 +83,7 @@ def patched_app_environment(monkeypatch: pytest.MonkeyPatch):
         registry_savers.append(reg)
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.set_registry",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.set_registry",
         save_registry,
     )
 
@@ -100,7 +100,7 @@ def patched_app_environment(monkeypatch: pytest.MonkeyPatch):
             return health_detail
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.HealthEndpoint",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.HealthEndpoint",
         HealthEndpoint,
     )
 
@@ -110,7 +110,7 @@ def patched_app_environment(monkeypatch: pytest.MonkeyPatch):
         return trace_context
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.get_trace_context",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.get_trace_context",
         get_trace,
     )
 
@@ -120,7 +120,7 @@ def patched_app_environment(monkeypatch: pytest.MonkeyPatch):
             return "metrics"
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.PrometheusMetrics",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.PrometheusMetrics",
         DummyMetrics,
     )
 
@@ -181,7 +181,7 @@ def test_create_app_with_components(
         return [example_router]
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.discover_router_registrations",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.discover_router_registrations",
         fake_discover,
     )
 
@@ -244,21 +244,21 @@ def test_create_app_with_components(
 
 def test_create_app_requires_credentials(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.allow_insecure_startup",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.allow_insecure_startup",
         lambda: False,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.get_settings_secret",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.get_settings_secret",
         lambda: "secret",
     )
     # Mock current environment to production to disable ephemeral key generation
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.current_runtime_environment",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.current_runtime_environment",
         lambda: "production",
     )
     # Also disable ephemeral key generation directly
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.generate_ephemeral_dev_key",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.generate_ephemeral_dev_key",
         lambda: None,
     )
 
@@ -270,7 +270,7 @@ def test_create_app_requires_credentials(monkeypatch: pytest.MonkeyPatch) -> Non
 
 def test_create_app_requires_secret_key(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.app_factory.allow_insecure_startup",
+        "exegesis.infrastructure.api.app.bootstrap.app_factory.allow_insecure_startup",
         lambda: False,
     )
 

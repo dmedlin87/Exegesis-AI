@@ -7,7 +7,7 @@ from datetime import datetime
 
 import pytest
 
-from theo.domain.biblical_texts import (
+from exegesis.domain.biblical_texts import (
     AIAnalysis,
     BiblicalBook,
     BiblicalVerse,

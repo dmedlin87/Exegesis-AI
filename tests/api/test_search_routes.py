@@ -7,11 +7,11 @@ import joblib  # type: ignore[import]
 import pytest
 from fastapi.testclient import TestClient
 
-from theo.application.facades.settings import get_settings
-from theo.infrastructure.api.app.main import app
-from theo.infrastructure.api.app.models.search import HybridSearchResult
-from theo.infrastructure.api.app.routes import search as search_route
-from theo.infrastructure.api.app.infra import retrieval_service as retrieval_service_module
+from exegesis.application.facades.settings import get_settings
+from exegesis.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.models.search import HybridSearchResult
+from exegesis.infrastructure.api.app.routes import search as search_route
+from exegesis.infrastructure.api.app.infra import retrieval_service as retrieval_service_module
 
 
 class _WeightedModel:

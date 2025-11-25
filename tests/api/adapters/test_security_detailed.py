@@ -7,8 +7,8 @@ import pytest
 import jwt
 from fastapi import Request, HTTPException
 
-from theo.infrastructure.api.app.adapters.security import FastAPIPrincipalResolver
-from theo.application.facades.settings import Settings
+from exegesis.infrastructure.api.app.adapters.security import FastAPIPrincipalResolver
+from exegesis.application.facades.settings import Settings
 
 class TestSecurityAdapterDetailed:
 
@@ -67,7 +67,7 @@ class TestSecurityAdapterDetailed:
 
     def test_settings_cache_refresh(self, resolver):
         """Verify settings cache refresh logic respects interval and lock."""
-        with patch("theo.infrastructure.api.app.adapters.security.get_settings") as mock_get_settings:
+        with patch("exegesis.infrastructure.api.app.adapters.security.get_settings") as mock_get_settings:
             # First call
             resolver._refresh_settings_cache_if_stale()
             assert mock_get_settings.cache_clear.called

@@ -42,27 +42,27 @@ class MemorySession:
 
 FACADE_DEFINITIONS = [
     {
-        "module": "theo.application.facades.database",
+        "module": "exegesis.application.facades.database",
         "exports": ["Base", "configure_engine", "get_engine", "get_session"],
         "callables": ["configure_engine", "get_engine", "get_session"],
     },
     {
-        "module": "theo.application.facades.runtime",
+        "module": "exegesis.application.facades.runtime",
         "exports": ["allow_insecure_startup", "current_runtime_environment"],
         "callables": ["allow_insecure_startup", "current_runtime_environment"],
     },
     {
-        "module": "theo.application.facades.secret_migration",
+        "module": "exegesis.application.facades.secret_migration",
         "exports": ["migrate_secret_settings"],
         "callables": ["migrate_secret_settings"],
     },
     {
-        "module": "theo.application.facades.settings",
+        "module": "exegesis.application.facades.settings",
         "exports": ["Settings", "get_settings", "get_settings_cipher"],
         "callables": ["get_settings", "get_settings_cipher"],
     },
     {
-        "module": "theo.application.facades.settings_store",
+        "module": "exegesis.application.facades.settings_store",
         "exports": [
             "SETTINGS_NAMESPACE",
             "SettingNotFoundError",
@@ -73,7 +73,7 @@ FACADE_DEFINITIONS = [
         "callables": ["load_setting", "require_setting", "save_setting"],
     },
     {
-        "module": "theo.application.facades.version",
+        "module": "exegesis.application.facades.version",
         "exports": ["get_git_sha"],
         "callables": ["get_git_sha"],
     },
@@ -116,15 +116,15 @@ def test_facade_callables_are_callable(
 def test_runtime_allow_insecure_startup_respects_environment(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    runtime_module = _import_module("theo.application.facades.runtime")
+    runtime_module = _import_module("exegesis.application.facades.runtime")
     runtime_module.allow_insecure_startup.cache_clear()
 
-    monkeypatch.setenv("THEO_ALLOW_INSECURE_STARTUP", "true")
-    monkeypatch.setenv("THEORIA_ENVIRONMENT", "development")
+    monkeypatch.setenv("EXEGESIS_ALLOW_INSECURE_STARTUP", "true")
+    monkeypatch.setenv("EXEGESIS_ENVIRONMENT", "development")
     assert runtime_module.allow_insecure_startup() is True
 
     runtime_module.allow_insecure_startup.cache_clear()
-    monkeypatch.setenv("THEORIA_ENVIRONMENT", "production")
+    monkeypatch.setenv("EXEGESIS_ENVIRONMENT", "production")
     with pytest.raises(RuntimeError):
         runtime_module.allow_insecure_startup()
 
@@ -132,7 +132,7 @@ def test_runtime_allow_insecure_startup_respects_environment(
 
 
 def test_database_connection_helpers_create_sessions() -> None:
-    database_module = _import_module("theo.application.facades.database")
+    database_module = _import_module("exegesis.application.facades.database")
     engine = database_module.configure_engine("sqlite:///:memory:")
     try:
         assert str(engine.url) == "sqlite:///:memory:"
@@ -170,13 +170,13 @@ class FakeCipher:
 
 
 def _patch_app_setting(monkeypatch: pytest.MonkeyPatch) -> None:
-    facade_store = importlib.import_module("theo.application.facades.settings_store")
+    facade_store = importlib.import_module("exegesis.application.facades.settings_store")
     monkeypatch.setattr(facade_store, "AppSetting", MemoryAppSetting)
 
 
 def test_settings_store_encryption_round_trip(monkeypatch: pytest.MonkeyPatch) -> None:
     _patch_app_setting(monkeypatch)
-    facade_store = importlib.import_module("theo.application.facades.settings_store")
+    facade_store = importlib.import_module("exegesis.application.facades.settings_store")
     cipher = FakeCipher()
     monkeypatch.setattr(facade_store, "get_settings_cipher", lambda: cipher)
 
@@ -199,7 +199,7 @@ def test_settings_store_requires_cipher_for_sensitive_values(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     _patch_app_setting(monkeypatch)
-    facade_store = importlib.import_module("theo.application.facades.settings_store")
+    facade_store = importlib.import_module("exegesis.application.facades.settings_store")
     monkeypatch.setattr(facade_store, "get_settings_cipher", lambda: None)
 
     session = MemorySession()
@@ -219,8 +219,8 @@ def test_secret_migration_encrypts_plaintext_and_is_idempotent(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     _patch_app_setting(monkeypatch)
-    facade_store = importlib.import_module("theo.application.facades.settings_store")
-    facade_secret = importlib.import_module("theo.application.facades.secret_migration")
+    facade_store = importlib.import_module("exegesis.application.facades.settings_store")
+    facade_secret = importlib.import_module("exegesis.application.facades.secret_migration")
 
     cipher = FakeCipher()
     monkeypatch.setattr(facade_store, "get_settings_cipher", lambda: cipher)
@@ -286,7 +286,7 @@ def test_settings_secret_resolution_uses_configured_backend(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     facade_settings = importlib.reload(
-        importlib.import_module("theo.application.facades.settings")
+        importlib.import_module("exegesis.application.facades.settings")
     )
 
     facade_settings.get_settings.cache_clear()
@@ -309,11 +309,11 @@ def test_settings_secret_resolution_uses_configured_backend(
         return fake_adapter
 
     monkeypatch.setenv("SETTINGS_SECRET_BACKEND", "vault")
-    monkeypatch.setenv("SETTINGS_SECRET_NAME", "theoria/settings")
+    monkeypatch.setenv("SETTINGS_SECRET_NAME", "Exegesis AI/settings")
     monkeypatch.setenv("SETTINGS_SECRET_FIELD", "token")
     monkeypatch.setenv("SECRETS_VAULT_ADDR", "http://vault")
     monkeypatch.setenv("SECRETS_VAULT_TOKEN", "vault-token")
-    monkeypatch.setenv("THEO_CORS_ALLOWED_ORIGINS", "[\"https://example.com\"]")
+    monkeypatch.setenv("EXEGESIS_CORS_ALLOWED_ORIGINS", "[\"https://example.com\"]")
 
     monkeypatch.setattr(facade_settings, "build_secrets_adapter", fake_build)
     monkeypatch.setattr(facade_settings, "allow_insecure_startup", lambda: False)
@@ -328,7 +328,7 @@ def test_settings_secret_resolution_uses_configured_backend(
     assert secret == "backend-secret"
     cipher = facade_settings.get_settings_cipher()
     assert isinstance(cipher, FakeFernet)
-    assert fake_adapter.requests and fake_adapter.requests[0].identifier == "theoria/settings"
+    assert fake_adapter.requests and fake_adapter.requests[0].identifier == "Exegesis AI/settings"
 
     settings_obj = facade_settings.get_settings()
     assert settings_obj.cors_allowed_origins == ["https://example.com"]
@@ -340,7 +340,7 @@ def test_settings_secret_resolution_uses_configured_backend(
 
 def test_version_get_git_sha_invokes_git_binary(monkeypatch: pytest.MonkeyPatch) -> None:
     facade_version = importlib.reload(
-        importlib.import_module("theo.application.facades.version")
+        importlib.import_module("exegesis.application.facades.version")
     )
 
     facade_version.get_git_sha.cache_clear()

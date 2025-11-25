@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from theo.application.facades.settings import Settings, get_settings
+from exegesis.application.facades.settings import Settings, get_settings
 
 
 def test_settings_reranker_validation_across_envs(

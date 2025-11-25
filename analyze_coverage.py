@@ -13,7 +13,7 @@ def analyze_coverage(coverage_file='coverage.xml'):
     lines_covered = int(root.get('lines-covered'))
 
     print("=" * 80)
-    print("THEORIA TEST COVERAGE REPORT")
+    print("Exegesis AI TEST COVERAGE REPORT")
     print("=" * 80)
     print(f"\nOverall Coverage: {overall_rate:.1%} ({lines_covered:,}/{lines_valid:,} lines)")
     print("Target: 80%")

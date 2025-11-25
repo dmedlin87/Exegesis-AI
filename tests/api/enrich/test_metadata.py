@@ -8,8 +8,8 @@ from types import SimpleNamespace
 import pytest
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.adapters.persistence.models import Document
-from theo.infrastructure.api.app.enrich.metadata import (
+from exegesis.adapters.persistence.models import Document
+from exegesis.infrastructure.api.app.enrich.metadata import (
     MetadataEnricher,
     _dedupe_preserve_order,
     _extract_doi_from_url,

@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Validate Evidence Cards
-        run: python evidence/scripts/theoria_cli.py validate
+        run: python evidence/scripts/EXEGESIS_cli.py validate
       - name: Build Markdown mirrors
         run: python evidence/scripts/build_markdown.py
       - name: Show generated files

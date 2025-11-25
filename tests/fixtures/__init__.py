@@ -27,7 +27,7 @@ def _missing_dependency_factory(exc: ModuleNotFoundError) -> Callable[..., Any]:
     def _raiser(*_args: Any, **_kwargs: Any) -> Any:  # pragma: no cover - error path
         raise ModuleNotFoundError(
             "Optional regression fixture dependencies are not installed. "
-            "Install the 'regression' extras or set THEORIA_SKIP_HEAVY_FIXTURES=1 "
+            "Install the 'regression' extras or set EXEGESIS_SKIP_HEAVY_FIXTURES=1 "
             "to skip loading them."
         ) from exc
 

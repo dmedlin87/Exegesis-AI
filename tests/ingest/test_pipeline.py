@@ -11,20 +11,20 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades.database import (  # noqa: E402  (import after path tweak)
+from exegesis.application.facades.database import (  # noqa: E402  (import after path tweak)
     get_settings,
 )
-from theo.adapters.persistence.models import (  # noqa: E402
+from exegesis.adapters.persistence.models import (  # noqa: E402
     Document,
     Passage,
 )
-from theo.infrastructure.api.app.library.ingest import network as ingest_network  # noqa: E402
-from theo.infrastructure.api.app.library.ingest import pipeline  # noqa: E402
-from theo.infrastructure.api.app.library.ingest.exceptions import UnsupportedSourceError  # noqa: E402
-from theo.infrastructure.api.app.library.ingest.parsers import TranscriptSegment  # noqa: E402
-from theo.infrastructure.api.app.library.ingest.stages import ErrorDecision  # noqa: E402
-from theo.infrastructure.api.app.library.ingest.stages.fetchers import UrlSourceFetcher  # noqa: E402
-from theo.infrastructure.api.app.library.ingest.stages.parsers import TranscriptParser  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest import network as ingest_network  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest import pipeline  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest.exceptions import UnsupportedSourceError  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest.parsers import TranscriptSegment  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest.stages import ErrorDecision  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest.stages.fetchers import UrlSourceFetcher  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest.stages.parsers import TranscriptParser  # noqa: E402
 
 
 pytestmark = pytest.mark.pgvector
@@ -585,23 +585,23 @@ def test_youtube_fetch_retries_with_error_policy(
     segments = [TranscriptSegment(text="Hello", start=0.0, end=1.0)]
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.library.ingest.pipeline.ensure_url_allowed",
+        "exegesis.infrastructure.api.app.library.ingest.pipeline.ensure_url_allowed",
         lambda _settings, _url: None,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.library.ingest.stages.fetchers.extract_youtube_video_id",
+        "exegesis.infrastructure.api.app.library.ingest.stages.fetchers.extract_youtube_video_id",
         lambda url: "abc123",
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.library.ingest.stages.fetchers.is_youtube_url",
+        "exegesis.infrastructure.api.app.library.ingest.stages.fetchers.is_youtube_url",
         lambda url: True,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.library.ingest.stages.fetchers.load_youtube_metadata",
+        "exegesis.infrastructure.api.app.library.ingest.stages.fetchers.load_youtube_metadata",
         lambda settings, video_id: {"title": "Retry Video", "channel": "Channel"},
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.library.ingest.stages.fetchers.load_youtube_transcript",
+        "exegesis.infrastructure.api.app.library.ingest.stages.fetchers.load_youtube_transcript",
         lambda settings, video_id: (segments, None),
     )
 

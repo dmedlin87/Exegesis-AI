@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Start Theoria (dev)",
+      "label": "Start Exegesis AI (dev)",
       "type": "shell",
       "command": "pwsh",
       "args": [
@@ -10,7 +10,7 @@
         "-ExecutionPolicy",
         "Bypass",
         "-File",
-        "${workspaceFolder}/start-theoria.ps1"
+        "${workspaceFolder}/start-exegesis.ps1"
       ],
       "presentation": {
         "reveal": "always",
@@ -18,7 +18,7 @@
       }
     },
     {
-      "label": "Start Theoria (dev HTTPS)",
+      "label": "Start Exegesis AI (dev HTTPS)",
       "type": "shell",
       "command": "pwsh",
       "args": [
@@ -26,7 +26,7 @@
         "-ExecutionPolicy",
         "Bypass",
         "-File",
-        "${workspaceFolder}/start-theoria.ps1",
+        "${workspaceFolder}/start-exegesis.ps1",
         "-UseHttps"
       ],
       "presentation": {
@@ -35,7 +35,7 @@
       }
     },
     {
-      "label": "Start Theoria (staging)",
+      "label": "Start Exegesis AI (staging)",
       "type": "shell",
       "command": "pwsh",
       "args": [
@@ -43,7 +43,7 @@
         "-ExecutionPolicy",
         "Bypass",
         "-File",
-        "${workspaceFolder}/start-theoria.ps1",
+        "${workspaceFolder}/start-exegesis.ps1",
         "-Profile",
         "staging"
       ],

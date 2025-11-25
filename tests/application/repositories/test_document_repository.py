@@ -10,8 +10,8 @@ import numpy as np
 import pytest
 from sqlalchemy.orm import Session
 
-from theo.adapters.persistence.document_repository import SQLAlchemyDocumentRepository
-from theo.adapters.persistence.models import Document, Passage, _PREFETCHED_EMBEDDING_ATTR
+from exegesis.adapters.persistence.document_repository import SQLAlchemyDocumentRepository
+from exegesis.adapters.persistence.models import Document, Passage, _PREFETCHED_EMBEDDING_ATTR
 
 pytestmark = pytest.mark.db
 

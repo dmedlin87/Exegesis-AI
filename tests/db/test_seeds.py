@@ -17,9 +17,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades.database import Base
-from theo.infrastructure.api.app.db import seeds
-from theo.adapters.persistence.models import (
+from exegesis.application.facades.database import Base
+from exegesis.infrastructure.api.app.db import seeds
+from exegesis.adapters.persistence.models import (
     CommentaryExcerptSeed,
     ContradictionSeed,
     GeoPlace,
@@ -397,28 +397,28 @@ def test_api_boots_contradiction_seeding_without_migrations(
 
     database_url = f"sqlite:///{db_path}"
     monkeypatch.setenv("DATABASE_URL", database_url)
-    monkeypatch.setenv("THEO_DATABASE_URL", database_url)
-    monkeypatch.setenv("THEO_ALLOW_INSECURE_STARTUP", "1")
-    monkeypatch.setenv("THEORIA_ENVIRONMENT", "development")
+    monkeypatch.setenv("EXEGESIS_DATABASE_URL", database_url)
+    monkeypatch.setenv("EXEGESIS_ALLOW_INSECURE_STARTUP", "1")
+    monkeypatch.setenv("EXEGESIS_ENVIRONMENT", "development")
     monkeypatch.setenv("SETTINGS_SECRET_KEY", "test-secret")
 
-    from theo.application.facades import settings as settings_module
+    from exegesis.application.facades import settings as settings_module
     settings_module.get_settings.cache_clear()
     settings_module.get_settings_cipher.cache_clear()
 
-    from theo.application.facades import database as database_module
+    from exegesis.application.facades import database as database_module
     database_module._engine = None  # type: ignore[attr-defined]
     database_module._SessionLocal = None  # type: ignore[attr-defined]
 
-    module_name = "theo.infrastructure.api.app.bootstrap.app_factory"
+    module_name = "exegesis.infrastructure.api.app.bootstrap.app_factory"
     if module_name in sys.modules:
         importlib.reload(sys.modules[module_name])
     else:
         importlib.import_module(module_name)
     app_factory_module = sys.modules[module_name]
 
-    from theo.infrastructure.api.app.db import run_sql_migrations as migrations_module
-    from theo.infrastructure.api.app.bootstrap import lifecycle as lifecycle_module
+    from exegesis.infrastructure.api.app.db import run_sql_migrations as migrations_module
+    from exegesis.infrastructure.api.app.bootstrap import lifecycle as lifecycle_module
 
     monkeypatch.setattr(
         migrations_module,
@@ -446,7 +446,7 @@ def test_api_boots_contradiction_seeding_without_migrations(
         json.dumps(minimal_payload), encoding="utf-8"
     )
 
-    from theo.infrastructure.api.app.db import seeds as seeds_module
+    from exegesis.infrastructure.api.app.db import seeds as seeds_module
 
     monkeypatch.setattr(seeds_module, "SEED_ROOT", seed_dir)
     monkeypatch.setattr(seeds_module, "seed_harmony_claims", lambda session: None)

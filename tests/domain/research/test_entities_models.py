@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from theo.domain.research.entities import (
+from exegesis.domain.research.entities import (
     Hypothesis,
     HypothesisDraft,
     HypothesisNotFoundError,

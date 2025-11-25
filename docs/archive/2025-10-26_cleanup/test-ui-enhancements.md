@@ -95,8 +95,8 @@ Then visit http://localhost:3000
 
 ### Expected Results:
 - [ ] Manifest loads without errors
-- [ ] Name: "Theoria Research Engine"
-- [ ] Short name: "Theoria"
+- [ ] Name: "Exegesis AI Research Engine"
+- [ ] Short name: "Exegesis AI"
 - [ ] Theme color: #6366f1
 - [ ] Start URL: /
 

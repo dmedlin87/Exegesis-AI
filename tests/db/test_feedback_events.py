@@ -13,9 +13,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades.database import Base
-from theo.infrastructure.api.app.db.feedback import record_feedback_event
-from theo.adapters.persistence.models import FeedbackEvent, FeedbackEventAction
+from exegesis.application.facades.database import Base
+from exegesis.infrastructure.api.app.db.feedback import record_feedback_event
+from exegesis.adapters.persistence.models import FeedbackEvent, FeedbackEventAction
 
 
 @pytest.fixture()

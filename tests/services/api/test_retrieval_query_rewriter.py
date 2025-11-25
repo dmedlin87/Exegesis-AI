@@ -2,10 +2,10 @@ from typing import Sequence
 
 from sqlalchemy.orm import Session
 
-from theo.application.facades.settings import Settings
-from theo.application.retrieval.search import QueryRewriter
-from theo.infrastructure.api.app.models.search import HybridSearchRequest, HybridSearchResult
-from theo.infrastructure.api.app.infra.retrieval_service import RetrievalService
+from exegesis.application.facades.settings import Settings
+from exegesis.application.retrieval.search import QueryRewriter
+from exegesis.infrastructure.api.app.models.search import HybridSearchRequest, HybridSearchResult
+from exegesis.infrastructure.api.app.infra.retrieval_service import RetrievalService
 
 
 def _build_result(meta: dict[str, object] | None = None) -> HybridSearchResult:

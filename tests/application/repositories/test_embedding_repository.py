@@ -8,11 +8,11 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from theo.adapters.persistence.embedding_repository import (
+from exegesis.adapters.persistence.embedding_repository import (
     SQLAlchemyPassageEmbeddingRepository,
 )
-from theo.adapters.persistence.models import Document, Passage, PassageEmbedding
-from theo.application.repositories.embedding_repository import EmbeddingUpdate
+from exegesis.adapters.persistence.models import Document, Passage, PassageEmbedding
+from exegesis.application.repositories.embedding_repository import EmbeddingUpdate
 
 pytestmark = pytest.mark.db
 

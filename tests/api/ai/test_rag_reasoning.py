@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from theo.infrastructure.api.app.research.ai.rag import reasoning
+from exegesis.infrastructure.api.app.research.ai.rag import reasoning
 
 
 class RecorderStub:

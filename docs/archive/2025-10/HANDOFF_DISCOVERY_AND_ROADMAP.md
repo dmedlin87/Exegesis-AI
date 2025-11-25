@@ -1,7 +1,7 @@
 # 🔄 Handoff Document - Discovery Feature & Future Roadmap
 
 **Date**: October 15, 2025  
-**Project**: Theoria - Theological Research Engine  
+**Project**: Exegesis AI - Theological Research Engine  
 **Developer**: dmedlin87
 
 ---
@@ -10,9 +10,9 @@
 
 ### What Was Discussed
 
-User wanted killer features that would make Theoria indispensable for theological research. Specifically focused on:
+User wanted killer features that would make Exegesis AI indispensable for theological research. Specifically focused on:
 
-1. **Auto-discovery features** - The original reason for building Theoria
+1. **Auto-discovery features** - The original reason for building Exegesis AI
 2. **"Lazy exploration" mode** - Automatic insights without manual searching
 3. **Handling large corpus growth** - Planning to dump video transcripts, AI research, etc.
 4. **Automated discoveries alongside focused research** - Two modes: Hunter (search) + Explorer (discover)
@@ -159,7 +159,7 @@ theo/services/web/app/api/discoveries/
 ### Immediate (This Week)
 1. **Test Discovery Frontend**
    ```powershell
-   .\start-theoria.ps1
+   .\start-Exegesis AI.ps1
    # Visit http://localhost:3000/discoveries
    ```
    - Verify all 6 mock discoveries render
@@ -398,7 +398,7 @@ All components use CSS modules with design system tokens:
 
 ### Project Structure
 ```
-Theoria/
+Exegesis AI/
 ├── theo/
 │   ├── services/
 │   │   ├── api/          # FastAPI backend
@@ -462,7 +462,7 @@ Theoria/
 
 2. **Test Current Implementation**
    ```powershell
-   .\start-theoria.ps1
+   .\start-Exegesis AI.ps1
    # Navigate to http://localhost:3000/discoveries
    ```
 
@@ -527,7 +527,7 @@ Theoria/
 ## 💡 Key Insights from Conversation
 
 ### User's Vision
-Theoria should work in **two modes**:
+Exegesis AI should work in **two modes**:
 
 | **Hunter Mode** 🎯 | **Explorer Mode** 🔍 |
 |-------------------|---------------------|
@@ -648,7 +648,7 @@ Once live, measure:
 
 **What it needs**: Backend implementation to make discoveries dynamic and real-time based on actual corpus analysis.
 
-**Why it matters**: Transforms Theoria from a search tool into an **intelligent research companion** that proactively surfaces insights, making theological research effortless and delightful.
+**Why it matters**: Transforms Exegesis AI from a search tool into an **intelligent research companion** that proactively surfaces insights, making theological research effortless and delightful.
 
 **Next session focus**: Backend implementation → Database + FastAPI + Pattern detection → Go live with real discoveries!
 

@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch, ANY
 
 import pytest
 
-from theo.infrastructure.api.app.adapters.telemetry import ApiTelemetryProvider
+from exegesis.infrastructure.api.app.adapters.telemetry import ApiTelemetryProvider
 
 
 class TestTelemetryErrorHandling:
@@ -121,8 +121,8 @@ class TestTelemetryErrorHandling:
         mock_tracer.start_as_current_span.return_value.__enter__.return_value = mock_span
 
         # We need Status/StatusCode to be present for the code to attempt set_status
-        with patch("theo.infrastructure.api.app.adapters.telemetry.Status", MagicMock()), \
-             patch("theo.infrastructure.api.app.adapters.telemetry.StatusCode", MagicMock()), \
+        with patch("exegesis.infrastructure.api.app.adapters.telemetry.Status", MagicMock()), \
+             patch("exegesis.infrastructure.api.app.adapters.telemetry.StatusCode", MagicMock()), \
              patch.object(provider, "_get_tracer", return_value=mock_tracer):
 
             with pytest.raises(RuntimeError):

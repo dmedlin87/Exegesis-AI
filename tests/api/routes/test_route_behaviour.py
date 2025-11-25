@@ -15,19 +15,19 @@ from sqlalchemy.orm import Session, sessionmaker
 
 API_KEY = "test-route-key"
 
-os.environ.setdefault("THEO_DISABLE_AI_SETTINGS", "1")
-os.environ.setdefault("THEO_ALLOW_INSECURE_STARTUP", "1")
+os.environ.setdefault("EXEGESIS_DISABLE_AI_SETTINGS", "1")
+os.environ.setdefault("EXEGESIS_ALLOW_INSECURE_STARTUP", "1")
 os.environ.setdefault("SETTINGS_SECRET_KEY", "tests-secret-key")
-os.environ.setdefault("THEORIA_ENVIRONMENT", "test")
-os.environ.setdefault("THEO_AUTH_ALLOW_ANONYMOUS", "0")
-os.environ.setdefault("THEO_API_KEYS", API_KEY)
+os.environ.setdefault("EXEGESIS_ENVIRONMENT", "test")
+os.environ.setdefault("EXEGESIS_AUTH_ALLOW_ANONYMOUS", "0")
+os.environ.setdefault("EXEGESIS_API_KEYS", API_KEY)
 
-from theo.adapters.persistence import Base  # noqa: E402
-from theo.application.facades.database import get_session  # noqa: E402
-from theo.application.facades.settings import get_settings  # noqa: E402
-from theo.infrastructure.api.app.adapters.security import require_principal  # noqa: E402
-from theo.infrastructure.api.app.main import app  # noqa: E402
-from theo.infrastructure.api.app.core.tracing import TRACE_ID_HEADER_NAME  # noqa: E402
+from exegesis.adapters.persistence import Base  # noqa: E402
+from exegesis.application.facades.database import get_session  # noqa: E402
+from exegesis.application.facades.settings import get_settings  # noqa: E402
+from exegesis.infrastructure.api.app.adapters.security import require_principal  # noqa: E402
+from exegesis.infrastructure.api.app.main import app  # noqa: E402
+from exegesis.infrastructure.api.app.core.tracing import TRACE_ID_HEADER_NAME  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -148,11 +148,11 @@ def test_search_unexpected_error_returns_internal_error(
         raise RuntimeError("boom")
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.routes.search.RetrievalService.search",
+        "exegesis.infrastructure.api.app.routes.search.RetrievalService.search",
         _raise_search,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.middleware.get_current_trace_headers",
+        "exegesis.infrastructure.api.app.bootstrap.middleware.get_current_trace_headers",
         lambda: {TRACE_ID_HEADER_NAME: "trace-test"},
     )
 

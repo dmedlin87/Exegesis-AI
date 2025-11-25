@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from click.testing import CliRunner
 
-from theo.services.cli.rag_eval import (
+from exegesis.services.cli.rag_eval import (
     _load_jsonl,
     _compute_overall_scores,
     _extract_per_sample_scores,
@@ -106,9 +106,9 @@ class TestRagEvalInternals:
 class TestRagEvalCommand:
     """Integration-like tests for the CLI command."""
 
-    @patch("theo.services.cli.rag_eval.ragas_evaluate")
-    @patch("theo.services.cli.rag_eval._load_jsonl")
-    @patch("theo.services.cli.rag_eval._build_dataset")
+    @patch("exegesis.services.cli.rag_eval.ragas_evaluate")
+    @patch("exegesis.services.cli.rag_eval._load_jsonl")
+    @patch("exegesis.services.cli.rag_eval._build_dataset")
     def test_rag_eval_happy_path(self, mock_build, mock_load, mock_eval, tmp_path):
         """Test full run with mocked external calls."""
         runner = CliRunner()
@@ -135,9 +135,9 @@ class TestRagEvalCommand:
         assert "All metrics are within the configured tolerances" in result.output
         assert output_file.exists()
 
-    @patch("theo.services.cli.rag_eval.ragas_evaluate")
-    @patch("theo.services.cli.rag_eval._load_jsonl")
-    @patch("theo.services.cli.rag_eval._build_dataset")
+    @patch("exegesis.services.cli.rag_eval.ragas_evaluate")
+    @patch("exegesis.services.cli.rag_eval._load_jsonl")
+    @patch("exegesis.services.cli.rag_eval._build_dataset")
     def test_rag_eval_regression_failure(self, mock_build, mock_load, mock_eval, tmp_path):
         """Test that regressions cause non-zero exit."""
         runner = CliRunner()

@@ -1,4 +1,4 @@
-# UI/UX Review: Theoria Web Application
+# UI/UX Review: Exegesis AI Web Application
 
 **Review Date:** January 2025  
 **Reviewer:** Comprehensive Analysis  
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Theoria demonstrates **strong foundational UI/UX architecture** with a well-designed design system, comprehensive documentation, and modern component patterns. However, the application suffers from **inconsistent adoption** of its own design system, resulting in technical debt across 45+ files with inline styling and incomplete refactoring.
+Exegesis AI demonstrates **strong foundational UI/UX architecture** with a well-designed design system, comprehensive documentation, and modern component patterns. However, the application suffers from **inconsistent adoption** of its own design system, resulting in technical debt across 45+ files with inline styling and incomplete refactoring.
 
 ### Overall Score: 7.2/10
 
@@ -750,7 +750,7 @@ npm install -D @percy/cli
 
 ### Against Modern Web Apps
 
-| Criteria | Theoria | Industry Standard | Gap |
+| Criteria | Exegesis AI | Industry Standard | Gap |
 |----------|-----------|-------------------|-----|
 | Design System | 9/10 | 9/10 | ✅ Equal |
 | Component Library | 6/10 | 9/10 | ❌ -3 |
@@ -764,7 +764,7 @@ npm install -D @percy/cli
 
 ## 12. Conclusion
 
-Theoria has **excellent bones** with a well-architected design system and thoughtful component patterns. The primary challenge is **following through on the refactoring plan** already documented.
+Exegesis AI has **excellent bones** with a well-architected design system and thoughtful component patterns. The primary challenge is **following through on the refactoring plan** already documented.
 
 ### The Good News
 

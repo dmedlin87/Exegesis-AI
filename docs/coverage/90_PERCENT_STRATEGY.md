@@ -1,4 +1,4 @@
-# 90% Coverage Strategy for Theoria
+# 90% Coverage Strategy for Exegesis AI
 
 **Status:** Active Strategy
 **Date:** November 1, 2025

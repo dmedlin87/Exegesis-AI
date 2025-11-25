@@ -4,8 +4,8 @@
 
 import json
 
-from theo.services.api.app.ai.rag import RAGAnswer, RAGCitation, ReasoningTrace
-from theo.services.api.app.routes.ai.workflows.chat import (
+from exegesis.services.api.app.ai.rag import RAGAnswer, RAGCitation, ReasoningTrace
+from exegesis.services.api.app.routes.ai.workflows.chat import (
     _create_mock_reasoning_timeline,
 )
 

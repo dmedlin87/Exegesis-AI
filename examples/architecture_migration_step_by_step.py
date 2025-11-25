@@ -13,8 +13,8 @@ def old_approach_list_discoveries():
     from sqlalchemy import select
     from sqlalchemy.orm import Session
 
-    from theo.adapters.persistence.models import Discovery
-    from theo.application.facades.database import get_session
+    from exegesis.adapters.persistence.models import Discovery
+    from exegesis.application.facades.database import get_session
 
     # Route handler directly queries database
     session = next(get_session())
@@ -45,10 +45,10 @@ def step2_with_dtos():
     from sqlalchemy import select
     from sqlalchemy.orm import Session
 
-    from theo.adapters.persistence.mappers import discovery_to_dto
-    from theo.adapters.persistence.models import Discovery
-    from theo.application.dtos import DiscoveryDTO
-    from theo.application.facades.database import get_session
+    from exegesis.adapters.persistence.mappers import discovery_to_dto
+    from exegesis.adapters.persistence.models import Discovery
+    from exegesis.application.dtos import DiscoveryDTO
+    from exegesis.application.facades.database import get_session
 
     session = next(get_session())
     try:
@@ -70,11 +70,11 @@ def step3_with_repository():
     """Better: Use repository pattern for abstraction."""
     from sqlalchemy.orm import Session
 
-    from theo.adapters.persistence.discovery_repository import (
+    from exegesis.adapters.persistence.discovery_repository import (
         SQLAlchemyDiscoveryRepository,
     )
-    from theo.application.dtos import DiscoveryListFilters
-    from theo.application.facades.database import get_session
+    from exegesis.application.dtos import DiscoveryListFilters
+    from exegesis.application.facades.database import get_session
 
     session = next(get_session())
     try:
@@ -97,12 +97,12 @@ def step4_dependency_injection():
     from fastapi import APIRouter, Depends
     from sqlalchemy.orm import Session
 
-    from theo.adapters.persistence.discovery_repository import (
+    from exegesis.adapters.persistence.discovery_repository import (
         SQLAlchemyDiscoveryRepository,
     )
-    from theo.application.dtos import DiscoveryDTO, DiscoveryListFilters
-    from theo.application.facades.database import get_session
-    from theo.application.repositories import DiscoveryRepository
+    from exegesis.application.dtos import DiscoveryDTO, DiscoveryListFilters
+    from exegesis.application.facades.database import get_session
+    from exegesis.application.repositories import DiscoveryRepository
 
     router = APIRouter()
 
@@ -136,13 +136,13 @@ def step5_with_domain_errors():
     from fastapi import APIRouter, Depends
     from sqlalchemy.orm import Session
 
-    from theo.adapters.persistence.discovery_repository import (
+    from exegesis.adapters.persistence.discovery_repository import (
         SQLAlchemyDiscoveryRepository,
     )
-    from theo.application.dtos import DiscoveryDTO
-    from theo.application.facades.database import get_session
-    from theo.application.repositories import DiscoveryRepository
-    from theo.domain.errors import NotFoundError
+    from exegesis.application.dtos import DiscoveryDTO
+    from exegesis.application.facades.database import get_session
+    from exegesis.application.repositories import DiscoveryRepository
+    from exegesis.domain.errors import NotFoundError
 
     router = APIRouter()
 
@@ -179,12 +179,12 @@ def step6_with_use_case():
     """Advanced: Use case for complex operations."""
     from datetime import UTC, datetime
 
-    from theo.application.dtos import DiscoveryDTO
-    from theo.application.repositories import (
+    from exegesis.application.dtos import DiscoveryDTO
+    from exegesis.application.repositories import (
         DiscoveryRepository,
         DocumentRepository,
     )
-    from theo.domain.discoveries import PatternDiscoveryEngine
+    from exegesis.domain.discoveries import PatternDiscoveryEngine
 
     class RefreshDiscoveriesUseCase:
         """Orchestrates discovery refresh process.
@@ -247,7 +247,7 @@ def test_new_approach():
     """New approach: Mock repository."""
     from unittest.mock import Mock
 
-    from theo.application.dtos import DiscoveryDTO, DiscoveryListFilters
+    from exegesis.application.dtos import DiscoveryDTO, DiscoveryListFilters
 
     # Create mock repository
     mock_repo = Mock()

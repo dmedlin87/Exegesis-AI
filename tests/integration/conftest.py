@@ -27,10 +27,10 @@ except (ModuleNotFoundError, ImportError):  # pragma: no cover - allow lightweig
     Base = None  # type: ignore[assignment]
     run_sql_migrations = None  # type: ignore[assignment]
 else:
-    from theo.adapters.persistence import Base
+    from exegesis.adapters.persistence import Base
 
     try:  # pragma: no cover - migrations optional in light environments
-        from theo.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
+        from exegesis.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
     except (ModuleNotFoundError, ImportError):  # pragma: no cover - lightweight test runs
         run_sql_migrations = None  # type: ignore[assignment]
 
@@ -88,18 +88,18 @@ def sqlite_session(sqlite_memory_engine: Engine) -> Generator[Session, None, Non
 def integration_session_environment() -> Iterator[None]:
     """Provide consistent configuration for integration scenarios (session-scoped)."""
 
-    from theo.infrastructure.api.app.db import query_optimizations
-    from theo.application.facades.settings import get_settings
-    from theo.application.facades.runtime import clear_generated_dev_key
+    from exegesis.infrastructure.api.app.db import query_optimizations
+    from exegesis.application.facades.settings import get_settings
+    from exegesis.application.facades.runtime import clear_generated_dev_key
 
     # Manually update os.environ to ensure global visibility
     old_environ = dict(os.environ)
     updates = {
         "SETTINGS_SECRET_KEY": "integration-secret",
-        "THEO_API_KEYS": '["pytest-default-key"]',
-        "THEO_ALLOW_INSECURE_STARTUP": "1",
-        "THEORIA_ENVIRONMENT": "test",
-        "THEO_FORCE_EMBEDDING_FALLBACK": "1",
+        "EXEGESIS_API_KEYS": '["pytest-default-key"]',
+        "EXEGESIS_ALLOW_INSECURE_STARTUP": "1",
+        "EXEGESIS_ENVIRONMENT": "test",
+        "EXEGESIS_FORCE_EMBEDDING_FALLBACK": "1",
         "CREATOR_VERSE_ROLLUPS_ASYNC_REFRESH": "0",
     }
     os.environ.update(updates)

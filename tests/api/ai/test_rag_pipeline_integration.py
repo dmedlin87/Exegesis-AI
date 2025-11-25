@@ -6,9 +6,9 @@ from collections import deque
 
 import pytest
 
-from theo.infrastructure.api.app.research.ai.rag import workflow
-from theo.infrastructure.api.app.research.ai.rag.models import RAGAnswer, RAGCitation
-from theo.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
+from exegesis.infrastructure.api.app.research.ai.rag import workflow
+from exegesis.infrastructure.api.app.research.ai.rag.models import RAGAnswer, RAGCitation
+from exegesis.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
 
 
 class _DummySpan:

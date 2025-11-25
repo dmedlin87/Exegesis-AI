@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.testclient import TestClient
 from starlette.responses import Response
 
-from theo.infrastructure.api.app import main as main_module
+from exegesis.infrastructure.api.app import main as main_module
 
 
 def test_enforce_authentication_requires_credentials(monkeypatch):
@@ -112,19 +112,19 @@ def test_attach_trace_headers_does_not_override_existing():
 
 
 def test_should_patch_httpx_respects_disable_env(monkeypatch):
-    monkeypatch.setenv("THEO_DISABLE_HTTPX_COMPAT_PATCH", "1")
+    monkeypatch.setenv("EXEGESIS_DISABLE_HTTPX_COMPAT_PATCH", "1")
     assert not main_module._should_patch_httpx()
 
-    monkeypatch.setenv("THEO_DISABLE_HTTPX_COMPAT_PATCH", "true")
+    monkeypatch.setenv("EXEGESIS_DISABLE_HTTPX_COMPAT_PATCH", "true")
     assert not main_module._should_patch_httpx()
 
-    monkeypatch.setenv("THEO_DISABLE_HTTPX_COMPAT_PATCH", "no")
+    monkeypatch.setenv("EXEGESIS_DISABLE_HTTPX_COMPAT_PATCH", "no")
     assert main_module._should_patch_httpx()
 
 
 def test_configure_console_traces_enabled(monkeypatch):
     calls: list[object] = []
-    monkeypatch.setenv("THEO_ENABLE_CONSOLE_TRACES", "true")
+    monkeypatch.setenv("EXEGESIS_ENABLE_CONSOLE_TRACES", "true")
     monkeypatch.setattr(main_module, "configure_console_tracer", lambda: calls.append(tuple()))
 
     settings = SimpleNamespace()
@@ -135,7 +135,7 @@ def test_configure_console_traces_enabled(monkeypatch):
 
 def test_configure_console_traces_disabled(monkeypatch):
     calls: list[object] = []
-    monkeypatch.delenv("THEO_ENABLE_CONSOLE_TRACES", raising=False)
+    monkeypatch.delenv("EXEGESIS_ENABLE_CONSOLE_TRACES", raising=False)
     monkeypatch.setattr(main_module, "configure_console_tracer", lambda: calls.append(tuple()))
 
     settings = SimpleNamespace()
@@ -184,7 +184,7 @@ def test_register_health_routes_return_service_data(monkeypatch):
             return FakeReport()
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.infra.health.get_health_service",
+        "exegesis.infrastructure.api.app.infra.health.get_health_service",
         lambda: FakeService(),
     )
 

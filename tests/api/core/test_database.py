@@ -5,7 +5,7 @@ from contextlib import closing
 
 from sqlalchemy import text
 
-from theo.application.facades import database as facades_database
+from exegesis.application.facades import database as facades_database
 
 
 def _reset_database_state() -> None:

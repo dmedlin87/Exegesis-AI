@@ -16,12 +16,12 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades.database import get_session
-from theo.application.facades.settings import get_settings
-from theo.infrastructure.api.app.main import app
-from theo.infrastructure.api.app.routes import ai as ai_module
-from theo.infrastructure.api.app.routes import documents as documents_module
-from theo.infrastructure.api.app.routes import ingest as ingest_module
+from exegesis.application.facades.database import get_session
+from exegesis.application.facades.settings import get_settings
+from exegesis.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.routes import ai as ai_module
+from exegesis.infrastructure.api.app.routes import documents as documents_module
+from exegesis.infrastructure.api.app.routes import ingest as ingest_module
 
 
 pytestmark = pytest.mark.no_auth_override
@@ -54,12 +54,12 @@ def _refresh_settings():
 
 @pytest.fixture
 def secure_env(monkeypatch) -> dict[str, str]:
-    monkeypatch.setenv("THEO_API_KEYS", '["valid-key"]')
-    monkeypatch.setenv("THEO_AUTH_JWT_SECRET", "shared-secret")
-    monkeypatch.delenv("THEO_AUTH_JWT_ALGORITHMS", raising=False)
-    monkeypatch.delenv("THEO_AUTH_JWT_PUBLIC_KEY", raising=False)
-    monkeypatch.delenv("THEO_AUTH_JWT_PUBLIC_KEY_PATH", raising=False)
-    monkeypatch.delenv("THEO_AUTH_ALLOW_ANONYMOUS", raising=False)
+    monkeypatch.setenv("EXEGESIS_API_KEYS", '["valid-key"]')
+    monkeypatch.setenv("EXEGESIS_AUTH_JWT_SECRET", "shared-secret")
+    monkeypatch.delenv("EXEGESIS_AUTH_JWT_ALGORITHMS", raising=False)
+    monkeypatch.delenv("EXEGESIS_AUTH_JWT_PUBLIC_KEY", raising=False)
+    monkeypatch.delenv("EXEGESIS_AUTH_JWT_PUBLIC_KEY_PATH", raising=False)
+    monkeypatch.delenv("EXEGESIS_AUTH_ALLOW_ANONYMOUS", raising=False)
     return {"api_key": "valid-key", "jwt_secret": "shared-secret"}
 
 
@@ -90,12 +90,12 @@ def rsa_keys() -> tuple[str, str]:
 @pytest.fixture
 def rsa_client(monkeypatch, rsa_keys):
     private_pem, public_pem = rsa_keys
-    monkeypatch.setenv("THEO_API_KEYS", '["valid-key"]')
-    monkeypatch.delenv("THEO_AUTH_JWT_SECRET", raising=False)
-    monkeypatch.setenv("THEO_AUTH_JWT_ALGORITHMS", '["RS256"]')
-    monkeypatch.setenv("THEO_AUTH_JWT_PUBLIC_KEY", public_pem)
-    monkeypatch.delenv("THEO_AUTH_JWT_PUBLIC_KEY_PATH", raising=False)
-    monkeypatch.delenv("THEO_AUTH_ALLOW_ANONYMOUS", raising=False)
+    monkeypatch.setenv("EXEGESIS_API_KEYS", '["valid-key"]')
+    monkeypatch.delenv("EXEGESIS_AUTH_JWT_SECRET", raising=False)
+    monkeypatch.setenv("EXEGESIS_AUTH_JWT_ALGORITHMS", '["RS256"]')
+    monkeypatch.setenv("EXEGESIS_AUTH_JWT_PUBLIC_KEY", public_pem)
+    monkeypatch.delenv("EXEGESIS_AUTH_JWT_PUBLIC_KEY_PATH", raising=False)
+    monkeypatch.delenv("EXEGESIS_AUTH_ALLOW_ANONYMOUS", raising=False)
     with _client_context(monkeypatch) as client:
         yield client, private_pem
 
@@ -108,11 +108,11 @@ def _client_context(monkeypatch):
     app.dependency_overrides[get_session] = _override_session
     try:
         monkeypatch.setattr(
-            "theo.infrastructure.api.app.bootstrap.lifecycle.run_sql_migrations",
+            "exegesis.infrastructure.api.app.bootstrap.lifecycle.run_sql_migrations",
             lambda *args, **kwargs: [],
         )
         monkeypatch.setattr(
-            "theo.infrastructure.api.app.bootstrap.lifecycle.seed_reference_data",
+            "exegesis.infrastructure.api.app.bootstrap.lifecycle.seed_reference_data",
             lambda *args, **kwargs: None,
         )
 

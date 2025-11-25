@@ -98,15 +98,15 @@ The system currently shows **6 sample discoveries**:
 ### 1. Start the Development Server
 
 ```powershell
-.\start-theoria.ps1
+.\start-Exegesis AI.ps1
 ```
 
 Or manually:
 
 ```powershell
 # Terminal 1 - API
-cd C:\Users\dmedl\Projects\Theoria
-$Env:THEO_AUTH_ALLOW_ANONYMOUS="1"
+cd C:\Users\dmedl\Projects\Exegesis AI
+$Env:EXEGESIS_AUTH_ALLOW_ANONYMOUS="1"
 uvicorn theo.services.api.app.main:app --reload
 
 # Terminal 2 - Web

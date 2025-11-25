@@ -5,8 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from theo.adapters.biblical_ai_processor import BiblicalAIProcessor
-from theo.domain.biblical_texts import Language, POS, Reference
+from exegesis.adapters.biblical_ai_processor import BiblicalAIProcessor
+from exegesis.domain.biblical_texts import Language, POS, Reference
 
 
 @dataclass

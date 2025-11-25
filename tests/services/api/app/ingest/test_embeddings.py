@@ -9,14 +9,14 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
-from theo.infrastructure.api.app.library.ingest.embeddings import (
+from exegesis.infrastructure.api.app.library.ingest.embeddings import (
     EmbeddingService,
     ResilienceError,
     lexical_representation,
 )
-from theo.infrastructure.api.app.resilience import ResilienceMetadata
+from exegesis.infrastructure.api.app.resilience import ResilienceMetadata
 
-import theo.infrastructure.api.app.library.ingest.embeddings as embeddings_module
+import exegesis.infrastructure.api.app.library.ingest.embeddings as embeddings_module
 
 
 class _RecordingEncoder:
@@ -87,7 +87,7 @@ def test_embedding_service_records_span_on_resilience_error(monkeypatch: pytest.
     provider = TracerProvider()
     provider.add_span_processor(SimpleSpanProcessor(exporter))
     trace.set_tracer_provider(provider)
-    tracer = provider.get_tracer("theo.embedding")
+    tracer = provider.get_tracer("exegesis.embedding")
     monkeypatch.setattr(embeddings_module, "_TRACER", tracer)
 
     metadata = ResilienceMetadata(

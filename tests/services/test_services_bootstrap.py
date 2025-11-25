@@ -3,17 +3,17 @@ from __future__ import annotations
 import pytest
 from sqlalchemy.orm import Session
 
-from theo.application.retrieval.embeddings.rebuild_service import EmbeddingRebuildService
-from theo.adapters import AdapterRegistry
-from theo.application import ApplicationContainer
-from theo.application.facades.database import Base, configure_engine, get_engine
-from theo.application.research import ResearchService
-from theo.adapters.research import (
+from exegesis.application.retrieval.embeddings.rebuild_service import EmbeddingRebuildService
+from exegesis.adapters import AdapterRegistry
+from exegesis.application import ApplicationContainer
+from exegesis.application.facades.database import Base, configure_engine, get_engine
+from exegesis.application.research import ResearchService
+from exegesis.adapters.research import (
     SqlAlchemyHypothesisRepository,
     SqlAlchemyResearchNoteRepository,
 )
-from theo.domain import Document, DocumentId, DocumentMetadata
-from theo.application.services.bootstrap import resolve_application
+from exegesis.domain import Document, DocumentId, DocumentMetadata
+from exegesis.application.services.bootstrap import resolve_application
 
 
 @pytest.fixture

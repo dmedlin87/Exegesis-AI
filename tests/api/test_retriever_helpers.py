@@ -2,12 +2,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from theo.infrastructure.api.app.models.search import (
+from exegesis.infrastructure.api.app.models.search import (
     HybridSearchFilters,
     HybridSearchRequest,
     HybridSearchResult,
 )
-from theo.infrastructure.api.app.retrieval.retriever.hybrid import (
+from exegesis.infrastructure.api.app.retrieval.retriever.hybrid import (
     _Candidate,
     _merge_scored_candidates,
     _score_candidates,

@@ -7,7 +7,7 @@ import pytest
 from fastapi import HTTPException
 from starlette.requests import Request
 
-from theo.infrastructure.api.app.adapters import security as security_adapter
+from exegesis.infrastructure.api.app.adapters import security as security_adapter
 
 
 class StubSettings(SimpleNamespace):

@@ -23,8 +23,8 @@ from types import SimpleNamespace
 from typing import TYPE_CHECKING, Sequence
 
 if TYPE_CHECKING:
-    from theo.infrastructure.api.app.models.ai import ChatMemoryEntry, IntentTagPayload
-    from theo.infrastructure.api.app.research.ai.memory_metadata import MemoryFocus
+    from exegesis.infrastructure.api.app.models.ai import ChatMemoryEntry, IntentTagPayload
+    from exegesis.infrastructure.api.app.research.ai.memory_metadata import MemoryFocus
 
 
 def make_chat_entry(
@@ -71,7 +71,7 @@ def make_chat_entry(
     Returns:
         A ChatMemoryEntry instance for use in tests.
     """
-    from theo.infrastructure.api.app.models.ai import ChatMemoryEntry
+    from exegesis.infrastructure.api.app.models.ai import ChatMemoryEntry
 
     if created_at is None:
         if minutes_ago is not None:
@@ -143,7 +143,7 @@ def load_memory_entries(record: object | None) -> "list[ChatMemoryEntry]":
     Returns:
         List of parsed ChatMemoryEntry objects, sorted by created_at.
     """
-    from theo.infrastructure.api.app.routes.ai.workflows.chat import (
+    from exegesis.infrastructure.api.app.routes.ai.workflows.chat import (
         _load_memory_entries,
     )
 
@@ -170,7 +170,7 @@ def prepare_memory_context(
     Returns:
         List of formatted memory snippet strings.
     """
-    from theo.infrastructure.api.app.routes.ai.workflows.chat import (
+    from exegesis.infrastructure.api.app.routes.ai.workflows.chat import (
         _prepare_memory_context,
     )
 
@@ -196,10 +196,10 @@ def prepare_focus_context(
     Returns:
         List of formatted memory snippet strings prioritized by focus.
     """
-    from theo.infrastructure.api.app.research.ai.memory_metadata import (
+    from exegesis.infrastructure.api.app.research.ai.memory_metadata import (
         extract_memory_metadata,
     )
-    from theo.infrastructure.api.app.routes.ai.workflows.chat import (
+    from exegesis.infrastructure.api.app.routes.ai.workflows.chat import (
         _prepare_memory_context,
     )
 

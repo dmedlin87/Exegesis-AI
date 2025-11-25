@@ -33,8 +33,8 @@ if "pypdf" not in sys.modules:
     sys.modules["pypdf"] = pypdf_module
     sys.modules["pypdf.errors"] = errors_module
 
-from theo.domain.research.osis import format_osis
-from theo.infrastructure.api.app.library.ingest.parsers import TranscriptSegment
+from exegesis.domain.research.osis import format_osis
+from exegesis.infrastructure.api.app.library.ingest.parsers import TranscriptSegment
 
 __all__ = [
     "DEFAULT_HYPOTHESIS_SETTINGS",

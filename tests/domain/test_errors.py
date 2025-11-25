@@ -2,7 +2,7 @@
 
 import pytest
 
-from theo.domain.errors import (
+from exegesis.domain.errors import (
     AuthorizationError,
     ConflictError,
     DomainError,

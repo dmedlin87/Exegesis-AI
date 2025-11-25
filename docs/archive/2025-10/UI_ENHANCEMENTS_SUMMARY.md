@@ -2,7 +2,7 @@
 
 ## Overview
 
-Based on a comprehensive UI review that rated Theoria at **5/5 stars** for design, accessibility, and code quality, the following enhancements have been prepared to elevate the user experience to the next level.
+Based on a comprehensive UI review that rated Exegesis AI at **5/5 stars** for design, accessibility, and code quality, the following enhancements have been prepared to elevate the user experience to the next level.
 
 ---
 

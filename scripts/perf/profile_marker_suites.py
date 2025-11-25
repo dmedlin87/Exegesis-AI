@@ -57,15 +57,27 @@ class MarkerProfile:
 
 
 def _build_command(marker: str) -> list[str]:
-    base = ["pytest", f"-m", marker, "--durations=25", "--durations-min=0.05", "-q"]
+    """Build a pytest command using the current Python interpreter.
+
+    The layout must be:
+
+        [sys.executable, "-m", "pytest", <marker-flags>, "-m", marker, ...]
+
+    so that flags like ``--schema`` are interpreted by pytest rather than by
+    the Python interpreter itself.
+    """
+
+    cmd: list[str] = [sys.executable, "-m", "pytest"]
+
     if marker == "schema":
-        base.insert(1, "--schema")
+        cmd.append("--schema")
     elif marker == "pgvector":
-        base.insert(1, "--schema")
-        base.insert(1, "--pgvector")
+        cmd.extend(["--pgvector", "--schema"])
     elif marker == "contract":
-        base.insert(1, "--contract")
-    return base
+        cmd.append("--contract")
+
+    cmd.extend(["-m", marker, "--durations=25", "--durations-min=0.05", "-q"])
+    return cmd
 
 
 def _parse_slowest(lines: Iterable[str]) -> list[SlowTestRecord]:

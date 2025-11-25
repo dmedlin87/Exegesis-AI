@@ -1,12 +1,12 @@
 # Implementation Context for AI Agents
 
-This document provides complete context for AI agents to continue development of the Theoria project.
+This document provides complete context for AI agents to continue development of the Exegesis AI project.
 
 ---
 
 ## Project Overview
 
-**Theoria** is an evidence-first theological research platform combining RAG (Retrieval-Augmented Generation), auto-discovery, and agent-based reasoning to help users explore biblical texts and theological documents.
+**Exegesis AI** is an evidence-first theological research platform combining RAG (Retrieval-Augmented Generation), auto-discovery, and agent-based reasoning to help users explore biblical texts and theological documents.
 
 **Tech Stack:**
 - Frontend: Next.js 14 (App Router), React, TypeScript
@@ -552,7 +552,7 @@ ruff format theo/
 ### 6. Manual Testing
 ```bash
 # Start services
-.\start-theoria.ps1
+.\start-Exegesis AI.ps1
 
 # Test API
 curl http://localhost:8000/api/discoveries
@@ -574,15 +574,15 @@ curl http://localhost:8000/api/discoveries
 
 ```bash
 # Database
-DATABASE_URL=postgresql://user:pass@localhost:5432/theoria
+DATABASE_URL=postgresql://user:pass@localhost:5432/Exegesis AI
 
 # OpenAI
 OPENAI_API_KEY=sk-...
 
 # Optional: Discovery configuration
-THEORIA_DISCOVERY_INTERVAL=30
-THEORIA_NLI_MODEL=microsoft/deberta-v3-base-mnli
-THEORIA_CONTRADICTION_THRESHOLD=0.7
+EXEGESIS_DISCOVERY_INTERVAL=30
+EXEGESIS_NLI_MODEL=microsoft/deberta-v3-base-mnli
+EXEGESIS_CONTRADICTION_THRESHOLD=0.7
 ```
 
 ### Local Development

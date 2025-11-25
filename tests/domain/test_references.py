@@ -2,7 +2,7 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from theo.domain.references import ScriptureReference
+from exegesis.domain.references import ScriptureReference
 
 
 def test_to_range_returns_osis_when_no_bounds():

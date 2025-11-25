@@ -2,7 +2,7 @@
 
 ## Summary
 
-Fixed critical performance issues and enhanced error handling across the Theoria frontend application. These improvements reduce unnecessary re-renders, add request cancellation support, improve error recovery, and provide better debugging capabilities.
+Fixed critical performance issues and enhanced error handling across the Exegesis AI frontend application. These improvements reduce unnecessary re-renders, add request cancellation support, improve error recovery, and provide better debugging capabilities.
 
 ## Changes Made
 

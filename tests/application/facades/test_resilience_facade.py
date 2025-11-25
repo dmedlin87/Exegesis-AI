@@ -3,8 +3,8 @@ from typing import Awaitable, Callable
 
 import pytest
 
-from theo.application.facades import resilience as resilience_facade
-from theo.application.core.resilience import ResilienceMetadata, ResiliencePolicy, ResilienceSettings
+from exegesis.application.facades import resilience as resilience_facade
+from exegesis.application.core.resilience import ResilienceMetadata, ResiliencePolicy, ResilienceSettings
 
 
 class _Policy(ResiliencePolicy):

@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Intelligent all-in-one runner for Theoria (API + Web)
+    Intelligent all-in-one runner for Exegesis AI (API + Web)
 
 .DESCRIPTION
     Automatically detects environment, checks prerequisites, and starts services.
@@ -268,14 +268,14 @@ function Initialize-EnvironmentFiles {
         } else {
             Write-Warn ".env.example not found, creating minimal .env"
             @"
-# Theoria Configuration
+# Exegesis AI Configuration
 database_url=sqlite:///./theo.db
 storage_root=./storage
 redis_url=redis://localhost:6379/0
-# Override THEO_AUTH_ALLOW_ANONYMOUS=1 in your shell when testing without API keys.
-THEO_AUTH_ALLOW_ANONYMOUS=0
-# Set THEO_ALLOW_INSECURE_STARTUP=1 in your shell only when running without credentials locally.
-THEO_ALLOW_INSECURE_STARTUP=0
+# Override EXEGESIS_AUTH_ALLOW_ANONYMOUS=1 in your shell when testing without API keys.
+EXEGESIS_AUTH_ALLOW_ANONYMOUS=0
+# Set EXEGESIS_ALLOW_INSECURE_STARTUP=1 in your shell only when running without credentials locally.
+EXEGESIS_ALLOW_INSECURE_STARTUP=0
 embedding_model=BAAI/bge-m3
 embedding_dim=1024
 NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:$Port
@@ -291,7 +291,7 @@ API_BASE_URL=http://127.0.0.1:$Port
     if (-not (Test-Path $Script:WebEnvFile)) {
         Write-Step "Creating web/.env.local..."
         @"
-# Theoria Web - Local Development
+# Exegesis AI Web - Local Development
 NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:$Port
 API_BASE_URL=http://127.0.0.1:$Port
 "@ | Out-File -FilePath $Script:WebEnvFile -Encoding UTF8
@@ -303,8 +303,8 @@ API_BASE_URL=http://127.0.0.1:$Port
 
 function Enable-LocalInsecureOverrides {
     $shouldEnable = $true
-    if ($env:THEO_LOCAL_INSECURE_OVERRIDES -eq '0') {
-        Write-Step "Skipping local insecure overrides (THEO_LOCAL_INSECURE_OVERRIDES=0)"
+    if ($env:EXEGESIS_LOCAL_INSECURE_OVERRIDES -eq '0') {
+        Write-Step "Skipping local insecure overrides (EXEGESIS_LOCAL_INSECURE_OVERRIDES=0)"
         $shouldEnable = $false
     }
 
@@ -313,21 +313,21 @@ function Enable-LocalInsecureOverrides {
     $truthy = @('1', 'true', 'yes')
 
     $currentInsecure = ''
-    if (-not [string]::IsNullOrWhiteSpace($env:THEO_ALLOW_INSECURE_STARTUP)) {
-        $currentInsecure = $env:THEO_ALLOW_INSECURE_STARTUP.ToLowerInvariant()
+    if (-not [string]::IsNullOrWhiteSpace($env:EXEGESIS_ALLOW_INSECURE_STARTUP)) {
+        $currentInsecure = $env:EXEGESIS_ALLOW_INSECURE_STARTUP.ToLowerInvariant()
     }
     if (-not $truthy.Contains($currentInsecure)) {
-        $env:THEO_ALLOW_INSECURE_STARTUP = '1'
-        Write-Warn "Enabling THEO_ALLOW_INSECURE_STARTUP=1 for local development"
+        $env:EXEGESIS_ALLOW_INSECURE_STARTUP = '1'
+        Write-Warn "Enabling EXEGESIS_ALLOW_INSECURE_STARTUP=1 for local development"
     }
 
     $currentAnonymous = ''
-    if (-not [string]::IsNullOrWhiteSpace($env:THEO_AUTH_ALLOW_ANONYMOUS)) {
-        $currentAnonymous = $env:THEO_AUTH_ALLOW_ANONYMOUS.ToLowerInvariant()
+    if (-not [string]::IsNullOrWhiteSpace($env:EXEGESIS_AUTH_ALLOW_ANONYMOUS)) {
+        $currentAnonymous = $env:EXEGESIS_AUTH_ALLOW_ANONYMOUS.ToLowerInvariant()
     }
     if (-not $truthy.Contains($currentAnonymous)) {
-        $env:THEO_AUTH_ALLOW_ANONYMOUS = '1'
-        Write-Warn "Enabling THEO_AUTH_ALLOW_ANONYMOUS=1 for local development"
+        $env:EXEGESIS_AUTH_ALLOW_ANONYMOUS = '1'
+        Write-Warn "Enabling EXEGESIS_AUTH_ALLOW_ANONYMOUS=1 for local development"
     }
 }
 

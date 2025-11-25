@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from theo.domain.discoveries.gap_engine import GapDiscoveryEngine
-from theo.domain.discoveries.models import DocumentEmbedding
+from exegesis.domain.discoveries.gap_engine import GapDiscoveryEngine
+from exegesis.domain.discoveries.models import DocumentEmbedding
 
 
 class FakeTopicModel:

@@ -3,9 +3,9 @@ import itertools
 
 import pytest
 
-from theo.application.facades import resilience as resilience_facade
-from theo.application.core.resilience import ResilienceError, ResilienceSettings
-from theo.infrastructure.api.app.adapters import resilience as resilience_adapter
+from exegesis.application.facades import resilience as resilience_facade
+from exegesis.application.core.resilience import ResilienceError, ResilienceSettings
+from exegesis.infrastructure.api.app.adapters import resilience as resilience_adapter
 
 
 @pytest.fixture(autouse=True)

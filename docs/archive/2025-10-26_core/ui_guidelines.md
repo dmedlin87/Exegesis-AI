@@ -1,6 +1,6 @@
 > **Archived on 2025-10-26**
 
-# Theoria UI Guidelines
+# Exegesis AI UI Guidelines
 
 ## Motion and Accessibility
 - Respect the user's reduced motion preference. Interactive components rely on CSS custom properties (e.g., `--motion-hover-translate-y-sm`) so they animate when motion is enabled but stay still when `prefers-reduced-motion: reduce` is set.

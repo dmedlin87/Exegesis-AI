@@ -1,4 +1,4 @@
-# Navigation Button Improvements - Theoria
+# Navigation Button Improvements - Exegesis AI
 
 ## Issues Identified and Fixed
 

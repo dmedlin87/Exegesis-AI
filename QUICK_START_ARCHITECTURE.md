@@ -1,6 +1,6 @@
 # Quick Start: New Architecture Patterns
 
-**5-Minute Guide** to using the improved architecture in Theoria.
+**5-Minute Guide** to using the improved architecture in Exegesis AI.
 
 ---
 

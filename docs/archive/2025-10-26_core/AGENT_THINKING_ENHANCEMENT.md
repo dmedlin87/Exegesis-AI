@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-Transform the Theoria agent from a reactive RAG system into an autonomous theological detective that reasons, hypothesizes, critiques, and synthesizes like a human researcher.
+Transform the Exegesis AI agent from a reactive RAG system into an autonomous theological detective that reasons, hypothesizes, critiques, and synthesizes like a human researcher.
 
 ## Current State Analysis
 

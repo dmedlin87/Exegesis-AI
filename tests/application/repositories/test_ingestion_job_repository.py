@@ -8,10 +8,10 @@ import pytest
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from theo.adapters.persistence.ingestion_job_repository import (
+from exegesis.adapters.persistence.ingestion_job_repository import (
     SQLAlchemyIngestionJobRepository,
 )
-from theo.adapters.persistence.models import IngestionJob
+from exegesis.adapters.persistence.models import IngestionJob
 
 
 pytestmark = pytest.mark.db

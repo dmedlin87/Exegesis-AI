@@ -10,7 +10,7 @@ import types
 
 import pytest
 
-from theo.application.facades.resilience import ResilienceError
+from exegesis.application.facades.resilience import ResilienceError
 
 
 @dataclass
@@ -53,7 +53,7 @@ class EmbeddingServicePatch:
         self.clear_cache_calls.clear()
         self.factory_calls.clear()
         self._service_factory = None
-_MODULE_NAME = "theo.infrastructure.api.app.library.ingest.embeddings"
+_MODULE_NAME = "exegesis.infrastructure.api.app.library.ingest.embeddings"
 
 
 def _create_stub_module(patch: EmbeddingServicePatch) -> ModuleType:

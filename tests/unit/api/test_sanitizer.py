@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from theo.infrastructure.api.app.library.ingest.sanitizer import sanitize_passage_text
+from exegesis.infrastructure.api.app.library.ingest.sanitizer import sanitize_passage_text
 
 
 def test_sanitize_removes_control_phrases_and_tags() -> None:

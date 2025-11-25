@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from theo.domain.research import fetch_passage
-from theo.domain.research import scripture as scripture_module
+from exegesis.domain.research import fetch_passage
+from exegesis.domain.research import scripture as scripture_module
 
 
 def test_expand_osis_to_keys_handles_manual_ranges(monkeypatch: pytest.MonkeyPatch) -> None:

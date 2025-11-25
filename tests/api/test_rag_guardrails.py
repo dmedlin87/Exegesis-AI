@@ -4,15 +4,15 @@ from pathlib import Path
 import pytest
 from sqlalchemy.orm import Session
 
-from theo.infrastructure.api.app.research.ai.rag.guardrails import (
+from exegesis.infrastructure.api.app.research.ai.rag.guardrails import (
     GuardrailError,
     apply_guardrail_profile,
     guardrail_metadata,
     validate_model_completion,
     validate_model_completion_strict,
 )
-from theo.infrastructure.api.app.research.ai.rag.models import RAGCitation
-from theo.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
+from exegesis.infrastructure.api.app.research.ai.rag.models import RAGCitation
+from exegesis.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
 
 
 @pytest.fixture

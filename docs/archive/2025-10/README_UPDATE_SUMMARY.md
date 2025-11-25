@@ -194,7 +194,7 @@ README.md (Updated)
 ```markdown
 ### Modern User Interface
 
-Theoria features a polished, accessible web interface:
+Exegesis AI features a polished, accessible web interface:
 
 - **Professional Animations** – Context-aware throughout
 - **Theme Customization** – User-selectable themes
@@ -209,7 +209,7 @@ Theoria features a polished, accessible web interface:
 
 ### For New Users
 
-- Immediately see what Theoria offers
+- Immediately see what Exegesis AI offers
 - Quick links to get started
 - Clear feature status indicators
 - Visual, scannable format

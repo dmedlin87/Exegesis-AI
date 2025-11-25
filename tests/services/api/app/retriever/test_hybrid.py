@@ -7,13 +7,13 @@ import pytest
 from sqlalchemy import create_engine
 from hypothesis import given, settings, strategies as st
 
-from theo.infrastructure.api.app.models.documents import DocumentAnnotationResponse
-from theo.infrastructure.api.app.models.search import (
+from exegesis.infrastructure.api.app.models.documents import DocumentAnnotationResponse
+from exegesis.infrastructure.api.app.models.search import (
     HybridSearchFilters,
     HybridSearchRequest,
     HybridSearchResult,
 )
-from theo.infrastructure.api.app.retrieval.retriever import hybrid
+from exegesis.infrastructure.api.app.retrieval.retriever import hybrid
 
 
 HYPOTHESIS_SETTINGS = settings(max_examples=40, deadline=None)

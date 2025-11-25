@@ -55,5 +55,5 @@ configuration, matching previous behaviour.
 
 If no backend variables are provided the service continues to read
 `SETTINGS_SECRET_KEY`. Environments that rely on the insecure fallback must set
-`THEO_ALLOW_INSECURE_STARTUP=1`; the warning emitted at boot now reflects whether
+`EXEGESIS_ALLOW_INSECURE_STARTUP=1`; the warning emitted at boot now reflects whether
 an external backend was attempted before using the fallback.

@@ -11,19 +11,19 @@ from sqlalchemy.orm import Session, sessionmaker
 
 sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from theo.application.facades.database import Base
-from theo.application.facades.settings_store import load_setting
-from theo.adapters.persistence.models import (
+from exegesis.application.facades.database import Base
+from exegesis.application.facades.settings_store import load_setting
+from exegesis.adapters.persistence.models import (
     GeoAncientPlace,
     GeoGeometry,
     GeoImage,
     GeoModernLocation,
     GeoPlaceVerse,
 )
-from theo.application.services.geo import seed_openbible_geo as seed_openbible_geo_public
+from exegesis.application.services.geo import seed_openbible_geo as seed_openbible_geo_public
 
-seed_openbible_geo_module = import_module("theo.application.services.geo.seed_openbible_geo")
-from theo.application.services.geo.seed_openbible_geo import (
+seed_openbible_geo_module = import_module("exegesis.application.services.geo.seed_openbible_geo")
+from exegesis.application.services.geo.seed_openbible_geo import (
     _detect_commit_sha,
     _load_geometry_payload,
     _normalize_osis,

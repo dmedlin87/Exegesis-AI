@@ -135,7 +135,7 @@ def serialise_json(
 
 def build_dot(modules: Sequence[str], edges: Sequence[Edge]) -> str:
     lines = [
-        "digraph theo_dependencies {",
+        "digraph EXEGESIS_dependencies {",
         "  rankdir=LR;",
         "  node [shape=box, fontname=\"Helvetica\", fontsize=10];",
     ]

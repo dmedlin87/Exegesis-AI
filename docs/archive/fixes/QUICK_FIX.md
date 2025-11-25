@@ -30,8 +30,8 @@ cd C:\Users\dmedl\Projects\TheoEngine
 ### Step 3: Set Environment Variables and Start API
 
 ```powershell
-$Env:THEO_AUTH_ALLOW_ANONYMOUS="1"
-$Env:THEO_ALLOW_INSECURE_STARTUP="1"
+$Env:EXEGESIS_AUTH_ALLOW_ANONYMOUS="1"
+$Env:EXEGESIS_ALLOW_INSECURE_STARTUP="1"
 python -m uvicorn theo.services.api.app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
@@ -123,7 +123,7 @@ Always run BOTH servers during development:
 **Terminal 1 (API):**
 
 ```powershell
-$Env:THEO_AUTH_ALLOW_ANONYMOUS="1"; $Env:THEO_ALLOW_INSECURE_STARTUP="1"; python -m uvicorn theo.services.api.app.main:app --reload --host 127.0.0.1 --port 8000
+$Env:EXEGESIS_AUTH_ALLOW_ANONYMOUS="1"; $Env:EXEGESIS_ALLOW_INSECURE_STARTUP="1"; python -m uvicorn theo.services.api.app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 **Terminal 2 (Web):**

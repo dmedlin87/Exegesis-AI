@@ -5,8 +5,8 @@ import os
 from contextlib import contextmanager
 from typing import Iterator
 
-MLFLOW_TRACKING_ENV = "THEO_MLFLOW_TRACKING_URI"
-MLFLOW_REGISTRY_ENV = "THEO_MLFLOW_REGISTRY_URI"
+MLFLOW_TRACKING_ENV = "EXEGESIS_MLFLOW_TRACKING_URI"
+MLFLOW_REGISTRY_ENV = "EXEGESIS_MLFLOW_REGISTRY_URI"
 
 try:  # pragma: no cover - optional dependency
     import mlflow

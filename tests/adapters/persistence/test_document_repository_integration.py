@@ -9,12 +9,12 @@ import sys
 import types
 
 try:
-    importlib.import_module("theo.domain.discoveries")
+    importlib.import_module("exegesis.domain.discoveries")
 except ModuleNotFoundError:
-    mock_module = types.ModuleType("theo.domain.discoveries")
+    mock_module = types.ModuleType("exegesis.domain.discoveries")
     mock_module.__path__ = []  # mark as package for submodule imports
     mock_module.__spec__ = importlib.util.spec_from_loader(
-        "theo.domain.discoveries", loader=None, is_package=True
+        "exegesis.domain.discoveries", loader=None, is_package=True
     )
 
     @dataclass
@@ -28,15 +28,15 @@ except ModuleNotFoundError:
         metadata: dict[str, object] | None = None
 
     mock_module.DocumentEmbedding = DocumentEmbedding
-    sys.modules["theo.domain.discoveries"] = mock_module
+    sys.modules["exegesis.domain.discoveries"] = mock_module
 
 import pytest
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.adapters.persistence import Base
-from theo.adapters.persistence.document_repository import SQLAlchemyDocumentRepository
-from theo.adapters.persistence.models import Document, Passage
+from exegesis.adapters.persistence import Base
+from exegesis.adapters.persistence.document_repository import SQLAlchemyDocumentRepository
+from exegesis.adapters.persistence.models import Document, Passage
 
 
 @pytest.fixture()

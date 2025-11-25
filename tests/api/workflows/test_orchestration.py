@@ -12,18 +12,18 @@ import pytest
 from fastapi.responses import JSONResponse
 from fastapi.testclient import TestClient
 
-from theo.application.facades.database import get_session
-from theo.infrastructure.api.app.research.ai.rag import GuardrailError, RAGAnswer
-from theo.infrastructure.api.app.main import app
-from theo.infrastructure.api.app.models.ai import (
+from exegesis.application.facades.database import get_session
+from exegesis.infrastructure.api.app.research.ai.rag import GuardrailError, RAGAnswer
+from exegesis.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.models.ai import (
     ChatSessionMessage,
     ChatSessionRequest,
     LoopControlAction,
     ResearchLoopState,
     ResearchLoopStatus,
 )
-from theo.infrastructure.api.app.models.research_plan import ResearchPlan
-from theo.infrastructure.api.app.routes.ai.workflows import chat as chat_module
+from exegesis.infrastructure.api.app.models.research_plan import ResearchPlan
+from exegesis.infrastructure.api.app.routes.ai.workflows import chat as chat_module
 
 
 class _DummySession:

@@ -4,16 +4,16 @@ from __future__ import annotations
 
 import pytest
 
-from theo.infrastructure.api.app.research.ai.reasoning.fallacies import (
+from exegesis.infrastructure.api.app.research.ai.reasoning.fallacies import (
     FallacyDetector,
     detect_fallacies,
 )
-from theo.infrastructure.api.app.research.ai.reasoning.chain_of_thought import (
+from exegesis.infrastructure.api.app.research.ai.reasoning.chain_of_thought import (
     build_cot_prompt,
     parse_chain_of_thought,
 )
-from theo.infrastructure.api.app.research.ai.reasoning.insights import InsightDetector
-from theo.infrastructure.api.app.research.ai.reasoning.metacognition import (
+from exegesis.infrastructure.api.app.research.ai.reasoning.insights import InsightDetector
+from exegesis.infrastructure.api.app.research.ai.reasoning.metacognition import (
     Critique,
     MAX_CITATIONS_IN_PROMPT,
     _detect_bias,
@@ -23,7 +23,7 @@ from theo.infrastructure.api.app.research.ai.reasoning.metacognition import (
     critique_reasoning,
     revise_with_critique,
 )
-from theo.infrastructure.api.app.research.ai.rag.models import RAGCitation
+from exegesis.infrastructure.api.app.research.ai.rag.models import RAGCitation
 
 
 class TestFallacyDetector:

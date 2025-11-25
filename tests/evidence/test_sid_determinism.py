@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from theo.infrastructure.api.app.export import formatters
+from exegesis.infrastructure.api.app.export import formatters
 
 
 def test_generate_export_id_uses_uuid4(monkeypatch) -> None:

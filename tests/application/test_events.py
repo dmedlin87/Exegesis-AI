@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from theo.application.ports.events import (
+from exegesis.application.ports.events import (
     CompositeEventPublisher,
     DomainEvent,
     EventDispatchError,

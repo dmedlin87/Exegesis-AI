@@ -3,10 +3,10 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 
-from theo.infrastructure.api.app.research.ai.memory_metadata import extract_memory_metadata
-from theo.infrastructure.api.app.research.ai.rag.models import RAGAnswer, RAGCitation
-from theo.infrastructure.api.app.models.ai import ChatMemoryEntry, IntentTagPayload
-from theo.infrastructure.api.app.routes.ai.workflows.chat import (
+from exegesis.infrastructure.api.app.research.ai.memory_metadata import extract_memory_metadata
+from exegesis.infrastructure.api.app.research.ai.rag.models import RAGAnswer, RAGCitation
+from exegesis.infrastructure.api.app.models.ai import ChatMemoryEntry, IntentTagPayload
+from exegesis.infrastructure.api.app.routes.ai.workflows.chat import (
     _load_memory_entries,
     _prepare_memory_context,
 )

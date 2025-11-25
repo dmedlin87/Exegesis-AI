@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Theoria Intelligent Runner (Bash version)
+# Exegesis AI Intelligent Runner (Bash version)
 # Cross-platform script for Linux/macOS
 
 set -euo pipefail
@@ -16,8 +16,8 @@ ENV_FILE="$PROJECT_ROOT/.env"
 WEB_ENV_FILE="$WEB_PATH/.env.local"
 
 MODE="${1:-full}"
-PORT="${THEO_API_PORT:-8000}"
-WEB_PORT="${THEO_WEB_PORT:-3001}"
+PORT="${EXEGESIS_API_PORT:-8000}"
+WEB_PORT="${EXEGESIS_WEB_PORT:-3001}"
 
 # Colors
 RED='\033[0;31m'
@@ -120,14 +120,14 @@ setup_env_files() {
         else
             print_warn "Creating minimal .env file"
             cat > "$ENV_FILE" <<EOF
-# Theoria Configuration
+# Exegesis AI Configuration
 database_url=sqlite:///./theo.db
 storage_root=./storage
 redis_url=redis://localhost:6379/0
-# Override THEO_AUTH_ALLOW_ANONYMOUS=1 in your shell when testing without API keys.
-THEO_AUTH_ALLOW_ANONYMOUS=0
-# Set THEO_ALLOW_INSECURE_STARTUP=1 in your shell only when running without credentials locally.
-THEO_ALLOW_INSECURE_STARTUP=0
+# Override EXEGESIS_AUTH_ALLOW_ANONYMOUS=1 in your shell when testing without API keys.
+EXEGESIS_AUTH_ALLOW_ANONYMOUS=0
+# Set EXEGESIS_ALLOW_INSECURE_STARTUP=1 in your shell only when running without credentials locally.
+EXEGESIS_ALLOW_INSECURE_STARTUP=0
 embedding_model=BAAI/bge-m3
 embedding_dim=1024
 NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:$PORT
@@ -139,7 +139,7 @@ EOF
     
     if [ ! -f "$WEB_ENV_FILE" ]; then
         cat > "$WEB_ENV_FILE" <<EOF
-# Theoria Web - Local Development
+# Exegesis AI Web - Local Development
 NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:$PORT
 API_BASE_URL=http://127.0.0.1:$PORT
 EOF
@@ -148,19 +148,19 @@ EOF
 }
 
 enable_local_insecure_overrides() {
-    if [ "${THEO_LOCAL_INSECURE_OVERRIDES:-1}" != "1" ]; then
-        print_step "Skipping local insecure overrides (THEO_LOCAL_INSECURE_OVERRIDES=0)"
+    if [ "${EXEGESIS_LOCAL_INSECURE_OVERRIDES:-1}" != "1" ]; then
+        print_step "Skipping local insecure overrides (EXEGESIS_LOCAL_INSECURE_OVERRIDES=0)"
         return
     fi
 
-    if [ "${THEO_ALLOW_INSECURE_STARTUP:-}" != "1" ]; then
-        export THEO_ALLOW_INSECURE_STARTUP=1
-        print_warn "Enabling THEO_ALLOW_INSECURE_STARTUP=1 for local development"
+    if [ "${EXEGESIS_ALLOW_INSECURE_STARTUP:-}" != "1" ]; then
+        export EXEGESIS_ALLOW_INSECURE_STARTUP=1
+        print_warn "Enabling EXEGESIS_ALLOW_INSECURE_STARTUP=1 for local development"
     fi
 
-    if [ "${THEO_AUTH_ALLOW_ANONYMOUS:-}" != "1" ]; then
-        export THEO_AUTH_ALLOW_ANONYMOUS=1
-        print_warn "Enabling THEO_AUTH_ALLOW_ANONYMOUS=1 for local development"
+    if [ "${EXEGESIS_AUTH_ALLOW_ANONYMOUS:-}" != "1" ]; then
+        export EXEGESIS_AUTH_ALLOW_ANONYMOUS=1
+        print_warn "Enabling EXEGESIS_AUTH_ALLOW_ANONYMOUS=1 for local development"
     fi
 }
 

@@ -13,19 +13,19 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-os.environ.setdefault("THEO_FORCE_EMBEDDING_FALLBACK", "1")
+os.environ.setdefault("EXEGESIS_FORCE_EMBEDDING_FALLBACK", "1")
 
-from theo.application.facades import database as database_module  # noqa: E402
-from theo.application.facades.database import (  # noqa: E402
+from exegesis.application.facades import database as database_module  # noqa: E402
+from exegesis.application.facades.database import (  # noqa: E402
     Base,
     configure_engine,
     get_engine,
     get_session,
 )
-from theo.application.facades.settings import get_settings  # noqa: E402
-from theo.infrastructure.api.app.library.ingest import pipeline  # noqa: E402
-from theo.infrastructure.api.app.library.ingest import events as ingest_events  # noqa: E402
-from theo.infrastructure.api.app.main import app  # noqa: E402
+from exegesis.application.facades.settings import get_settings  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest import pipeline  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest import events as ingest_events  # noqa: E402
+from exegesis.infrastructure.api.app.main import app  # noqa: E402
 
 
 @pytest.fixture(scope="module")

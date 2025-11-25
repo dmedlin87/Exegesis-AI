@@ -11,11 +11,11 @@ def test_get_settings_uses_environment_configuration(
 ) -> None:
     """The settings facade should load values from environment variables."""
 
-    module = reload_facade("theo.application.facades.settings")
+    module = reload_facade("exegesis.application.facades.settings")
     module.get_settings.cache_clear()
 
-    monkeypatch.setenv("THEO_CORS_ALLOWED_ORIGINS", "[\"https://example.com\"]")
-    monkeypatch.setenv("THEO_STORAGE_ROOT", "./data")
+    monkeypatch.setenv("EXEGESIS_CORS_ALLOWED_ORIGINS", "[\"https://example.com\"]")
+    monkeypatch.setenv("EXEGESIS_STORAGE_ROOT", "./data")
 
     settings = module.get_settings()
     assert settings.cors_allowed_origins == ["https://example.com"]
@@ -27,7 +27,7 @@ def test_get_settings_cipher_uses_insecure_fallback_when_allowed(
 ) -> None:
     """When insecure startup is permitted, the facade should create a fallback cipher."""
 
-    module = reload_facade("theo.application.facades.settings")
+    module = reload_facade("exegesis.application.facades.settings")
     module.get_settings.cache_clear()
     module.get_settings_secret.cache_clear()
     module.get_settings_cipher.cache_clear()

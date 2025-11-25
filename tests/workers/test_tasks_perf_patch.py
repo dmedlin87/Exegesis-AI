@@ -18,9 +18,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades.database import Base
-from theo.adapters.persistence.models import Document, IngestionJob, Passage, ChatSession
-from theo.infrastructure.api.app.workers import tasks
+from exegesis.application.facades.database import Base
+from exegesis.adapters.persistence.models import Document, IngestionJob, Passage, ChatSession
+from exegesis.infrastructure.api.app.workers import tasks
 
 pytestmark = pytest.mark.usefixtures("worker_stubs")
 
@@ -64,28 +64,28 @@ def mock_expensive_operations(monkeypatch):
     mock_snapshot.generated_at = datetime.now(UTC)
     
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.analytics.topic_map.TopicMapBuilder.build",
+        "exegesis.infrastructure.api.app.analytics.topic_map.TopicMapBuilder.build",
         Mock(return_value=mock_snapshot)
     )
     
     # Mock vector operations
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.workers.tasks._format_vector",
+        "exegesis.infrastructure.api.app.workers.tasks._format_vector",
         Mock(return_value=[0.1] * 10)
     )
     
     # Mock enrichment
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.enrich.MetadataEnricher.enrich_document",
+        "exegesis.infrastructure.api.app.enrich.MetadataEnricher.enrich_document",
         Mock(return_value=True)
     )
     
     # Mock telemetry
     monkeypatch.setattr(
-        "theo.application.facades.telemetry.log_workflow_event", Mock()
+        "exegesis.application.facades.telemetry.log_workflow_event", Mock()
     )
     monkeypatch.setattr(
-        "theo.application.facades.telemetry.record_counter", Mock()
+        "exegesis.application.facades.telemetry.record_counter", Mock()
     )
 
 @pytest.fixture(autouse=True)
@@ -228,8 +228,8 @@ class TestWorkerPerformance:
             def begin(self):
                 return MockConnection()
         
-        with patch('theo.infrastructure.api.app.workers.tasks.get_engine') as mock_get_engine, \
-             patch('theo.infrastructure.api.app.workers.tasks._evaluate_hnsw_recall') as mock_eval:
+        with patch('exegesis.infrastructure.api.app.workers.tasks.get_engine') as mock_get_engine, \
+             patch('exegesis.infrastructure.api.app.workers.tasks._evaluate_hnsw_recall') as mock_eval:
             
             mock_get_engine.return_value = MockEngine()
             mock_eval.return_value = {"sample_size": 5, "avg_recall": 0.95}

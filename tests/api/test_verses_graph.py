@@ -6,8 +6,8 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from theo.infrastructure.api.app.main import app
-from theo.adapters.persistence.models import (
+from exegesis.infrastructure.api.app.main import app
+from exegesis.adapters.persistence.models import (
     CommentaryExcerptSeed,
     ContradictionSeed,
     Document,
@@ -15,7 +15,7 @@ from theo.adapters.persistence.models import (
     Passage,
     PassageVerse,
 )
-from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference
+from exegesis.infrastructure.api.app.library.ingest.osis import expand_osis_reference
 
 
 @pytest.fixture()

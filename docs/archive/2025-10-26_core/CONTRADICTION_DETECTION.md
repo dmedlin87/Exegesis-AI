@@ -140,13 +140,13 @@ DELETE /api/discoveries/{id}
 
 ```bash
 # NLI model to use (default: microsoft/deberta-v3-base-mnli)
-THEORIA_NLI_MODEL=microsoft/deberta-v3-base-mnli
+EXEGESIS_NLI_MODEL=microsoft/deberta-v3-base-mnli
 
 # Contradiction threshold (default: 0.7)
-THEORIA_CONTRADICTION_THRESHOLD=0.7
+EXEGESIS_CONTRADICTION_THRESHOLD=0.7
 
 # Minimum confidence to include (default: 0.6)
-THEORIA_MIN_CONTRADICTION_CONFIDENCE=0.6
+EXEGESIS_MIN_CONTRADICTION_CONFIDENCE=0.6
 ```
 
 ### Code Configuration

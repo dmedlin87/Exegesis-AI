@@ -1,7 +1,7 @@
 """Tests for the discovery engine keyword extraction helpers."""
 
-from theo.domain.discoveries.engine import _top_keywords
-from theo.domain.discoveries.models import DocumentEmbedding
+from exegesis.domain.discoveries.engine import _top_keywords
+from exegesis.domain.discoveries.models import DocumentEmbedding
 
 
 def test_top_keywords_handles_string_metadata_keywords():

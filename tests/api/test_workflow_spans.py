@@ -14,7 +14,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from sqlalchemy.orm import Session
 
-from theo.infrastructure.api.app.research.ai import rag
+from exegesis.infrastructure.api.app.research.ai import rag
 
 
 def _patch_instrumentation(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, dict[str, object]]]:

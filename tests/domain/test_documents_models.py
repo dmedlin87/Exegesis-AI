@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from theo.domain.documents import Document, DocumentId, DocumentMetadata
+from exegesis.domain.documents import Document, DocumentId, DocumentMetadata
 
 
 def test_document_metadata_initialisation_and_defaults() -> None:

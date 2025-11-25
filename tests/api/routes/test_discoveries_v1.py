@@ -14,11 +14,11 @@ from unittest.mock import Mock
 import pytest
 from fastapi.testclient import TestClient
 
-from theo.application.dtos import DiscoveryDTO, DiscoveryListFilters
-from theo.application.repositories import DiscoveryRepository
-from theo.domain.errors import NotFoundError
-from theo.infrastructure.api.app.main import app
-from theo.infrastructure.api.app.routes import discoveries_v1
+from exegesis.application.dtos import DiscoveryDTO, DiscoveryListFilters
+from exegesis.application.repositories import DiscoveryRepository
+from exegesis.domain.errors import NotFoundError
+from exegesis.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.routes import discoveries_v1
 
 
 @pytest.fixture
@@ -217,10 +217,10 @@ class TestRepositoryIntegration:
     def test_full_stack_list_discoveries(self, api_engine):
         """Full integration test with real repository and database."""
         from sqlalchemy.orm import Session
-        from theo.adapters.persistence.discovery_repository import (
+        from exegesis.adapters.persistence.discovery_repository import (
             SQLAlchemyDiscoveryRepository,
         )
-        from theo.adapters.persistence.models import Discovery
+        from exegesis.adapters.persistence.models import Discovery
 
         # Setup test data
         session = Session(api_engine)

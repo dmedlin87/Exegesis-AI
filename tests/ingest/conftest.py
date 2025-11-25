@@ -12,7 +12,7 @@ import pytest
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.application.facades.database import Base, configure_engine, get_engine
+from exegesis.application.facades.database import Base, configure_engine, get_engine
 from tests.fixtures.pgvector import PGVectorDatabase, PGVectorClone
 
 
@@ -60,7 +60,7 @@ def pgvector_pipeline_engine(
 ) -> Generator[Engine, None, None]:
     """Provision a Postgres+pgvector engine with migrations applied."""
 
-    from theo.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
+    from exegesis.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
 
     engine = create_engine(pgvector_database_url, future=True)
     run_sql_migrations(engine)
@@ -112,7 +112,7 @@ def _stub_pythonbible(monkeypatch: pytest.MonkeyPatch):
     """Replace heavy pythonbible lookups with a lightweight stub during tests."""
 
     try:
-        from theo.infrastructure.api.app.library.ingest import osis as ingest_osis
+        from exegesis.infrastructure.api.app.library.ingest import osis as ingest_osis
     except ModuleNotFoundError:  # pragma: no cover - dependency not installed
         yield
         return

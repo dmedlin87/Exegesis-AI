@@ -17,7 +17,7 @@
 
 **Outcome**: Repository pattern successfully implemented with DTOs and abstractions. Architecture foundation is now solid for Cognitive Scholar features.
 
-**Archived**: This task is now superseded by the Cognitive Scholar vision in `docs/tasks/theoria_feature_brainstorm_cognitive_scholar_v_1.md`.
+**Archived**: This task is now superseded by the Cognitive Scholar vision in `docs/tasks/EXEGESIS_feature_brainstorm_cognitive_scholar_v_1.md`.
 
 ---
 

@@ -17,23 +17,23 @@ if str(PROJECT_ROOT) not in sys.path:
 
 
 def _configure_environment(database_url: str | None) -> None:
-    os.environ.setdefault("THEO_DISABLE_AI_SETTINGS", "1")
+    os.environ.setdefault("EXEGESIS_DISABLE_AI_SETTINGS", "1")
     if database_url:
         os.environ["DATABASE_URL"] = database_url
 
 
 def _load_settings():
-    from theo.application.facades.settings import get_settings
+    from exegesis.application.facades.settings import get_settings
 
     return get_settings()
 
 
 def _ensure_models_loaded() -> None:
-    import theo.adapters.persistence.models  # noqa: F401  (side-effect import)
+    import exegesis.adapters.persistence.models  # noqa: F401  (side-effect import)
 
 
 def _verse_range(reference: str) -> tuple[int, int] | None:
-    from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference
+    from exegesis.infrastructure.api.app.library.ingest.osis import expand_osis_reference
 
     verse_ids = expand_osis_reference(reference)
     if not verse_ids:
@@ -69,7 +69,7 @@ def _update_pair_seed(seed, osis_attr: str, start_attr: str, end_attr: str) -> b
 
 
 def _backfill(session: Session) -> tuple[int, int, int]:
-    from theo.adapters.persistence.models import (
+    from exegesis.adapters.persistence.models import (
         CommentaryExcerptSeed,
         ContradictionSeed,
         HarmonySeed,
@@ -142,7 +142,7 @@ def main() -> None:
     _configure_environment(args.database_url)
     settings = _load_settings()
 
-    from theo.application.facades.database import configure_engine
+    from exegesis.application.facades.database import configure_engine
 
     engine = configure_engine(settings.database_url)
     _ensure_models_loaded()

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from theo.domain.research import datasets
+from exegesis.domain.research import datasets
 
 
 def test_load_dict_of_dicts_validates_structure(monkeypatch: pytest.MonkeyPatch) -> None:

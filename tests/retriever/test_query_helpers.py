@@ -4,14 +4,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from theo.infrastructure.api.app.models.documents import DocumentAnnotationResponse
-from theo.infrastructure.api.app.models.search import (
+from exegesis.infrastructure.api.app.models.documents import DocumentAnnotationResponse
+from exegesis.infrastructure.api.app.models.search import (
     HybridSearchFilters,
     HybridSearchRequest,
     HybridSearchResult,
 )
-from theo.infrastructure.api.app.retrieval.retriever import hybrid
-from theo.infrastructure.api.app.retrieval.retriever.hybrid import _Candidate
+from exegesis.infrastructure.api.app.retrieval.retriever import hybrid
+from exegesis.infrastructure.api.app.retrieval.retriever.hybrid import _Candidate
 
 
 @pytest.fixture

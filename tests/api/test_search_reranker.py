@@ -9,13 +9,13 @@ from fastapi.testclient import TestClient
 
 import joblib  # type: ignore[import]
 
-from theo.application.facades.settings import get_settings
-from theo.infrastructure.api.app.main import app
-from theo.infrastructure.api.app.models.search import HybridSearchResult
-from theo.infrastructure.api.app.retrieval.ranking.features import FEATURE_NAMES, extract_features
-from theo.infrastructure.api.app.retrieval.ranking.re_ranker import Reranker, load_reranker
-from theo.infrastructure.api.app.routes import search as search_route
-from theo.infrastructure.api.app.infra import retrieval_service as retrieval_service_module
+from exegesis.application.facades.settings import get_settings
+from exegesis.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.models.search import HybridSearchResult
+from exegesis.infrastructure.api.app.retrieval.ranking.features import FEATURE_NAMES, extract_features
+from exegesis.infrastructure.api.app.retrieval.ranking.re_ranker import Reranker, load_reranker
+from exegesis.infrastructure.api.app.routes import search as search_route
+from exegesis.infrastructure.api.app.infra import retrieval_service as retrieval_service_module
 
 
 class _WeightedModel:

@@ -4,8 +4,8 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from theo.domain.discoveries.models import CorpusSnapshotSummary
-from theo.domain.discoveries.trend_engine import TrendDiscoveryEngine
+from exegesis.domain.discoveries.models import CorpusSnapshotSummary
+from exegesis.domain.discoveries.trend_engine import TrendDiscoveryEngine
 
 
 @pytest.fixture

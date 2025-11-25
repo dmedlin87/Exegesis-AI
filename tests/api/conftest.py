@@ -49,13 +49,13 @@ import sys
 import types
 from collections.abc import Iterator
 
-os.environ.setdefault("THEORIA_ALLOW_REAL_FASTAPI", "1")
+os.environ.setdefault("EXEGESIS_ALLOW_REAL_FASTAPI", "1")
 
 os.environ.setdefault("SETTINGS_SECRET_KEY", "test-secret-key")
-os.environ.setdefault("THEO_API_KEYS", '["pytest-default-key"]')
-os.environ.setdefault("THEO_ALLOW_INSECURE_STARTUP", "1")
-os.environ.setdefault("THEORIA_ENVIRONMENT", "development")
-os.environ.setdefault("THEO_FORCE_EMBEDDING_FALLBACK", "1")
+os.environ.setdefault("EXEGESIS_API_KEYS", '["pytest-default-key"]')
+os.environ.setdefault("EXEGESIS_ALLOW_INSECURE_STARTUP", "1")
+os.environ.setdefault("EXEGESIS_ENVIRONMENT", "development")
+os.environ.setdefault("EXEGESIS_FORCE_EMBEDDING_FALLBACK", "1")
 
 
 class _StubFlagModel:
@@ -147,7 +147,7 @@ def _register_opentelemetry_stub() -> None:
 
             return _manager()
 
-    def _get_tracer(_name: str = "theoria") -> _StubTracer:  # pragma: no cover - helper
+    def _get_tracer(_name: str = "Exegesis AI") -> _StubTracer:  # pragma: no cover - helper
         return _StubTracer()
 
     trace_module.get_tracer = _get_tracer  # type: ignore[attr-defined]
@@ -317,11 +317,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.infrastructure.api.app.main import app
-from theo.infrastructure.api.app.db import run_sql_migrations as migrations_module
-from theo.application.facades import database as database_module
-from theo.application.facades.database import Base, configure_engine, get_engine
-from theo.infrastructure.api.app.adapters.security import require_principal
+from exegesis.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.db import run_sql_migrations as migrations_module
+from exegesis.application.facades import database as database_module
+from exegesis.application.facades.database import Base, configure_engine, get_engine
+from exegesis.infrastructure.api.app.adapters.security import require_principal
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -329,7 +329,7 @@ def _stub_external_integrations() -> Iterator[None]:
     """Replace external integrations with deterministic test doubles."""
 
     monkeypatch = pytest.MonkeyPatch()
-    from theo.infrastructure.api.app.export import zotero as _zotero_module
+    from exegesis.infrastructure.api.app.export import zotero as _zotero_module
 
     def _fake_zotero_export(sources, csl_entries, api_key, **kwargs):  # pragma: no cover - simple stub
         total = len(sources or [])
@@ -355,7 +355,7 @@ def _stub_external_integrations() -> Iterator[None]:
     )
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.routes.realtime.publish_notebook_update",
+        "exegesis.infrastructure.api.app.routes.realtime.publish_notebook_update",
         lambda *a, **kw: None,
         raising=False,
     )
@@ -368,12 +368,12 @@ def _stub_external_integrations() -> Iterator[None]:
         return _manager()
 
     monkeypatch.setattr(
-        "theo.application.facades.telemetry.instrument_workflow",
+        "exegesis.application.facades.telemetry.instrument_workflow",
         _instrument_stub,
         raising=False,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.research.ai.trails._compute_input_hash",
+        "exegesis.infrastructure.api.app.research.ai.trails._compute_input_hash",
         lambda input_payload, tool, action: str(
             (tool or "", action or "", repr(input_payload))
         ),
@@ -436,7 +436,7 @@ def _disable_migrations(
         _noop_run_sql_migrations,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.lifecycle.run_sql_migrations",
+        "exegesis.infrastructure.api.app.bootstrap.lifecycle.run_sql_migrations",
         _noop_run_sql_migrations,
     )
 
@@ -449,7 +449,7 @@ def _skip_heavy_startup() -> None:
     """Disable expensive FastAPI lifespan setup steps for API tests."""
 
     from sqlalchemy import text as _sql_text
-    from theo.infrastructure.api.app.db import seeds as _seeds_module
+    from exegesis.infrastructure.api.app.db import seeds as _seeds_module
 
     original_seed_reference_data = _seeds_module.seed_reference_data
 
@@ -492,17 +492,17 @@ def _skip_heavy_startup() -> None:
             original_seed_reference_data(session)
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.lifecycle.seed_reference_data",
+        "exegesis.infrastructure.api.app.bootstrap.lifecycle.seed_reference_data",
         _maybe_seed_reference_data,
         raising=False,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.lifecycle.start_discovery_scheduler",
+        "exegesis.infrastructure.api.app.bootstrap.lifecycle.start_discovery_scheduler",
         lambda: None,
         raising=False,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.lifecycle.stop_discovery_scheduler",
+        "exegesis.infrastructure.api.app.bootstrap.lifecycle.stop_discovery_scheduler",
         lambda: None,
         raising=False,
     )
@@ -516,7 +516,7 @@ def _skip_heavy_startup() -> None:
 @pytest.fixture(scope="session")
 def _api_engine_template(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Materialise a migrated SQLite database once per test session."""
-    from theo.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
+    from exegesis.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
 
     template_dir = tmp_path_factory.mktemp("api-engine-template")
     template_path = template_dir / "api.sqlite"
@@ -552,7 +552,7 @@ def api_engine(_shared_api_engine):
     """
     from sqlalchemy import event
     from sqlalchemy.orm import Session
-    from theo.application.facades import database as database_module
+    from exegesis.application.facades import database as database_module
 
     connection = _shared_api_engine.connect()
     transaction = connection.begin()

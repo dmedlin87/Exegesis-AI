@@ -7,7 +7,7 @@ from typing import Mapping
 
 import pytest
 
-from theo.infrastructure.api.app.core.errors import IngestionError, Severity, TheoError
+from exegesis.infrastructure.api.app.core.errors import IngestionError, Severity, TheoError
 
 
 @pytest.mark.parametrize(
@@ -19,7 +19,7 @@ from theo.infrastructure.api.app.core.errors import IngestionError, Severity, Th
         ("Retry", {"attempt": 2}, "trace-456"),
     ],
 )
-def test_theo_error_to_payload_combinations(
+def test_EXEGESIS_error_to_payload_combinations(
     hint: str | None, data: Mapping[str, str] | None, trace_id: str | None
 ) -> None:
     error = TheoError(

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from theo.domain.research import fallacies as fallacies_module
+from exegesis.domain.research import fallacies as fallacies_module
 
 
 def test_fallacy_detect_filters_and_sorts_hits(monkeypatch: pytest.MonkeyPatch) -> None:

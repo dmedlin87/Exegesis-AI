@@ -2,7 +2,7 @@ import pytest
 
 from pythonbible import convert_reference_to_verse_ids, get_references
 
-from theo.domain.research import osis as research_osis
+from exegesis.domain.research import osis as research_osis
 
 
 @pytest.mark.parametrize(

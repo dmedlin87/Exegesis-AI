@@ -208,7 +208,7 @@ class TestFeedbackIngestion:
             raise ValueError("Database constraint violation")
 
         monkeypatch.setattr(
-            "theo.infrastructure.api.app.routes.analytics.record_feedback_from_payload",
+            "exegesis.infrastructure.api.app.routes.analytics.record_feedback_from_payload",
             _raise_value_error,
         )
 

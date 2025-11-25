@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
-from theo.application.facades.research import ResearchNoteDraft, get_research_service
-from theo.adapters.persistence.models import NoteEvidence, ResearchNote
+from exegesis.application.facades.research import ResearchNoteDraft, get_research_service
+from exegesis.adapters.persistence.models import NoteEvidence, ResearchNote
 
 
 def test_generate_research_note_preview_does_not_persist(

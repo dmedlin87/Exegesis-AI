@@ -4,7 +4,9 @@ playwright.db
 storage/
 theo.db
 .theo.db
+*.sqlite
 *.sqlite3
+*.sql
 node_modules/
 theo/services/web/node_modules/
 theo/services/web/.next/

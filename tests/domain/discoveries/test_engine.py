@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from theo.domain.discoveries.engine import (
+from exegesis.domain.discoveries.engine import (
     PatternDiscoveryEngine,
     _normalise_topics,
     _top_keywords,
 )
-from theo.domain.discoveries.models import DocumentEmbedding
+from exegesis.domain.discoveries.models import DocumentEmbedding
 
 
 def make_embedding(

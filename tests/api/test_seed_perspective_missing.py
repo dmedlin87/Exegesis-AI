@@ -10,7 +10,7 @@ import pytest
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session
 
-from theo.infrastructure.api.app.db.seeds import (
+from exegesis.infrastructure.api.app.db.seeds import (
     seed_contradiction_claims,
     seed_harmony_claims,
     seed_commentary_excerpts,
@@ -71,7 +71,7 @@ def test_seed_gracefully_handles_missing_perspective(
         with Session(engine) as session:
             with caplog.at_level(logging.WARNING):
                 with patch(
-                    "theo.infrastructure.api.app.db.seeds._recreate_seed_table_if_missing_column",
+                    "exegesis.infrastructure.api.app.db.seeds._recreate_seed_table_if_missing_column",
                     return_value=(False, False),
                 ):
                     seed_fn(session)

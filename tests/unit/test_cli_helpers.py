@@ -108,13 +108,13 @@ pytest.importorskip(
 )
 from sqlalchemy.exc import SQLAlchemyError
 
-from theo.commands import embedding_rebuild as cli
-from theo.commands.embedding_rebuild import (
+from exegesis.commands import embedding_rebuild as cli
+from exegesis.commands.embedding_rebuild import (
     _load_ids,
     _commit_with_retry,
     _normalise_timestamp,
 )
-from theo.application.retrieval.embeddings.checkpoint_store import (
+from exegesis.application.retrieval.embeddings.checkpoint_store import (
     CheckpointError,
     EmbeddingCheckpoint,
     load_checkpoint,

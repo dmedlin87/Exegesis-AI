@@ -1,4 +1,4 @@
-# Theoria Test Map
+# Exegesis AI Test Map
 
 ## Inventory Overview
 

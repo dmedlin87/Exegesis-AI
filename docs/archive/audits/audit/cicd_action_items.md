@@ -344,7 +344,7 @@ jobs:
         env:
           IMAGE_TAG: ${{ github.event.inputs.image_tag || github.sha }}
         run: |
-          IMAGE="ghcr.io/${{ github.repository_owner }}/theoria-api:${IMAGE_TAG}"
+          IMAGE="ghcr.io/${{ github.repository_owner }}/Exegesis AI-api:${IMAGE_TAG}"
           EXPECTED_IDENTITY="https://github.com/${{ github.repository }}/.github/workflows/deployment-sign.yml@refs/heads/main"
           
           cosign verify \
@@ -365,7 +365,7 @@ jobs:
         run: |
           # Add your deployment commands here
           # Examples:
-          # - kubectl set image deployment/theoria-api ...
+          # - kubectl set image deployment/Exegesis AI-api ...
           # - docker stack deploy ...
           # - terraform apply ...
           echo "Deploying ${{ needs.verify-image.outputs.image_digest }} to staging"
@@ -560,7 +560,7 @@ if (failures.length > 0) {
 
 ## Contact
 - Security Lead: [Name]
-- Escalation: security@theoria.dev
+- Escalation: security@Exegesis AI.dev
 ```
 
 ---

@@ -1,6 +1,6 @@
-# Contributing to Theoria
+# Contributing to Exegesis AI
 
-Thank you for investing time into Theoria! This guide captures the current development workflow and the near-term testing plan captured in [`docs/testing/TEST_MAP.md`](docs/testing/TEST_MAP.md).
+Thank you for investing time into Exegesis AI! This guide captures the current development workflow and the near-term testing plan captured in [`docs/testing/TEST_MAP.md`](docs/testing/TEST_MAP.md).
 
 ## Prerequisites
 

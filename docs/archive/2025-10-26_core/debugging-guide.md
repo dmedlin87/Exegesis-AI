@@ -3,7 +3,7 @@
 # End-to-End Debugging Guide
 
 This guide explains how to follow a user request from the front-end through the
-Theoria API telemetry and into the persistence layer. The instructions lean
+Exegesis AI API telemetry and into the persistence layer. The instructions lean
 on the trace propagation work that surfaces a single identifier across the UI,
 structured API logs, emitted spans, and database records.
 
@@ -49,8 +49,8 @@ structured API logs, emitted spans, and database records.
      contextual attributes (request IDs, workflow names, durations, etc.).
    - OpenTelemetry spans annotated with the workflow metadata so that they show
      up in the console exporter or any OTLP backend you configure.
-   - Prometheus metrics (`theo_workflow_runs_total` and
-     `theo_workflow_latency_seconds`) labelled by workflow and status.
+   - Prometheus metrics (`EXEGESIS_workflow_runs_total` and
+     `EXEGESIS_workflow_latency_seconds`) labelled by workflow and status.
 2. Use the Trace ID or workflow label from the debug report to filter spans and
    logs, and inspect the correlated metrics for regressions.
 3. If you have the console tracer enabled locally, the span tree will include
@@ -76,7 +76,7 @@ structured API logs, emitted spans, and database records.
    sessions) for the captured identifiers to inspect the persisted state and
    confirm whether retries or manual intervention are needed.
 4. When investigating cache-related issues, also review the
-   `theo_rag_cache_events_total` metric emitted by the telemetry helper to see
+   `EXEGESIS_rag_cache_events_total` metric emitted by the telemetry helper to see
    whether reads were cache hits, misses, or refreshes.
 
 > **Where this comes from:** The SQLAlchemy models define the document, passage,
@@ -90,5 +90,5 @@ By carrying the `debug_report_id` (trace ID) from the UI into your log search
 and telemetry tooling, you can pivot from a failed front-end action straight to
 its API request metadata, correlated spans, Prometheus metrics, and finally the
 database rows that record the canonical state. This end-to-end propagation is
-now part of the default Theoria stack, so you can debug issues quickly
+now part of the default Exegesis AI stack, so you can debug issues quickly
 without having to reproduce them manually.

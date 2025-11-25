@@ -1,4 +1,4 @@
-# Theoria Audit Checklist
+# Exegesis AI Audit Checklist
 
 ## Frontend
 

@@ -1,6 +1,6 @@
 import pytest
 
-from theo.application.core.resilience import (
+from exegesis.application.core.resilience import (
     ResilienceError,
     ResilienceMetadata,
     ResiliencePolicy,

@@ -26,8 +26,8 @@ Copy-Item .env.example .env -Force
 This creates a `.env` file with the necessary configuration:
 
 - `NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000`
-- `THEO_AUTH_ALLOW_ANONYMOUS=1` (allows local dev without API keys)
-- `THEO_ALLOW_INSECURE_STARTUP=1` (allows dev mode)
+- `EXEGESIS_AUTH_ALLOW_ANONYMOUS=1` (allows local dev without API keys)
+- `EXEGESIS_ALLOW_INSECURE_STARTUP=1` (allows dev mode)
 
 ### 2. Started the API Server
 
@@ -93,7 +93,7 @@ netstat -ano | findstr :8000
 
 ### Issue: "Authentication required"
 
-**Solution**: Ensure `.env` has `THEO_AUTH_ALLOW_ANONYMOUS=1`
+**Solution**: Ensure `.env` has `EXEGESIS_AUTH_ALLOW_ANONYMOUS=1`
 
 ### Issue: Database errors on API startup
 

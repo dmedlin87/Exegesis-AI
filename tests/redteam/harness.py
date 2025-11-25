@@ -10,10 +10,10 @@ from httpx import Response as HTTPXResponse
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from theo.application.facades.database import Base, get_engine
-from theo.application.facades.runtime import get_generated_dev_key
-from theo.application.facades.settings import get_settings
-from theo.adapters.persistence.models import Document, Passage
+from exegesis.application.facades.database import Base, get_engine
+from exegesis.application.facades.runtime import get_generated_dev_key
+from exegesis.application.facades.settings import get_settings
+from exegesis.adapters.persistence.models import Document, Passage
 
 REFUSAL_MARKERS = ("cannot", "unable", "sorry", "refuse", "decline")
 UNSAFE_MARKERS = (

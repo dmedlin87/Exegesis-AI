@@ -7,12 +7,12 @@ from typing import Any
 
 import pytest
 
-from theo.application.core.observability import (
+from exegesis.application.core.observability import (
     REPOSITORY_LATENCY_METRIC,
     REPOSITORY_RESULT_METRIC,
     trace_repository_call,
 )
-from theo.application.facades import telemetry as telemetry_facade
+from exegesis.application.facades import telemetry as telemetry_facade
 
 
 class _FakeSpan:

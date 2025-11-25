@@ -15,7 +15,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.infrastructure.api.app.debug import (  # noqa: E402
+from exegesis.infrastructure.api.app.debug import (  # noqa: E402
     ErrorReportingMiddleware,
     build_debug_report,
     emit_debug_report,
@@ -46,14 +46,14 @@ def _make_request(body: bytes) -> Request:
 
 
 def test_build_debug_report_filters_sensitive_data(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("THEO_VISIBLE", "1")
-    monkeypatch.setenv("THEO_PUBLIC_ENDPOINT", "https://example.invalid")
-    monkeypatch.setenv("THEO_SECRET_KEY", "hidden")
-    monkeypatch.setenv("THEO_ACCESS_TOKEN", "token")
+    monkeypatch.setenv("EXEGESIS_VISIBLE", "1")
+    monkeypatch.setenv("EXEGESIS_PUBLIC_ENDPOINT", "https://example.invalid")
+    monkeypatch.setenv("EXEGESIS_SECRET_KEY", "hidden")
+    monkeypatch.setenv("EXEGESIS_ACCESS_TOKEN", "token")
 
     # Normalise the environment so we only assert on the keys we control.
     for key in list(os.environ):
-        if key.startswith("THEO_") and key not in {"THEO_VISIBLE", "THEO_PUBLIC_ENDPOINT"}:
+        if key.startswith("EXEGESIS_") and key not in {"EXEGESIS_VISIBLE", "EXEGESIS_PUBLIC_ENDPOINT"}:
             monkeypatch.delenv(key, raising=False)
     body = b"{\"password\": \"secret\"}"
     request = _make_request(body)
@@ -67,10 +67,10 @@ def test_build_debug_report_filters_sensitive_data(monkeypatch: pytest.MonkeyPat
     assert payload["request"]["body"]["truncated"] is False
 
     environment = payload["environment"]
-    assert environment["THEO_VISIBLE"] == "1"
-    assert environment["THEO_PUBLIC_ENDPOINT"] == "https://example.invalid"
-    assert "THEO_SECRET_KEY" not in environment
-    assert "THEO_ACCESS_TOKEN" not in environment
+    assert environment["EXEGESIS_VISIBLE"] == "1"
+    assert environment["EXEGESIS_PUBLIC_ENDPOINT"] == "https://example.invalid"
+    assert "EXEGESIS_SECRET_KEY" not in environment
+    assert "EXEGESIS_ACCESS_TOKEN" not in environment
     assert payload["error"]["type"] == "ValueError"
     assert "ValueError: boom" in "".join(payload["error"]["stacktrace"])
 
@@ -78,8 +78,8 @@ def test_build_debug_report_filters_sensitive_data(monkeypatch: pytest.MonkeyPat
 def test_error_reporting_middleware_emits_report(
     monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
 ) -> None:
-    monkeypatch.setenv("THEO_VISIBLE", "1")
-    monkeypatch.setenv("THEO_SECRET_KEY", "hidden")
+    monkeypatch.setenv("EXEGESIS_VISIBLE", "1")
+    monkeypatch.setenv("EXEGESIS_SECRET_KEY", "hidden")
 
     app = FastAPI()
     app.add_middleware(
@@ -94,7 +94,7 @@ def test_error_reporting_middleware_emits_report(
 
     client = TestClient(app)
 
-    with caplog.at_level(logging.ERROR, logger="theo.api.errors"):
+    with caplog.at_level(logging.ERROR, logger="exegesis.api.errors"):
         response = client.get("/explode")
 
     assert response.status_code == 500
@@ -107,21 +107,21 @@ def test_error_reporting_middleware_emits_report(
     logged_report = debug_records[0].__dict__["debug_report"]
     assert logged_report["context"]["feature"] == "test"
     assert logged_report["error"]["message"] == "kaboom"
-    assert logged_report["environment"]["THEO_VISIBLE"] == "1"
-    assert "THEO_SECRET_KEY" not in logged_report["environment"]
+    assert logged_report["environment"]["EXEGESIS_VISIBLE"] == "1"
+    assert "EXEGESIS_SECRET_KEY" not in logged_report["environment"]
 
 
 def test_debug_report_includes_trace_id(monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture) -> None:
     trace_id = "1234567890abcdef1234567890abcdef"
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.debug.reporting.get_current_trace_id", lambda: trace_id
+        "exegesis.infrastructure.api.app.debug.reporting.get_current_trace_id", lambda: trace_id
     )
 
     request = _make_request(b"{}")
     report = build_debug_report(request, exc=None, body=None)
     assert report.context["trace_id"] == trace_id
 
-    with caplog.at_level(logging.ERROR, logger="theo.api.errors"):
+    with caplog.at_level(logging.ERROR, logger="exegesis.api.errors"):
         emit_debug_report(report)
 
     debug_records = [record for record in caplog.records if record.getMessage() == "api.debug_report"]

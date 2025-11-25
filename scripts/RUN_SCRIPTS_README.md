@@ -1,6 +1,6 @@
-# Theoria Run Scripts
+# Exegesis AI Run Scripts
 
-Intelligent all-in-one scripts for running Theoria services with automatic environment setup, dependency management, and error handling.
+Intelligent all-in-one scripts for running Exegesis AI services with automatic environment setup, dependency management, and error handling.
 
 ---
 
@@ -10,7 +10,7 @@ Intelligent all-in-one scripts for running Theoria services with automatic envir
 
 ```powershell
 # Navigate to project root
-cd C:\Users\dmedl\Projects\Theoria
+cd C:\Users\dmedl\Projects\Exegesis AI
 
 # Run full stack (API + Web)
 .\scripts\run.ps1
@@ -23,7 +23,7 @@ cd C:\Users\dmedl\Projects\Theoria
 
 ```bash
 # Navigate to project root
-cd ~/Projects/Theoria
+cd ~/Projects/Exegesis AI
 
 # Make script executable (first time only)
 chmod +x scripts/run.sh
@@ -196,7 +196,7 @@ Runs all test suites (Python, Node.js, E2E)
 The scripts automatically create these files if they don't exist:
 
 ```text
-Theoria/
+Exegesis AI/
 ├── .env                    # Main environment variables
 ├── .venv/                  # Python virtual environment
 └── theo/services/web/
@@ -209,18 +209,18 @@ Theoria/
 database_url=sqlite:///./theo.db
 storage_root=./storage
 redis_url=redis://localhost:6379/0
-# Override THEO_AUTH_ALLOW_ANONYMOUS=1 in your shell when testing without API keys.
-THEO_AUTH_ALLOW_ANONYMOUS=0
-# Set THEO_ALLOW_INSECURE_STARTUP=1 in your shell only when running without credentials locally.
-THEO_ALLOW_INSECURE_STARTUP=0
+# Override EXEGESIS_AUTH_ALLOW_ANONYMOUS=1 in your shell when testing without API keys.
+EXEGESIS_AUTH_ALLOW_ANONYMOUS=0
+# Set EXEGESIS_ALLOW_INSECURE_STARTUP=1 in your shell only when running without credentials locally.
+EXEGESIS_ALLOW_INSECURE_STARTUP=0
 embedding_model=BAAI/bge-m3
 embedding_dim=1024
 NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000
 ```
 
-During local development the runners export `THEO_ALLOW_INSECURE_STARTUP=1` and
-`THEO_AUTH_ALLOW_ANONYMOUS=1` on your behalf so the API can start without
-credentials. Set `THEO_LOCAL_INSECURE_OVERRIDES=0` before running a script to
+During local development the runners export `EXEGESIS_ALLOW_INSECURE_STARTUP=1` and
+`EXEGESIS_AUTH_ALLOW_ANONYMOUS=1` on your behalf so the API can start without
+credentials. Set `EXEGESIS_LOCAL_INSECURE_OVERRIDES=0` before running a script to
 opt out and exercise the production startup paths.
 
 ### `.env.local` (Auto-generated)
@@ -322,8 +322,8 @@ Remove-Item -Recurse -Force .venv, theo\services\web\node_modules
 
 ```powershell
 # 1. Clone repository
-git clone https://github.com/yourorg/Theoria.git
-cd Theoria
+git clone https://github.com/yourorg/Exegesis AI.git
+cd Exegesis AI
 
 # 2. Run environment check
 .\scripts\run.ps1 -Mode check
@@ -352,7 +352,7 @@ cd Theoria
 .\scripts\run.ps1 -Mode api -Verbose
 
 # Terminal 2: Run API tests
-cd Theoria
+cd Exegesis AI
 .venv\Scripts\Activate.ps1
 pytest tests/ -v
 ```
@@ -378,7 +378,7 @@ npm run test:e2e
 .\scripts\run.ps1 -Mode test
 
 # Or individually
-cd Theoria
+cd Exegesis AI
 .venv\Scripts\Activate.ps1
 pytest tests/ -v                    # Python tests
 
@@ -564,8 +564,8 @@ npm --version
 
 ```bash
 # Customize ports
-export THEO_API_PORT=8080
-export THEO_WEB_PORT=3000
+export EXEGESIS_API_PORT=8080
+export EXEGESIS_WEB_PORT=3000
 ./scripts/run.sh full
 ```
 

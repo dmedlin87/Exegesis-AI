@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-from theo.domain.research import crossrefs as crossrefs_module
-from theo.domain.research.crossrefs import (
+from exegesis.domain.research import crossrefs as crossrefs_module
+from exegesis.domain.research.crossrefs import (
     CrossReferenceEntry,
     fetch_cross_references,
 )

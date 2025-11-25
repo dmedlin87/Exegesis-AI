@@ -12,13 +12,13 @@ from unittest.mock import Mock, call
 
 import pytest
 
-from theo.application.dtos import (
+from exegesis.application.dtos import (
     CorpusSnapshotDTO,
     DiscoveryDTO,
     DiscoveryListFilters,
 )
-from theo.adapters.persistence.discovery_repository import SQLAlchemyDiscoveryRepository
-from theo.adapters.persistence.models import Discovery, CorpusSnapshot
+from exegesis.adapters.persistence.discovery_repository import SQLAlchemyDiscoveryRepository
+from exegesis.adapters.persistence.models import Discovery, CorpusSnapshot
 
 
 @pytest.fixture

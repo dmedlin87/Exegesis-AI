@@ -3,7 +3,7 @@
 import pytest
 import time
 
-from theo.infrastructure.api.app.research.ai.passage import (
+from exegesis.infrastructure.api.app.research.ai.passage import (
     PassageResolutionError,
     resolve_passage_reference,
 )

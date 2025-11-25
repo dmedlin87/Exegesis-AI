@@ -5,8 +5,8 @@ import base64
 
 import pytest
 
-from theo.adapters.secrets.aws import AWSSecretsAdapter
-from theo.application.ports.secrets import SecretRequest, SecretRetrievalError
+from exegesis.adapters.secrets.aws import AWSSecretsAdapter
+from exegesis.application.ports.secrets import SecretRequest, SecretRetrievalError
 
 
 class DummyAWSClient:
@@ -79,7 +79,7 @@ def test_aws_adapter_reports_invalid_json_when_extracting_field() -> None:
 
 
 def test_aws_adapter_from_config_requires_boto3(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("theo.adapters.secrets.aws.boto3", None)
+    monkeypatch.setattr("exegesis.adapters.secrets.aws.boto3", None)
 
     with pytest.raises(RuntimeError):
         AWSSecretsAdapter.from_config(profile_name="default")

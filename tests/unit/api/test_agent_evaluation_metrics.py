@@ -10,11 +10,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from theo.infrastructure.api.app.analytics.agent_evaluation import (
+from exegesis.infrastructure.api.app.analytics.agent_evaluation import (
     evaluate_agent_trails,
 )
-from theo.application.facades.database import Base
-from theo.adapters.persistence.models import (
+from exegesis.application.facades.database import Base
+from exegesis.adapters.persistence.models import (
     AgentStep,
     AgentTrail,
     TrailRetrievalSnapshot,

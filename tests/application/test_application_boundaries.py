@@ -20,13 +20,13 @@ def test_application_layer_does_not_depend_on_services(module_path: Path) -> Non
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                if alias.name.startswith("theo.infrastructure"):
+                if alias.name.startswith("exegesis.infrastructure"):
                     pytest.fail(
                         f"{module_path} imports infrastructure layer module {alias.name}"
                     )
         elif isinstance(node, ast.ImportFrom):
             module = node.module or ""
-            if module.startswith("theo.infrastructure"):
+            if module.startswith("exegesis.infrastructure"):
                 pytest.fail(
                     f"{module_path} imports infrastructure layer module {module}"
                 )

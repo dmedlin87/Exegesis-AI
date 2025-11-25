@@ -57,14 +57,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades import database as database_module  # noqa: E402
-from theo.application.facades.database import configure_engine, get_session  # noqa: E402
-from theo.application.facades.settings import Settings  # noqa: E402
-from theo.infrastructure.api.app.main import app  # noqa: E402
-from theo.infrastructure.api.app.routes import ingest as ingest_module  # noqa: E402
-from theo.infrastructure.api.app.infra import ingestion_service as ingestion_service_module  # noqa: E402
-from theo.infrastructure.api.app.library.ingest import pipeline as pipeline_module  # noqa: E402
-from theo.infrastructure.api.app.library.ingest import network as network_module  # noqa: E402
+from exegesis.application.facades import database as database_module  # noqa: E402
+from exegesis.application.facades.database import configure_engine, get_session  # noqa: E402
+from exegesis.application.facades.settings import Settings  # noqa: E402
+from exegesis.infrastructure.api.app.main import app  # noqa: E402
+from exegesis.infrastructure.api.app.routes import ingest as ingest_module  # noqa: E402
+from exegesis.infrastructure.api.app.infra import ingestion_service as ingestion_service_module  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest import pipeline as pipeline_module  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest import network as network_module  # noqa: E402
 
 PAYLOAD_TOO_LARGE = getattr(status, "HTTP_413_CONTENT_TOO_LARGE", None)
 if PAYLOAD_TOO_LARGE is None:  # pragma: no cover - compatibility path
@@ -86,14 +86,14 @@ def api_engine(tmp_path_factory: pytest.TempPathFactory):
 @pytest.fixture()
 def api_client(api_engine, monkeypatch):
     # Disable migrations during app startup
-    from theo.infrastructure.api.app.db import run_sql_migrations as migrations_module
+    from exegesis.infrastructure.api.app.db import run_sql_migrations as migrations_module
 
     def _noop_migrations(*args, **kwargs):
         return []
 
     monkeypatch.setattr(migrations_module, "run_sql_migrations", _noop_migrations)
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.lifecycle.run_sql_migrations",
+        "exegesis.infrastructure.api.app.bootstrap.lifecycle.run_sql_migrations",
         _noop_migrations,
     )
 
@@ -253,7 +253,7 @@ def test_ingest_file_logs_large_body_as_truncated(
 
     payload = b"y" * (chunk_size * 5)
 
-    with caplog.at_level(logging.ERROR, logger="theo.api.errors"):
+    with caplog.at_level(logging.ERROR, logger="exegesis.api.errors"):
         response = api_client.post(
             "/ingest/file",
             files={"file": ("large.bin", payload, "application/octet-stream")},
@@ -346,7 +346,7 @@ def test_ingest_url_rejects_disallowed_scheme(
 def test_ingest_url_blocks_private_targets(
     monkeypatch: pytest.MonkeyPatch, api_client: TestClient, blocked_url: str
 ) -> None:
-    from theo.infrastructure.api.app.library.ingest import pipeline as pipeline_module
+    from exegesis.infrastructure.api.app.library.ingest import pipeline as pipeline_module
 
     def unexpected_fetch(*args, **kwargs):  # noqa: ANN001
         raise AssertionError("Disallowed URLs must not be fetched")

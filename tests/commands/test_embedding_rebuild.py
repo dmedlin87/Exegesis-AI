@@ -139,17 +139,17 @@ except ModuleNotFoundError:  # pragma: no cover - testing fallback
     sys.modules["sqlalchemy.sql"] = sql_module
     sys.modules["sqlalchemy.sql.elements"] = elements_module
 
-sanitizer_stub = types.ModuleType("theo.infrastructure.api.app.library.ingest.sanitizer")
+sanitizer_stub = types.ModuleType("exegesis.infrastructure.api.app.library.ingest.sanitizer")
 sanitizer_stub.sanitize_passage_text = lambda text: text
-sys.modules["theo.infrastructure.api.app.library.ingest.sanitizer"] = sanitizer_stub
+sys.modules["exegesis.infrastructure.api.app.library.ingest.sanitizer"] = sanitizer_stub
 
 pytest.importorskip("sqlalchemy")
 from sqlalchemy.exc import SQLAlchemyError
 
-from theo.application.retrieval.embeddings import EmbeddingRebuildResult
-from theo.application.retrieval.embeddings.checkpoint_store import load_checkpoint
-from theo.commands import embedding_rebuild
-from theo.commands.embedding_rebuild import (
+from exegesis.application.retrieval.embeddings import EmbeddingRebuildResult
+from exegesis.application.retrieval.embeddings.checkpoint_store import load_checkpoint
+from exegesis.commands import embedding_rebuild
+from exegesis.commands.embedding_rebuild import (
     _batched,
     _commit_with_retry,
     _load_ids,
@@ -159,7 +159,7 @@ from theo.commands.embedding_rebuild import (
 )
 
 
-_EMBEDDING_MODULE_NAME = "theo.infrastructure.api.app.library.ingest.embeddings"
+_EMBEDDING_MODULE_NAME = "exegesis.infrastructure.api.app.library.ingest.embeddings"
 
 
 @pytest.fixture(scope="module")

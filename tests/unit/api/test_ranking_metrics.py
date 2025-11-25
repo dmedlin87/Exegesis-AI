@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from theo.infrastructure.api.app.retrieval.ranking import metrics
+from exegesis.infrastructure.api.app.retrieval.ranking import metrics
 
 
 def test_ndcg_with_zero_k_returns_zero() -> None:

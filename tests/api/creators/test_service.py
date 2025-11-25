@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.infrastructure.api.app.creators.service import (
+from exegesis.infrastructure.api.app.creators.service import (
     _average_confidence,
     _collect_quotes,
     _normalise_topic,
@@ -11,7 +11,7 @@ from theo.infrastructure.api.app.creators.service import (
     fetch_creator_topic_profile,
     search_creators,
 )
-from theo.adapters.persistence.models import (
+from exegesis.adapters.persistence.models import (
     Base,
     Creator,
     CreatorClaim,

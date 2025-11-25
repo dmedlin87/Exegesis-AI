@@ -1,40 +1,54 @@
 version: "3.9"
 
 services:
-  api:
-    build:
-      context: .
-      dockerfile: theo/infrastructure/api/Dockerfile
-    ports:
-      - "${THEORIA_API_PORT:-8000}:8000"
-    environment:
-      PYTHONPATH: /app
-      # Anonymous access is disabled by default; set THEO_AUTH_ALLOW_ANONYMOUS=1
-      # in your shell only when iterating locally.
-      THEO_AUTH_ALLOW_ANONYMOUS: "${THEO_AUTH_ALLOW_ANONYMOUS:-0}"
-      # Insecure startup must be explicitly enabled for local development.
-      THEO_ALLOW_INSECURE_STARTUP: "${THEO_ALLOW_INSECURE_STARTUP:-0}"
-      THEORIA_ENVIRONMENT: "development"
-      THEORIA_PROFILE: "${THEORIA_PROFILE:-dev}"
-      THEORIA_API_PORT: "${THEORIA_API_PORT:-8000}"
-    volumes:
-      - .:/app
-    command: ["uvicorn", "theo.infrastructure.api.app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+    api:
+        build:
+            context: .
+            dockerfile: exegesis/infrastructure/api/Dockerfile
+        ports:
+            - "${EXEGESIS_API_PORT:-8000}:8000"
+        environment:
+            PYTHONPATH: /app
+            # Anonymous access is disabled by default; set EXEGESIS_AUTH_ALLOW_ANONYMOUS=1
+            # in your shell only when iterating locally.
+            EXEGESIS_AUTH_ALLOW_ANONYMOUS: "${EXEGESIS_AUTH_ALLOW_ANONYMOUS:-0}"
+            # Insecure startup must be explicitly enabled for local development.
+            EXEGESIS_ALLOW_INSECURE_STARTUP: "${EXEGESIS_ALLOW_INSECURE_STARTUP:-0}"
+            EXEGESIS_ENVIRONMENT: "development"
+            EXEGESIS_PROFILE: "${EXEGESIS_PROFILE:-dev}"
+            EXEGESIS_API_PORT: "${EXEGESIS_API_PORT:-8000}"
+        volumes:
+            - .:/app
+        command:
+            [
+                "uvicorn",
+                "exegesis.infrastructure.api.app.main:app",
+                "--reload",
+                "--host",
+                "0.0.0.0",
+                "--port",
+                "8000",
+            ]
 
-  web:
-    image: node:20-alpine
-    working_dir: /workspace/theo/services/web
-    volumes:
-      - .:/workspace
-    ports:
-      - "${THEORIA_WEB_PORT:-3000}:3000"
-    environment:
-      NEXT_PUBLIC_API_BASE_URL: "http://localhost:${THEORIA_API_PORT:-8000}"
-      THEORIA_PROFILE: "${THEORIA_PROFILE:-dev}"
-      THEORIA_ENVIRONMENT: "development"
-      NODE_ENV: development
-      THEORIA_WEB_PORT: "${THEORIA_WEB_PORT:-3000}"
-      THEORIA_API_PORT: "${THEORIA_API_PORT:-8000}"
-    command: ["sh", "-c", "npm install && npm run dev -- --hostname 0.0.0.0 --port ${THEORIA_WEB_PORT:-3000}"]
-    depends_on:
-      - api
+    web:
+        image: node:20-alpine
+        working_dir: /workspace/exegesis/services/web
+        volumes:
+            - .:/workspace
+        ports:
+            - "${EXEGESIS_WEB_PORT:-3000}:3000"
+        environment:
+            NEXT_PUBLIC_API_BASE_URL: "http://localhost:${EXEGESIS_API_PORT:-8000}"
+            EXEGESIS_PROFILE: "${EXEGESIS_PROFILE:-dev}"
+            EXEGESIS_ENVIRONMENT: "development"
+            NODE_ENV: development
+            EXEGESIS_WEB_PORT: "${EXEGESIS_WEB_PORT:-3000}"
+            EXEGESIS_API_PORT: "${EXEGESIS_API_PORT:-8000}"
+        command:
+            [
+                "sh",
+                "-c",
+                "npm install && npm run dev -- --hostname 0.0.0.0 --port ${EXEGESIS_WEB_PORT:-3000}",
+            ]
+        depends_on:
+            - api

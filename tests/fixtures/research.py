@@ -13,8 +13,8 @@ RESEARCH_IMPORT_ERROR: Exception | None = None
 
 try:  # pragma: no cover - optional dependency wiring
     sqlalchemy_spec = importlib.util.find_spec("sqlalchemy")
-    theo_spec = importlib.util.find_spec("theo")
-    if sqlalchemy_spec is None or theo_spec is None:
+    EXEGESIS_spec = importlib.util.find_spec("theo")
+    if sqlalchemy_spec is None or EXEGESIS_spec is None:
         raise ModuleNotFoundError("research fixtures dependencies not available")
 except (ModuleNotFoundError, ImportError) as exc:  # pragma: no cover - dependency missing
     RESEARCH_DEPENDENCIES_AVAILABLE = False
@@ -42,7 +42,7 @@ def _require_dependencies() -> None:
 def _draft_from_payload(payload: Mapping[str, object]) -> ResearchNoteDraft:
     _require_dependencies()
 
-    from theo.domain.research import ResearchNoteDraft, ResearchNoteEvidenceDraft
+    from exegesis.domain.research import ResearchNoteDraft, ResearchNoteEvidenceDraft
 
     tags = payload.get("tags")
     tags_tuple: tuple[str, ...] | None = None
@@ -127,7 +127,7 @@ def research_session() -> Iterator[SQLASession]:
     from sqlalchemy.orm import sessionmaker
     from sqlalchemy.pool import StaticPool
 
-    from theo.application.facades.database import Base
+    from exegesis.application.facades.database import Base
 
     engine = create_engine(
         "sqlite:///:memory:",
@@ -161,7 +161,7 @@ def persisted_research_note(
 
     _require_dependencies()
 
-    from theo.adapters.research.sqlalchemy import SqlAlchemyResearchNoteRepository
+    from exegesis.adapters.research.sqlalchemy import SqlAlchemyResearchNoteRepository
 
     repository = SqlAlchemyResearchNoteRepository(research_session)
     note = repository.create(research_note_draft, commit=True)

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from theo.domain.research import historicity as historicity_module
-from theo.domain.research.historicity import historicity_search
+from exegesis.domain.research import historicity as historicity_module
+from exegesis.domain.research.historicity import historicity_search
 
 
 @pytest.fixture()

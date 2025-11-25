@@ -5,9 +5,9 @@ from dataclasses import replace
 import pytest
 from sqlalchemy.orm import Session
 
-from theo.adapters.persistence.models import NoteEvidence, ResearchNote as ResearchNoteModel
-from theo.adapters.research.sqlalchemy import SqlAlchemyResearchNoteRepository
-from theo.domain.research import (
+from exegesis.adapters.persistence.models import NoteEvidence, ResearchNote as ResearchNoteModel
+from exegesis.adapters.research.sqlalchemy import SqlAlchemyResearchNoteRepository
+from exegesis.domain.research import (
     ResearchNoteDraft,
     ResearchNoteEvidenceDraft,
     ResearchNoteNotFoundError,

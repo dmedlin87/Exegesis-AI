@@ -4,7 +4,7 @@
 
 ## What Happened
 
-Comprehensive architectural review completed with full implementation of improvements. Theoria now has significantly stronger hexagonal architecture boundaries.
+Comprehensive architectural review completed with full implementation of improvements. Exegesis AI now has significantly stronger hexagonal architecture boundaries.
 
 ---
 

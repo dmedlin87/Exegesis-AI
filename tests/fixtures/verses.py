@@ -12,8 +12,8 @@ VERSE_DEPENDENCIES_AVAILABLE = True
 VERSE_IMPORT_ERROR: Exception | None = None
 
 try:  # pragma: no cover - optional dependency wiring
-    theo_spec = importlib.util.find_spec("theo")
-    if theo_spec is None:
+    EXEGESIS_spec = importlib.util.find_spec("theo")
+    if EXEGESIS_spec is None:
         raise ModuleNotFoundError("verse graph dependencies unavailable")
 except (ModuleNotFoundError, ImportError) as exc:  # pragma: no cover - dependency missing
     VERSE_DEPENDENCIES_AVAILABLE = False
@@ -24,7 +24,7 @@ except (ModuleNotFoundError, ImportError) as exc:  # pragma: no cover - dependen
     Passage = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
-    from theo.infrastructure.api.app.db.verse_graph import VerseSeedRelationships as VerseSeedRelationshipsType
+    from exegesis.infrastructure.api.app.db.verse_graph import VerseSeedRelationships as VerseSeedRelationshipsType
 else:  # pragma: no cover - runtime fallback
     VerseSeedRelationshipsType = object
 
@@ -40,7 +40,7 @@ def verse_graph_passage():
 
     _require_dependencies()
 
-    from theo.infrastructure.api.app.models.base import Passage
+    from exegesis.infrastructure.api.app.models.base import Passage
 
     return Passage(
         id="passage-1",
@@ -72,7 +72,7 @@ def verse_seed_relationships() -> VerseSeedRelationshipsType:
 
     _require_dependencies()
 
-    from theo.infrastructure.api.app.db.verse_graph import (
+    from exegesis.infrastructure.api.app.db.verse_graph import (
         CommentarySeedRecord,
         PairSeedRecord,
         VerseSeedRelationships,

@@ -13,9 +13,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades import database as database_module
-from theo.application.facades.database import Base, configure_engine, get_engine
-from theo.adapters.persistence.models import Document, WatchlistEvent
+from exegesis.application.facades import database as database_module
+from exegesis.application.facades.database import Base, configure_engine, get_engine
+from exegesis.adapters.persistence.models import Document, WatchlistEvent
 
 
 def _initialise_database(db_path: Path) -> tuple[Session, Engine]:

@@ -13,19 +13,19 @@ from sqlalchemy import event, text
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session
 
-from theo.application.facades import database as database_module
-from theo.application.facades.database import Base, configure_engine, get_engine
-from theo.application.facades.settings import get_settings
-from theo.infrastructure.api.app.db import seeds as seeds_module
-from theo.adapters.persistence.models import AppSetting
-from theo.infrastructure.api.app.main import app
-import theo.infrastructure.api.app.db.run_sql_migrations as migrations_module
-from theo.infrastructure.api.app.db.run_sql_migrations import (
+from exegesis.application.facades import database as database_module
+from exegesis.application.facades.database import Base, configure_engine, get_engine
+from exegesis.application.facades.settings import get_settings
+from exegesis.infrastructure.api.app.db import seeds as seeds_module
+from exegesis.adapters.persistence.models import AppSetting
+from exegesis.infrastructure.api.app.main import app
+import exegesis.infrastructure.api.app.db.run_sql_migrations as migrations_module
+from exegesis.infrastructure.api.app.db.run_sql_migrations import (
     MIGRATIONS_PATH,
     _SQLITE_PERSPECTIVE_MIGRATION,
     run_sql_migrations,
 )
-from theo.infrastructure.api.app.db.seeds import seed_contradiction_claims
+from exegesis.infrastructure.api.app.db.seeds import seed_contradiction_claims
 
 
 @pytest.mark.schema
@@ -49,7 +49,7 @@ def test_sql_migrations_run_on_startup(tmp_path: Path, monkeypatch: pytest.Monke
         )
 
         migrations_module = importlib.import_module(
-            "theo.infrastructure.api.app.db.run_sql_migrations"
+            "exegesis.infrastructure.api.app.db.run_sql_migrations"
         )
 
         monkeypatch.setattr(migrations_module, "MIGRATIONS_PATH", migrations_dir)
@@ -209,7 +209,7 @@ def test_sqlite_startup_without_migrations_creates_contradiction_table(
 
     monkeypatch.setattr(migrations_module, "run_sql_migrations", _noop_migrations)
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.lifecycle.run_sql_migrations",
+        "exegesis.infrastructure.api.app.bootstrap.lifecycle.run_sql_migrations",
         _noop_migrations,
     )
 
@@ -346,7 +346,7 @@ def test_sqlite_startup_restores_missing_perspective_column(
 
     monkeypatch.setattr(seeds_module, "seed_reference_data", _lightweight_seed_reference_data)
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.lifecycle.seed_reference_data",
+        "exegesis.infrastructure.api.app.bootstrap.lifecycle.seed_reference_data",
         _lightweight_seed_reference_data,
     )
 

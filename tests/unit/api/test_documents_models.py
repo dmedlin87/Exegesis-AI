@@ -7,7 +7,7 @@ import types
 import pytest
 from pydantic import ValidationError
 
-from theo.infrastructure.api.app.models import documents
+from exegesis.infrastructure.api.app.models import documents
 
 
 @pytest.fixture
@@ -52,7 +52,7 @@ def test_url_ingest_request_requires_allowed_scheme(configure_ingest_settings) -
     configure_ingest_settings(blocked=set(), allowed={"https"})
 
     with pytest.raises(ValidationError) as exc:
-        documents.UrlIngestRequest(url="http://theoria.test/doc")
+        documents.UrlIngestRequest(url="http://Exegesis AI.test/doc")
 
     assert "URL scheme is not allowed" in str(exc.value)
 
@@ -62,9 +62,9 @@ def test_url_ingest_request_accepts_allowed_scheme(configure_ingest_settings) ->
 
     configure_ingest_settings(blocked={"ftp"}, allowed={"https", "http"})
 
-    payload = documents.UrlIngestRequest(url="https://theoria.test/notes")
+    payload = documents.UrlIngestRequest(url="https://Exegesis AI.test/notes")
 
-    assert payload.url == "https://theoria.test/notes"
+    assert payload.url == "https://Exegesis AI.test/notes"
 
 
 def test_simple_ingest_request_normalises_sources_from_string() -> None:

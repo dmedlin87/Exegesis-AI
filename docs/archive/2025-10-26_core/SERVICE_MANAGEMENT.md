@@ -4,7 +4,7 @@
 
 ## Overview
 
-The Theoria service launcher (`start-theoria.ps1`) is an intelligent orchestration system that manages the full-stack application lifecycle with built-in resilience, monitoring, and diagnostic capabilities.
+The Exegesis AI service launcher (`start-Exegesis AI.ps1`) is an intelligent orchestration system that manages the full-stack application lifecycle with built-in resilience, monitoring, and diagnostic capabilities.
 
 ## Key Features
 
@@ -48,7 +48,7 @@ The Theoria service launcher (`start-theoria.ps1`) is an intelligent orchestrati
 - Session summaries on shutdown
 - Verbose mode for troubleshooting
 - Graceful shutdown with uptime reporting
-- Cross-platform launcher (`scripts/start-theoria.sh`) for macOS/Linux developers
+- Cross-platform launcher (`scripts/start-Exegesis AI.sh`) for macOS/Linux developers
 - Docker definition in `infra/service-manager/` to run the entire stack in containers
 - Lightweight React dashboard (`dashboard/index.html`) that consumes manager metrics
 
@@ -58,29 +58,29 @@ The Theoria service launcher (`start-theoria.ps1`) is an intelligent orchestrati
 
 ```powershell
 # Start with default settings
-.\start-theoria.ps1
+.\start-Exegesis AI.ps1
 
 # Start with custom ports
-.\start-theoria.ps1 -ApiPort 8010 -WebPort 3100
+.\start-Exegesis AI.ps1 -ApiPort 8010 -WebPort 3100
 
 # Start with verbose logging
-.\start-theoria.ps1 -Verbose
+.\start-Exegesis AI.ps1 -Verbose
 ```
 
 ### Advanced Usage
 
 ```powershell
 # Enable file logging and real-time metrics
-.\start-theoria.ps1 -LogToFile -ShowMetrics
+.\start-Exegesis AI.ps1 -LogToFile -ShowMetrics
 
 # Disable health monitoring (faster startup, less resilient)
-.\start-theoria.ps1 -SkipHealthChecks
+.\start-Exegesis AI.ps1 -SkipHealthChecks
 
 # Full monitoring setup
-.\start-theoria.ps1 -Verbose -LogToFile -ShowMetrics
+.\start-Exegesis AI.ps1 -Verbose -LogToFile -ShowMetrics
 
 # Switch to green deployment slot and enable profiling with alerts
-.\start-theoria.ps1 -ActiveDeploymentColor green -EnableProfiling -EnableAlerts
+.\start-Exegesis AI.ps1 -ActiveDeploymentColor green -EnableProfiling -EnableAlerts
 ```
 
 ## Architecture
@@ -89,7 +89,7 @@ The Theoria service launcher (`start-theoria.ps1`) is an intelligent orchestrati
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                   START-THEORIA                         │
+│                   START-Exegesis AI                         │
 └────────────┬────────────────────────────────────────────┘
              │
              ├─► Prerequisites Check (Python, Node, npm)
@@ -187,7 +187,7 @@ Override the active color with `-ActiveDeploymentColor green` or set metrics/ale
 
 ### Docker & Cross-Platform Tooling
 
-- `scripts/start-theoria.sh` wraps the PowerShell launcher so macOS/Linux users can start the stack via Bash.
+- `scripts/start-Exegesis AI.sh` wraps the PowerShell launcher so macOS/Linux users can start the stack via Bash.
 - `infra/service-manager/Dockerfile` builds a container image with all dependencies ready to launch the service orchestrator.
 - `infra/service-manager/docker-compose.yml` provides a compose target that exposes API, web, and metrics ports for easy local orchestration.
 
@@ -228,7 +228,7 @@ Each health check returns:
 
 ```powershell
 @{
-    Name = "Theoria API"
+    Name = "Exegesis AI API"
     Status = "Running"
     Uptime = "01:23:45"            # hh:mm:ss format
     UptimeSeconds = 5025           # Total seconds
@@ -249,9 +249,9 @@ When `ShowMetrics` is enabled, the system displays a live dashboard every 60 sec
 ╔══════════════════════════════════════════════════════════╗
 ║               SERVICE STATUS DASHBOARD                  ║
 ╠══════════════════════════════════════════════════════════╣
-║ Theoria API [Running]                                    ║
+║ Exegesis AI API [Running]                                    ║
 ║   Uptime: 01:23:45 | Health: 98.5% | Avg Response: 45.2ms║
-║ Theoria Web [Running]                                    ║
+║ Exegesis AI Web [Running]                                    ║
 ║   Uptime: 01:23:40 | Health: 100.0% | Avg Response: 12.3ms║
 ╠══════════════════════════════════════════════════════════╣
 ║ Total Runtime: 01:23:45                                  ║
@@ -277,7 +277,7 @@ When `LogToFile` is enabled, logs are written as JSON:
 {
   "timestamp": "2025-10-12 12:34:56.789",
   "level": "Warning",
-  "message": "Theoria API health check failed: Connection timeout",
+  "message": "Exegesis AI API health check failed: Connection timeout",
   "metadata": {
     "service": "Api",
     "status_code": 0,
@@ -290,7 +290,7 @@ When `LogToFile` is enabled, logs are written as JSON:
 ### Log File Location
 
 ```
-logs/theoria-launcher.log
+logs/Exegesis AI-launcher.log
 ```
 
 ## Shutdown & Session Summary
@@ -302,10 +302,10 @@ On graceful shutdown (Ctrl+C), the system displays a comprehensive session summa
 ║                   SESSION SUMMARY                        ║
 ╠══════════════════════════════════════════════════════════╣
 ║ Total Runtime: 02:45:30                                  ║
-║ Theoria API:                                             ║
+║ Exegesis AI API:                                             ║
 ║   Uptime: 02:45:25                                       ║
 ║   Health Checks: 990 (99.2% success)                     ║
-║ Theoria Web:                                             ║
+║ Exegesis AI Web:                                             ║
 ║   Uptime: 02:45:20                                       ║
 ║   Health Checks: 990 (100.0% success)                    ║
 ║   Restarts: 1                                            ║
@@ -326,13 +326,13 @@ On graceful shutdown (Ctrl+C), the system displays a comprehensive session summa
 2. **Enable verbose logging**
 
    ```powershell
-   .\start-theoria.ps1 -Verbose
+   .\start-Exegesis AI.ps1 -Verbose
    ```
 
 3. **Check logs**
 
    ```powershell
-   Get-Content logs/theoria-launcher.log | Select-Object -Last 50
+   Get-Content logs/Exegesis AI-launcher.log | Select-Object -Last 50
    ```
 
 ### Service Keeps Restarting
@@ -362,25 +362,25 @@ On graceful shutdown (Ctrl+C), the system displays a comprehensive session summa
 1. **Daily Development**
 
    ```powershell
-   .\start-theoria.ps1
+   .\start-Exegesis AI.ps1
    ```
 
 2. **Debugging Issues**
 
    ```powershell
-   .\start-theoria.ps1 -Verbose -LogToFile
+   .\start-Exegesis AI.ps1 -Verbose -LogToFile
    ```
 
 3. **Performance Monitoring**
 
    ```powershell
-   .\start-theoria.ps1 -ShowMetrics
+   .\start-Exegesis AI.ps1 -ShowMetrics
    ```
 
 4. **CI/CD Testing**
 
    ```powershell
-   .\start-theoria.ps1 -SkipHealthChecks
+   .\start-Exegesis AI.ps1 -SkipHealthChecks
    ```
 
 ### Performance Tips
@@ -404,23 +404,23 @@ For production deployments, consider:
 
 ### Functions
 
-#### `Start-Theoria`
+#### `Start-Exegesis AI`
 
 Main entry point that orchestrates the complete lifecycle.
 
-#### `Start-TheoriaApi`
+#### `Start-Exegesis AIApi`
 
 Launches FastAPI service with health check polling.
 
 **Returns**: `$true` if started successfully, `$false` otherwise
 
-#### `Start-TheoriaWeb`
+#### `Start-Exegesis AIWeb`
 
 Launches Next.js service with dependency installation.
 
 **Returns**: `$true` if started successfully, `$false` otherwise
 
-#### `Stop-TheoriaService`
+#### `Stop-Exegesis AIService`
 
 Gracefully stops a service and captures final output.
 
@@ -485,4 +485,4 @@ To improve the service management system:
 
 ## License
 
-Part of the Theoria project. See root LICENSE file.
+Part of the Exegesis AI project. See root LICENSE file.

@@ -2,9 +2,9 @@ from pathlib import Path
 
 import pytest
 
-from theo.application.facades import runtime as runtime_module
-from theo.application.facades import settings as settings_module
-from theo.application.facades.settings import Settings
+from exegesis.application.facades import runtime as runtime_module
+from exegesis.application.facades import settings as settings_module
+from exegesis.application.facades.settings import Settings
 
 
 @pytest.fixture(autouse=True)
@@ -24,8 +24,8 @@ def test_settings_collection_parsers():
     assert Settings._parse_api_keys('["alpha", "beta"]') == ["alpha", "beta"]
     assert Settings._parse_algorithms("rs256,HS256") == ["RS256", "HS256"]
     assert Settings._parse_cors_origins(
-        ["https://example.com", "https://theoria.ai"]
-    ) == ["https://example.com", "https://theoria.ai"]
+        ["https://example.com", "https://Exegesis AI.ai"]
+    ) == ["https://example.com", "https://Exegesis AI.ai"]
 
 
 def test_reranker_configuration_normalizes_paths(tmp_path: Path):
@@ -59,18 +59,18 @@ def test_reranker_configuration_rejects_external_paths(tmp_path: Path):
 
 
 def test_get_settings_cipher_uses_insecure_fallback(monkeypatch):
-    monkeypatch.setenv("THEO_ALLOW_INSECURE_STARTUP", "1")
-    monkeypatch.setenv("THEORIA_ENVIRONMENT", "development")
+    monkeypatch.setenv("EXEGESIS_ALLOW_INSECURE_STARTUP", "1")
+    monkeypatch.setenv("EXEGESIS_ENVIRONMENT", "development")
     monkeypatch.delenv("SETTINGS_SECRET_KEY", raising=False)
-    monkeypatch.delenv("THEO_SETTINGS_SECRET_KEY", raising=False)
+    monkeypatch.delenv("EXEGESIS_SETTINGS_SECRET_KEY", raising=False)
 
     cipher_one = settings_module.get_settings_cipher()
     assert cipher_one is not None
     cipher_two = settings_module.get_settings_cipher()
     assert cipher_one is cipher_two
 
-    payload = cipher_one.encrypt(b"theoria")
-    assert cipher_one.decrypt(payload) == b"theoria"
+    payload = cipher_one.encrypt(b"Exegesis AI")
+    assert cipher_one.decrypt(payload) == b"Exegesis AI"
 
 
 def test_get_settings_handles_non_path_fixture_root(monkeypatch):

@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-from theo.domain.research import variants as variants_module
-from theo.domain.research.variants import variants_apparatus
+from exegesis.domain.research import variants as variants_module
+from exegesis.domain.research.variants import variants_apparatus
 
 
 @pytest.fixture

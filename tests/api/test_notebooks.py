@@ -4,10 +4,10 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session, sessionmaker
 
 from fastapi import Request
-from theo.application.facades.database import get_session
-from theo.adapters.persistence.models import Document, Notebook
-from theo.infrastructure.api.app.main import app
-from theo.infrastructure.api.app.adapters.security import require_principal
+from exegesis.application.facades.database import get_session
+from exegesis.adapters.persistence.models import Document, Notebook
+from exegesis.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.adapters.security import require_principal
 
 
 @pytest.fixture()
@@ -17,11 +17,11 @@ def allow_anonymous_env(
     """Ensure anonymous access is configured for selected tests."""
 
     if request.node.get_closest_marker("no_auth_override"):
-        from theo.application.facades import settings as settings_module
+        from exegesis.application.facades import settings as settings_module
 
-        monkeypatch.setenv("THEO_AUTH_ALLOW_ANONYMOUS", "true")
-        monkeypatch.setenv("THEO_ALLOW_INSECURE_STARTUP", "1")
-        monkeypatch.setenv("THEO_API_KEYS", "[]")
+        monkeypatch.setenv("EXEGESIS_AUTH_ALLOW_ANONYMOUS", "true")
+        monkeypatch.setenv("EXEGESIS_ALLOW_INSECURE_STARTUP", "1")
+        monkeypatch.setenv("EXEGESIS_API_KEYS", "[]")
         settings_module.get_settings.cache_clear()
         try:
             yield

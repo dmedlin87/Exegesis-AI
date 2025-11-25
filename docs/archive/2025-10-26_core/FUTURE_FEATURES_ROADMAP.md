@@ -1,8 +1,8 @@
 > **Archived on 2025-10-26**
 
-# 🚀 Theoria - Future Features Roadmap
+# 🚀 Exegesis AI - Future Features Roadmap
 
-This document captures all planned features to enhance Theoria as a comprehensive theological research platform.
+This document captures all planned features to enhance Exegesis AI as a comprehensive theological research platform.
 
 ---
 
@@ -619,7 +619,7 @@ Visual tool to construct systematic theological arguments.
   - Tag with AI (topic detection)
   
 - **Voice Assistant**
-  - "Hey Theoria, what does Romans 8:28 say?"
+  - "Hey Exegesis AI, what does Romans 8:28 say?"
   - "Find contradictions on election"
   - "Add this document to my sermon prep collection"
   
@@ -1056,4 +1056,4 @@ For each feature, track:
 
 ---
 
-**This roadmap represents the future of Theoria as the ultimate theological research platform!** 🎓📖✨
+**This roadmap represents the future of Exegesis AI as the ultimate theological research platform!** 🎓📖✨

@@ -5,7 +5,7 @@ import os
 sys.path.insert(0, os.getcwd())
 
 try:
-    import theo.infrastructure.api.app.research.ai.rag
+    import exegesis.infrastructure.api.app.research.ai.rag
     print("Import successful")
 except ImportError as e:
     print(f"Import failed: {e}")

@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-from theo.domain.research import dss_links
-from theo.domain.research.dss_links import DssLinkEntry, fetch_dss_links, _expand_osis
+from exegesis.domain.research import dss_links
+from exegesis.domain.research.dss_links import DssLinkEntry, fetch_dss_links, _expand_osis
 
 
 @pytest.mark.parametrize(

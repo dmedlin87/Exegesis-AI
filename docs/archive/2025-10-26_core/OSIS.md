@@ -2,7 +2,7 @@
 
 # OSIS Normalization
 
-Theoria uses the [OSIS](https://www.bibletechnologies.net/) schema to
+Exegesis AI uses the [OSIS](https://www.bibletechnologies.net/) schema to
 normalize Bible references across the corpus.
 
 ## Detection Pipeline

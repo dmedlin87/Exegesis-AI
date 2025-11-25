@@ -1,11 +1,11 @@
-# 🚀 Start Theoria - The Smart Way
+# 🚀 Start Exegesis AI - The Smart Way
 
 ## Quick Start (Recommended)
 
 **Just run this one command:**
 
 ```powershell
-.\start-theoria.ps1
+.\start-Exegesis AI.ps1
 ```
 
 That's it! The intelligent launcher will:
@@ -27,7 +27,7 @@ When you run the script, you'll see:
 ```text
 ╔══════════════════════════════════════════════════════════╗
 ║                                                          ║
-║              THEORIA ENGINE - Service Launcher           ║
+║              Exegesis AI ENGINE - Service Launcher           ║
 ║                                                          ║
 ║          Research workspace for theology                 ║
 ║                                                          ║
@@ -41,16 +41,16 @@ When you run the script, you'll see:
 
 --- Starting Services ---
 
-ℹ Starting Theoria API on port 8000...
-✓ Theoria API is ready at http://127.0.0.1:8000
+ℹ Starting Exegesis AI API on port 8000...
+✓ Exegesis AI API is ready at http://127.0.0.1:8000
 ℹ API Docs: http://127.0.0.1:8000/docs
 
-ℹ Starting Theoria Web UI on port 3000...
-✓ Theoria Web UI is ready at http://localhost:3000
+ℹ Starting Exegesis AI Web UI on port 3000...
+✓ Exegesis AI Web UI is ready at http://localhost:3000
 
 ╔══════════════════════════════════════════════════════════╗
 ║                                                          ║
-║                 🚀 THEORIA IS READY! 🚀                  ║
+║                 🚀 Exegesis AI IS READY! 🚀                  ║
 ║                                                          ║
 ║  API:     http://127.0.0.1:8000                          ║
 ║  Web UI:  http://localhost:3000                          ║
@@ -102,7 +102,7 @@ When you run the script, you'll see:
 ### Custom Ports
 
 ```powershell
-.\start-theoria.ps1 -ApiPort 8010 -WebPort 3100
+.\start-Exegesis AI.ps1 -ApiPort 8010 -WebPort 3100
 ```
 
 ### Skip Health Monitoring
@@ -110,7 +110,7 @@ When you run the script, you'll see:
 For faster startup (less resilient):
 
 ```powershell
-.\start-theoria.ps1 -SkipHealthChecks
+.\start-Exegesis AI.ps1 -SkipHealthChecks
 ```
 
 ### Verbose Logging
@@ -118,13 +118,13 @@ For faster startup (less resilient):
 See detailed logs for debugging:
 
 ```powershell
-.\start-theoria.ps1 -Verbose
+.\start-Exegesis AI.ps1 -Verbose
 ```
 
 ### Combine Options
 
 ```powershell
-.\start-theoria.ps1 -ApiPort 8010 -Verbose
+.\start-Exegesis AI.ps1 -ApiPort 8010 -Verbose
 ```
 
 ### Environment Profiles
@@ -132,13 +132,13 @@ See detailed logs for debugging:
 Need staging-style ports and environment variables? Use the new `-Profile` switch:
 
 ```powershell
-.\start-theoria.ps1 -Profile staging
+.\start-Exegesis AI.ps1 -Profile staging
 ```
 
 Profiles automatically set sensible defaults:
 
-- `dev` (default): API `8000`, Web `3000`, `THEORIA_ENVIRONMENT=development`
-- `staging`: API `8100`, Web `3100`, `THEORIA_ENVIRONMENT=staging`
+- `dev` (default): API `8000`, Web `3000`, `EXEGESIS_ENVIRONMENT=development`
+- `staging`: API `8100`, Web `3100`, `EXEGESIS_ENVIRONMENT=staging`
 
 You can still override ports with `-ApiPort`/`-WebPort`; the profile adjusts the downstream environment variables for you.
 
@@ -147,7 +147,7 @@ You can still override ports with `-ApiPort`/`-WebPort`; the profile adjusts the
 Pass `-UseHttps` to spin up the API and Web UI with self-signed certificates:
 
 ```powershell
-.\start-theoria.ps1 -UseHttps
+.\start-Exegesis AI.ps1 -UseHttps
 ```
 
 The launcher generates development certificates under `infra/certs/` (one-time) and wires them into Uvicorn and Next.js. The health checks automatically trust the self-signed certificates, and the Web UI points to `https://localhost:<port>`.
@@ -167,8 +167,8 @@ The bundled `docker-compose.yml` starts a hot-reloading API container plus a Nod
 Telemetry is **disabled** by default. Opt in or out explicitly:
 
 ```powershell
-.\start-theoria.ps1 -TelemetryOptIn
-.\start-theoria.ps1 -TelemetryOptOut
+.\start-Exegesis AI.ps1 -TelemetryOptIn
+.\start-Exegesis AI.ps1 -TelemetryOptOut
 ```
 
 When enabled the launcher records anonymous session events (profile, ports, HTTPS usage). Visualize the history any time with the lightweight dashboard:
@@ -181,11 +181,11 @@ Open the printed URL to see aggregated counts by profile and event.
 
 ### VS Code Tasks
 
-We now ship ready-made VS Code tasks so you can start Theoria right from the Command Palette:
+We now ship ready-made VS Code tasks so you can start Exegesis AI right from the Command Palette:
 
-- **Start Theoria (dev)** – standard localhost run
-- **Start Theoria (dev HTTPS)** – runs with `-UseHttps`
-- **Start Theoria (staging)** – uses the staging profile defaults
+- **Start Exegesis AI (dev)** – standard localhost run
+- **Start Exegesis AI (dev HTTPS)** – runs with `-UseHttps`
+- **Start Exegesis AI (staging)** – uses the staging profile defaults
 
 Open the Command Palette → *Tasks: Run Task* and choose the launcher you need.
 
@@ -205,7 +205,7 @@ environment variables, and installation steps.
 
 2. **API Server Startup**
    - Checks if port 8000 is available
-   - Sets environment variables (`THEO_AUTH_ALLOW_ANONYMOUS=1`, etc.)
+   - Sets environment variables (`EXEGESIS_AUTH_ALLOW_ANONYMOUS=1`, etc.)
    - Starts `uvicorn` with hot reload
    - Waits up to 30 seconds for health check to pass
    - Confirms API is responding at `/health` endpoint
@@ -230,12 +230,12 @@ environment variables, and installation steps.
 If the API crashes or becomes unresponsive:
 
 ```text
-⚠ Theoria API health check failed
-⚠ Attempting to restart Theoria API (attempt 1/3)...
-ℹ Stopping Theoria API...
-✓ Theoria API stopped
-ℹ Starting Theoria API on port 8000...
-✓ Theoria API restarted successfully
+⚠ Exegesis AI API health check failed
+⚠ Attempting to restart Exegesis AI API (attempt 1/3)...
+ℹ Stopping Exegesis AI API...
+✓ Exegesis AI API stopped
+ℹ Starting Exegesis AI API on port 8000...
+✓ Exegesis AI API restarted successfully
 ```
 
 ## Troubleshooting
@@ -253,21 +253,21 @@ Install Node.js from <https://nodejs.org> (includes npm)
 Something else is using port 8000. Options:
 
 1. Stop the other service
-2. Use a custom port: `.\start-theoria.ps1 -ApiPort 8010`
+2. Use a custom port: `.\start-Exegesis AI.ps1 -ApiPort 8010`
 
 ### "Port 3000 is already in use"
 
 Something else is using port 3000. Options:
 
 1. Stop the other service
-2. Use a custom port: `.\start-theoria.ps1 -WebPort 3100`
+2. Use a custom port: `.\start-Exegesis AI.ps1 -WebPort 3100`
 
 ### Services won't start
 
 Try with verbose logging:
 
 ```powershell
-.\start-theoria.ps1 -Verbose
+.\start-Exegesis AI.ps1 -Verbose
 ```
 
 Look for error messages in the output.
@@ -293,13 +293,13 @@ If the smart launcher doesn't work, you can start services manually:
 
 ```powershell
 cd C:\Users\dmedl\Projects\TheoEngine
-$Env:THEO_AUTH_ALLOW_ANONYMOUS="1"
-$Env:THEO_ALLOW_INSECURE_STARTUP="1"
+$Env:EXEGESIS_AUTH_ALLOW_ANONYMOUS="1"
+$Env:EXEGESIS_ALLOW_INSECURE_STARTUP="1"
 python -m uvicorn theo.infrastructure.api.app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 > The launchers set these overrides automatically for the `dev` profile. Export
-> `THEO_LOCAL_INSECURE_OVERRIDES=0` before running `start-theoria.ps1` or
+> `EXEGESIS_LOCAL_INSECURE_OVERRIDES=0` before running `start-Exegesis AI.ps1` or
 > `scripts/run.*` if you want to exercise the production-grade authentication
 > checks locally.
 
@@ -315,7 +315,7 @@ npm run dev
 
 ### Branding Updates ✨
 
-- **TheoEngine** → **Theoria**
+- **TheoEngine** → **Exegesis AI**
 - Updated in:
   - Navigation header
   - Page titles
@@ -340,7 +340,7 @@ Previously, you had to:
 4. Manually restart if something crashed
 5. Kill orphaned processes if shutdown failed
 
-Now you just run `.\start-theoria.ps1` and everything works! 🎉
+Now you just run `.\start-Exegesis AI.ps1` and everything works! 🎉
 
 ## System Requirements
 
@@ -353,7 +353,7 @@ Now you just run `.\start-theoria.ps1` and everything works! 🎉
 
 ## Next Steps
 
-1. **Run the launcher**: `.\start-theoria.ps1`
+1. **Run the launcher**: `.\start-Exegesis AI.ps1`
 2. **Open your browser**: <http://localhost:3000>
 3. **Start researching**: Upload documents, search verses, use the copilot!
 
@@ -373,21 +373,21 @@ For active development with the smart launcher running:
 1. **Edit code** - Changes auto-reload (API and Web both have hot reload)
 2. **Check logs** - The launcher shows real-time status
 3. **Stop services** - Press `Ctrl+C` once (waits for graceful shutdown)
-4. **Restart** - Run `.\start-theoria.ps1` again
+4. **Restart** - Run `.\start-Exegesis AI.ps1` again
 
 ## Comparison with Other Scripts
 
 | Script | Use Case | Features |
 |--------|----------|----------|
-| `start-theoria.ps1` | **Recommended for everyone** | Smart checks, auto-recovery, health monitoring |
+| `start-Exegesis AI.ps1` | **Recommended for everyone** | Smart checks, auto-recovery, health monitoring |
 | `scripts/dev.ps1` | Alternative launcher | Simpler, less monitoring |
 | `scripts/run.sh` | Linux/Mac users | Bash version of dev.ps1 |
 | Manual commands | When scripts fail | Direct control, no automation |
 
-**Recommendation**: Always use `start-theoria.ps1` unless you have a specific reason not to.
+**Recommendation**: Always use `start-Exegesis AI.ps1` unless you have a specific reason not to.
 
 ---
 
-**Welcome to Theoria!** 🎓📖
+**Welcome to Exegesis AI!** 🎓📖
 
 Your intelligent research workspace for theology is ready to use.

@@ -4,13 +4,13 @@ import os
 
 # Set test environment defaults immediately to ensure they are present
 # before any application modules are imported (which might happen at collection time).
-os.environ.setdefault("THEORIA_ENVIRONMENT", "test")
-os.environ.setdefault("THEO_ALLOW_INSECURE_STARTUP", "1")
+os.environ.setdefault("EXEGESIS_ENVIRONMENT", "test")
+os.environ.setdefault("EXEGESIS_ALLOW_INSECURE_STARTUP", "1")
 
 # Force use of real FastAPI and Celery packages during testing
 # This prevents import errors when shims don't expose all required submodules
-os.environ["THEORIA_ALLOW_REAL_FASTAPI"] = "1"
-os.environ["THEORIA_ALLOW_REAL_CELERY"] = "1"
+os.environ["EXEGESIS_ALLOW_REAL_FASTAPI"] = "1"
+os.environ["EXEGESIS_ALLOW_REAL_CELERY"] = "1"
 
 import importlib
 import importlib.util
@@ -69,7 +69,7 @@ def _build_sqlalchemy_stub_modules() -> dict[str, types.ModuleType]:
     def _raise(*_args: object, **_kwargs: object) -> _Placeholder:
         raise NotImplementedError("sqlalchemy placeholder accessed")
 
-    sqlalchemy_stub.__theoria_sqlalchemy_stub__ = True
+    sqlalchemy_stub.__EXEGESIS_sqlalchemy_stub__ = True
     sqlalchemy_stub.func = _FuncProxy()
     sqlalchemy_stub.select = _raise
     sqlalchemy_stub.create_engine = _raise
@@ -502,7 +502,7 @@ def _install_optional_dependency_stubs() -> None:
             sys.modules.setdefault(name, module)
 
 
-if os.environ.get("THEORIA_LIGHTWEIGHT_TESTS") == "1":
+if os.environ.get("EXEGESIS_LIGHTWEIGHT_TESTS") == "1":
     _install_optional_dependency_stubs()
 
 

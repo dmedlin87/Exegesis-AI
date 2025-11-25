@@ -1,4 +1,4 @@
-# UI/UX Action Plan - Theoria
+# UI/UX Action Plan - Exegesis AI
 
 ## Sprint Planning Guide | Priority-Based Roadmap
 

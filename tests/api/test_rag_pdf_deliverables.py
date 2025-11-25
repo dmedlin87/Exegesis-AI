@@ -2,14 +2,14 @@ from unittest.mock import MagicMock
 
 from sqlalchemy.orm import Session
 
-from theo.infrastructure.api.app.research.ai.rag import (
+from exegesis.infrastructure.api.app.research.ai.rag import (
     RAGAnswer,
     RAGCitation,
     SermonPrepResponse,
     build_sermon_deliverable,
     build_transcript_deliverable,
 )
-from theo.adapters.persistence.models import Document, Passage
+from exegesis.adapters.persistence.models import Document, Passage
 
 
 def _sermon_response() -> SermonPrepResponse:

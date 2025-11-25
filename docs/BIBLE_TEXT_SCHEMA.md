@@ -228,4 +228,4 @@ class TheologicalResearch:
    - Theological term evolution
    - Context-sensitive meaning analysis
 
-This schema provides the foundation for serious biblical scholarship within Theoria while leveraging your AI expertise for automated analysis.
+This schema provides the foundation for serious biblical scholarship within Exegesis AI while leveraging your AI expertise for automated analysis.

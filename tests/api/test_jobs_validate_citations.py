@@ -7,14 +7,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades import database as database_module  # noqa: E402
-from theo.application.facades.database import (  # noqa: E402
+from exegesis.application.facades import database as database_module  # noqa: E402
+from exegesis.application.facades.database import (  # noqa: E402
     Base,
     configure_engine,
     get_engine,
 )
-from theo.infrastructure.api.app.main import app  # noqa: E402
-from theo.infrastructure.api.app.workers import tasks  # noqa: E402
+from exegesis.infrastructure.api.app.main import app  # noqa: E402
+from exegesis.infrastructure.api.app.workers import tasks  # noqa: E402
 
 
 def test_validate_citations_job_endpoint_enqueues(monkeypatch, tmp_path) -> None:

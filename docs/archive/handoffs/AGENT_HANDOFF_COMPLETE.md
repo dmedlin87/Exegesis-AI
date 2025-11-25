@@ -168,7 +168,7 @@ Your AI agents have everything they need to continue development:
 pip install -r requirements.txt
 
 # Start services
-.\start-theoria.ps1
+.\start-Exegesis AI.ps1
 
 # Verify scheduler is running
 # Check logs for: "Discovery scheduler started successfully"

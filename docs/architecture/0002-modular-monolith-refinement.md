@@ -2,7 +2,7 @@
 
 - **Status**: Proposed
 - **Date**: 2025-11-23
-- **Context**: Review feedback suggests refining Theoria into a "modular monolith" with sharper bounded contexts and runtime separation for heavy work, rather than splitting into microservices.
+- **Context**: Review feedback suggests refining Exegesis AI into a "modular monolith" with sharper bounded contexts and runtime separation for heavy work, rather than splitting into microservices.
 
 ## Context
 

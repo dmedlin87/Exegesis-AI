@@ -96,7 +96,7 @@ def cached_builder(fn: Callable[P, T]) -> Callable[P, T]:
 # Domain Model Builders
 # ---------------------------------------------------------------------------
 
-from theo.domain import (
+from exegesis.domain import (
     Hypothesis,
     HypothesisDraft,
     ResearchNote,

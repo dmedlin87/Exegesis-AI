@@ -2,7 +2,7 @@
 
 ## Overview
 
-Completed a comprehensive UI overhaul to make the Theoria interface sleek, modern, and significantly improve the overall UX.
+Completed a comprehensive UI overhaul to make the Exegesis AI interface sleek, modern, and significantly improve the overall UX.
 
 ## Major Changes
 

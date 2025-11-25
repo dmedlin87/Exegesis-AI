@@ -11,23 +11,23 @@ import pytest
 
 FACADE_DEFINITIONS = [
     {
-        "module": "theo.application.facades.database",
+        "module": "exegesis.application.facades.database",
         "exports": ["Base", "configure_engine", "get_engine", "get_session"],
     },
     {
-        "module": "theo.application.facades.runtime",
+        "module": "exegesis.application.facades.runtime",
         "exports": ["allow_insecure_startup", "current_runtime_environment"],
     },
     {
-        "module": "theo.application.facades.secret_migration",
+        "module": "exegesis.application.facades.secret_migration",
         "exports": ["migrate_secret_settings"],
     },
     {
-        "module": "theo.application.facades.settings",
+        "module": "exegesis.application.facades.settings",
         "exports": ["Settings", "get_settings", "get_settings_cipher"],
     },
     {
-        "module": "theo.application.facades.settings_store",
+        "module": "exegesis.application.facades.settings_store",
         "exports": [
             "SETTINGS_NAMESPACE",
             "SettingNotFoundError",
@@ -37,7 +37,7 @@ FACADE_DEFINITIONS = [
         ],
     },
     {
-        "module": "theo.application.facades.version",
+        "module": "exegesis.application.facades.version",
         "exports": ["get_git_sha"],
     },
 ]

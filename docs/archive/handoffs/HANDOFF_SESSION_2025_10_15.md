@@ -1,4 +1,4 @@
-# Theoria Development Session - October 15, 2025
+# Exegesis AI Development Session - October 15, 2025
 
 ## Executive Summary
 
@@ -139,7 +139,7 @@ pip install -r requirements.txt
 python -c "from transformers import AutoModel; AutoModel.from_pretrained('microsoft/deberta-v3-base-mnli')"
 
 # Start services
-.\start-theoria.ps1
+.\start-Exegesis AI.ps1
 ```
 
 ### Verify
@@ -202,15 +202,15 @@ pytest tests/api/test_discovery_integration.py -v
 
 ```bash
 # Discovery scheduler interval (default: 30 minutes)
-export THEORIA_DISCOVERY_INTERVAL=30
+export EXEGESIS_DISCOVERY_INTERVAL=30
 
 # Disable periodic scheduler
-export THEORIA_DISABLE_DISCOVERY_SCHEDULER=true
+export EXEGESIS_DISABLE_DISCOVERY_SCHEDULER=true
 
 # NLI model configuration
-export THEORIA_NLI_MODEL=microsoft/deberta-v3-base-mnli
-export THEORIA_CONTRADICTION_THRESHOLD=0.7
-export THEORIA_MIN_CONTRADICTION_CONFIDENCE=0.6
+export EXEGESIS_NLI_MODEL=microsoft/deberta-v3-base-mnli
+export EXEGESIS_CONTRADICTION_THRESHOLD=0.7
+export EXEGESIS_MIN_CONTRADICTION_CONFIDENCE=0.6
 ```
 
 ---

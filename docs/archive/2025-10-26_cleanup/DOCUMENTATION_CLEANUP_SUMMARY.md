@@ -99,13 +99,13 @@ Each archive directory includes a README explaining its contents and retention p
 
 ### 3. ✅ Branding Updated
 
-Updated "Theo Engine" / "TheoEngine" → "Theoria" in 23 canonical documents:
+Updated "Theo Engine" / "TheoEngine" → "Exegesis AI" in 23 canonical documents:
 
 - docs/API.md
 - docs/AGENT_CONFINEMENT.md
 - docs/BLUEPRINT.md
 - docs/SERVICE_MANAGEMENT.md
-- docs/theoria_instruction_prompt.md
+- docs/EXEGESIS_instruction_prompt.md
 - docs/ui_overhaul_proposal.md
 - docs/performance.md
 - docs/debugging-guide.md

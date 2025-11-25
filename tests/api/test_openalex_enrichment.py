@@ -1,10 +1,10 @@
 import httpx
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.infrastructure.api.app.analytics.openalex_enrichment import (
+from exegesis.infrastructure.api.app.analytics.openalex_enrichment import (
     enrich_document_openalex_details,
 )
-from theo.adapters.persistence.models import Document
+from exegesis.adapters.persistence.models import Document
 
 
 class _StubOpenAlexClient:

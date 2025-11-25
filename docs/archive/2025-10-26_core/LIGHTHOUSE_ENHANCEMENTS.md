@@ -243,7 +243,7 @@ Workflow skips LHCI if staging is down (by design):
 
 ```
 Note skip (staging unreachable)
-Skipping LHCI; https://staging.Theoria.com unreachable.
+Skipping LHCI; https://staging.Exegesis AI.com unreachable.
 ```
 
 Staging tests are optional - localhost tests always run.

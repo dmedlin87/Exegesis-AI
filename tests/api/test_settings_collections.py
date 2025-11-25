@@ -7,7 +7,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades.settings import Settings
+from exegesis.application.facades.settings import Settings
 
 
 def test_ingest_string_collections_strip_and_filter_blank_entries(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -62,7 +62,7 @@ def test_load_auth_jwt_public_key_prefers_inline_value(monkeypatch: pytest.Monke
     monkeypatch.delenv("SETTINGS_SECRET_KEY", raising=False)
 
     inline_key = "-----BEGIN KEY-----\nabc\n-----END KEY-----"
-    settings = Settings.model_validate({"THEO_AUTH_JWT_PUBLIC_KEY": inline_key})
+    settings = Settings.model_validate({"EXEGESIS_AUTH_JWT_PUBLIC_KEY": inline_key})
 
     assert settings.load_auth_jwt_public_key() == inline_key
 
@@ -75,7 +75,7 @@ def test_load_auth_jwt_public_key_reads_path_when_inline_missing(
     key_path = tmp_path / "token.pem"
     key_path.write_text("PEM CONTENT", encoding="utf-8")
 
-    settings = Settings.model_validate({"THEO_AUTH_JWT_PUBLIC_KEY": str(key_path)})
+    settings = Settings.model_validate({"EXEGESIS_AUTH_JWT_PUBLIC_KEY": str(key_path)})
 
     assert settings.load_auth_jwt_public_key() == "PEM CONTENT"
 
@@ -90,8 +90,8 @@ def test_load_auth_jwt_public_key_path_field_used_when_inline_blank(
 
     settings = Settings.model_validate(
         {
-            "THEO_AUTH_JWT_PUBLIC_KEY": "  ",
-            "THEO_AUTH_JWT_PUBLIC_KEY_PATH": str(key_path),
+            "EXEGESIS_AUTH_JWT_PUBLIC_KEY": "  ",
+            "EXEGESIS_AUTH_JWT_PUBLIC_KEY_PATH": str(key_path),
         }
     )
 
@@ -105,6 +105,6 @@ def test_load_auth_jwt_public_key_missing_file_returns_none(
 
     missing_path = tmp_path / "missing.pem"
 
-    settings = Settings.model_validate({"THEO_AUTH_JWT_PUBLIC_KEY": str(missing_path)})
+    settings = Settings.model_validate({"EXEGESIS_AUTH_JWT_PUBLIC_KEY": str(missing_path)})
 
     assert settings.load_auth_jwt_public_key() is None

@@ -4,7 +4,7 @@
 
 > **Source of truth:** `HANDOFF_NEXT_PHASE.md` (last updated 2025-02-10)
 
-The Cognitive Scholar initiative reshapes Theoria's planning lens. This roadmap surfaces the delivery checkpoints for the
+The Cognitive Scholar initiative reshapes Exegesis AI's planning lens. This roadmap surfaces the delivery checkpoints for the
 Hypothesis & Debate stack. Refer to `HANDOFF_NEXT_PHASE.md` for detailed task breakdowns, owners, and acceptance criteria.
 
 ## Current Status

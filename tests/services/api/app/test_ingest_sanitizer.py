@@ -7,9 +7,9 @@ import pytest
 from importlib import import_module
 import sys
 
-sys.modules.pop("theo.infrastructure.api.app.library.ingest.sanitizer", None)
+sys.modules.pop("exegesis.infrastructure.api.app.library.ingest.sanitizer", None)
 sanitize_passage_text = import_module(
-    "theo.infrastructure.api.app.library.ingest.sanitizer"
+    "exegesis.infrastructure.api.app.library.ingest.sanitizer"
 ).sanitize_passage_text
 
 

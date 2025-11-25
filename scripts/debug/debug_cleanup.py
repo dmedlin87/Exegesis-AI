@@ -4,9 +4,9 @@ from pathlib import Path
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from theo.application.facades.database import configure_engine, get_engine
-from theo.infrastructure.api.app.db import seeds as seeds_module
-from theo.infrastructure.api.app.db.seeds import seed_contradiction_claims
+from exegesis.application.facades.database import configure_engine, get_engine
+from exegesis.infrastructure.api.app.db import seeds as seeds_module
+from exegesis.infrastructure.api.app.db.seeds import seed_contradiction_claims
 
 path = Path('temp_seed.db')
 if path.exists():

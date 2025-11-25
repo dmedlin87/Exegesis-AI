@@ -10,13 +10,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.adapters.persistence.models import Document, Passage  # noqa: E402
-from theo.infrastructure.api.app.library.ingest.tei_pipeline import (  # noqa: E402
+from exegesis.adapters.persistence.models import Document, Passage  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest.tei_pipeline import (  # noqa: E402
     HTRResult,
     ingest_pilot_corpus,
 )
-from theo.infrastructure.api.app.models.search import HybridSearchRequest  # noqa: E402
-from theo.infrastructure.api.app.retrieval.retriever.hybrid import hybrid_search  # noqa: E402
+from exegesis.infrastructure.api.app.models.search import HybridSearchRequest  # noqa: E402
+from exegesis.infrastructure.api.app.retrieval.retriever.hybrid import hybrid_search  # noqa: E402
 
 
 pytestmark = pytest.mark.pgvector

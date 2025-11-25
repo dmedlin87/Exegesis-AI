@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from theo.domain.research import variants_apparatus
+from exegesis.domain.research import variants_apparatus
 
 
 def test_variants_apparatus_handles_cross_chapter_ranges() -> None:
@@ -30,7 +30,7 @@ def test_variants_apparatus_handles_cross_chapter_ranges() -> None:
         ],
     }
 
-    with patch("theo.domain.research.variants.variants_dataset", return_value=fake_dataset):
+    with patch("exegesis.domain.research.variants.variants_dataset", return_value=fake_dataset):
         entries = variants_apparatus("Gen.1.31-Gen.2.2")
 
     assert [entry.id for entry in entries] == ["gen131", "gen21", "gen22"]

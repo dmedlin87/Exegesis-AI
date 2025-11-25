@@ -2,7 +2,7 @@
 
 # Documentation Guide
 
-> Quick reference for navigating and maintaining Theoria documentation
+> Quick reference for navigating and maintaining Exegesis AI documentation
 
 ## Finding Documentation
 
@@ -14,7 +14,7 @@
 ### By Role
 
 **New Users:**
-1. [README.md](../README.md) - What is Theoria?
+1. [README.md](../README.md) - What is Exegesis AI?
 2. [START_HERE.md](../START_HERE.md) - Launch the application
 3. [docs/DISCOVERY_QUICK_START.md](DISCOVERY_QUICK_START.md) - Try the Discovery Feed
 
@@ -37,7 +37,7 @@
 ## Documentation Structure
 
 ```
-Theoria/
+Exegesis AI/
 ├── README.md                   # Entry point
 ├── CONTRIBUTING.md             # Developer guide
 ├── SECURITY.md                 # Security policy
@@ -144,7 +144,7 @@ Move documents to `docs/archive/` when they are:
 1. **Edit canonical docs directly** for behavior changes
 2. **Update the INDEX.md** when adding/removing major docs
 3. **Archive completed session notes** after merging features
-4. **Update branding** consistently (use "Theoria", not "Theo Engine")
+4. **Update branding** consistently (use "Exegesis AI", not "Theo Engine")
 5. **Cross-reference** related documents with links
 
 ### Adding New Documentation
@@ -266,4 +266,4 @@ Brief description...
 
 **Last Updated:** October 2025  
 **Maintained By:** Project contributors  
-**Source:** c:\Users\dmedl\Projects\Theoria\docs\DOCUMENTATION_GUIDE.md
+**Source:** c:\Users\dmedl\Projects\Exegesis AI\docs\DOCUMENTATION_GUIDE.md

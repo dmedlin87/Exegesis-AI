@@ -8,12 +8,12 @@ import pytest
 from sqlalchemy import create_engine, event, select
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.adapters.persistence import Base
-from theo.adapters.persistence.models import Document, Passage, PassageEmbedding
-from theo.adapters.persistence.passage_embedding_store import (
+from exegesis.adapters.persistence import Base
+from exegesis.adapters.persistence.models import Document, Passage, PassageEmbedding
+from exegesis.adapters.persistence.passage_embedding_store import (
     SQLAlchemyPassageEmbeddingStore,
 )
-from theo.application.retrieval.embeddings.store import PassageEmbeddingService
+from exegesis.application.retrieval.embeddings.store import PassageEmbeddingService
 
 
 @contextmanager

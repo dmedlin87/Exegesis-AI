@@ -6,13 +6,13 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from theo.adapters.persistence.models import Document, Passage
+from exegesis.adapters.persistence.models import Document, Passage
 
 
 @pytest.fixture
 def sample_document(api_engine) -> str:
     """Create a sample document for testing."""
-    from theo.application.facades.database import get_session
+    from exegesis.application.facades.database import get_session
 
     session = next(get_session())
 

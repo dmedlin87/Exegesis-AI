@@ -5,11 +5,11 @@ from dataclasses import dataclass
 import pytest
 from fastapi.testclient import TestClient
 
-from theo.application.services import ApplicationContainer
-from theo.domain import Document, DocumentId, DocumentMetadata
-from theo.domain.research.overview import OverviewBullet, ReliabilityOverview
-from theo.domain.research.scripture import Verse
-from theo.infrastructure.api.app.main import app
+from exegesis.application.services import ApplicationContainer
+from exegesis.domain import Document, DocumentId, DocumentMetadata
+from exegesis.domain.research.overview import OverviewBullet, ReliabilityOverview
+from exegesis.domain.research.scripture import Verse
+from exegesis.infrastructure.api.app.main import app
 
 
 @dataclass(slots=True)
@@ -98,7 +98,7 @@ def graphql_app_setup(monkeypatch: pytest.MonkeyPatch):
     )
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.graphql.context.resolve_application",
+        "exegesis.infrastructure.api.app.graphql.context.resolve_application",
         lambda: (container, None),
     )
 

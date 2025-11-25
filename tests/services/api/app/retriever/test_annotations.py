@@ -8,17 +8,17 @@ from datetime import datetime, timezone
 
 from hypothesis import given, settings, strategies as st
 
-from theo.infrastructure.api.app.retrieval.retriever.annotations import (
+from exegesis.infrastructure.api.app.retrieval.retriever.annotations import (
     annotation_to_schema,
     index_annotations_by_passage,
     load_annotations_for_documents,
     prepare_annotation_body,
 )
-from theo.infrastructure.api.app.models.documents import (
+from exegesis.infrastructure.api.app.models.documents import (
     DocumentAnnotationCreate,
     DocumentAnnotationResponse,
 )
-from theo.infrastructure.api.app.persistence_models import DocumentAnnotation
+from exegesis.infrastructure.api.app.persistence_models import DocumentAnnotation
 
 
 HYPOTHESIS_SETTINGS = settings(max_examples=40, deadline=None)

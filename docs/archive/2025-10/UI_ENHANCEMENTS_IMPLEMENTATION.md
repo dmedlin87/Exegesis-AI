@@ -107,7 +107,7 @@ Uses CSS animations (GPU-accelerated) for smooth performance without blocking Ja
 - `theo/services/web/public/manifest.json`
 
 ### Features
-- **Installable**: Users can install Theoria as a standalone app
+- **Installable**: Users can install Exegesis AI as a standalone app
 - **Theme colors**: Matches design system colors
 - **Shortcuts**: Quick access to Chat, Search, and Copilot
 - **Categories**: Properly categorized for app stores
@@ -345,7 +345,7 @@ test('theme toggle persists across reload', async ({ page }) => {
 
 ## Summary
 
-These enhancements bring Theoria's UI to the next level with:
+These enhancements bring Exegesis AI's UI to the next level with:
 
 - ⚡ Instant command palette navigation
 - 🎨 User-controlled theming with smooth transitions

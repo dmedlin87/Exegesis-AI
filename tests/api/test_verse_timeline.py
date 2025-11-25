@@ -12,16 +12,16 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades import database as database_module  # noqa: E402
-from theo.application.facades.database import (  # noqa: E402  # import after path tweak
+from exegesis.application.facades import database as database_module  # noqa: E402
+from exegesis.application.facades.database import (  # noqa: E402  # import after path tweak
     Base,
     configure_engine,
     get_engine,
 )
-from theo.adapters.persistence.models import Document, Passage, PassageVerse  # noqa: E402
-from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference  # noqa: E402
-from theo.infrastructure.api.app.models.verses import VerseMentionsFilters  # noqa: E402
-from theo.infrastructure.api.app.retrieval.retriever.verses import (  # noqa: E402
+from exegesis.adapters.persistence.models import Document, Passage, PassageVerse  # noqa: E402
+from exegesis.infrastructure.api.app.library.ingest.osis import expand_osis_reference  # noqa: E402
+from exegesis.infrastructure.api.app.models.verses import VerseMentionsFilters  # noqa: E402
+from exegesis.infrastructure.api.app.retrieval.retriever.verses import (  # noqa: E402
     get_verse_timeline,
 )
 

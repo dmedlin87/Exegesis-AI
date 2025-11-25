@@ -6,11 +6,11 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.testclient import TestClient
 from starlette.websockets import WebSocket
 
-from theo.application.facades import settings as settings_module
-from theo.application.facades.database import get_session
-from theo.infrastructure.api.app.adapters.security import configure_principal_resolver
-from theo.infrastructure.api.app.routes import realtime
-from theo.infrastructure.api.app.routes.realtime import NotebookEventBroker
+from exegesis.application.facades import settings as settings_module
+from exegesis.application.facades.database import get_session
+from exegesis.infrastructure.api.app.adapters.security import configure_principal_resolver
+from exegesis.infrastructure.api.app.routes import realtime
+from exegesis.infrastructure.api.app.routes.realtime import NotebookEventBroker
 
 
 pytestmark = pytest.mark.anyio
@@ -107,7 +107,7 @@ def realtime_app() -> FastAPI:
     app = FastAPI()
     app.include_router(realtime.router, prefix="/realtime")
 
-    os.environ.setdefault("THEO_API_KEYS", '["pytest-default-key"]')
+    os.environ.setdefault("EXEGESIS_API_KEYS", '["pytest-default-key"]')
     settings_module.get_settings.cache_clear()
     settings = settings_module.get_settings()
     assert settings.api_keys, "API keys must be configured for authentication tests"
@@ -127,8 +127,8 @@ def realtime_app() -> FastAPI:
     finally:
         app.dependency_overrides.pop(get_session, None)
         settings_module.get_settings.cache_clear()
-        if "THEO_API_KEYS" in os.environ and os.environ["THEO_API_KEYS"] == '["pytest-default-key"]':
-             del os.environ["THEO_API_KEYS"]
+        if "EXEGESIS_API_KEYS" in os.environ and os.environ["EXEGESIS_API_KEYS"] == '["pytest-default-key"]':
+             del os.environ["EXEGESIS_API_KEYS"]
 
 
 @pytest.fixture()
@@ -196,7 +196,7 @@ async def test_realtime_websocket_requires_authentication(
     async with realtime_app.router.lifespan_context(realtime_app):
         websocket = _build_websocket()
         # The function may either raise HTTPException or return an anonymous/invalid principal
-        # depending on auth configuration. In test environments with THEO_AUTH_ALLOW_ANONYMOUS
+        # depending on auth configuration. In test environments with EXEGESIS_AUTH_ALLOW_ANONYMOUS
         # or insecure startup, it may not raise.
         result = realtime.require_websocket_principal(websocket)
         if isawaitable(result):

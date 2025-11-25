@@ -88,7 +88,7 @@ def _resolve_faker() -> type[_FallbackFaker]:
 
     stub_path = Path(__file__).resolve().parents[2] / "faker" / "__init__.py"
     if stub_path.exists():
-        spec = spec_from_file_location("_theoria_faker_stub", stub_path)
+        spec = spec_from_file_location("_EXEGESIS_faker_stub", stub_path)
         if spec and spec.loader:  # pragma: no branch - loader present in tests
             module = module_from_spec(spec)
             spec.loader.exec_module(module)
@@ -104,10 +104,10 @@ def _resolve_faker() -> type[_FallbackFaker]:
 
 Faker = _resolve_faker()
 
-from theo.domain.research.osis import format_osis, osis_to_readable
+from exegesis.domain.research.osis import format_osis, osis_to_readable
 
 try:  # pragma: no cover - exercised in lightweight environments
-    from theo.infrastructure.api.app.research.ai.rag.models import RAGAnswer, RAGCitation
+    from exegesis.infrastructure.api.app.research.ai.rag.models import RAGAnswer, RAGCitation
 except Exception:  # pragma: no cover - allows running without pydantic
     @dataclass(frozen=True)
     class RAGCitation:  # type: ignore[override]

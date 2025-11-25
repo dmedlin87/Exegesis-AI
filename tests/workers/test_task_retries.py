@@ -12,10 +12,10 @@ from sqlalchemy.orm import Session
 
 pytest_plugins = ("celery.contrib.pytest",)
 
-from theo.adapters.persistence.models import AppSetting, IngestionJob
-from theo.application.facades.database import Base
-from theo.infrastructure.api.app.analytics.topics import TopicDigest
-from theo.infrastructure.api.app.workers import tasks
+from exegesis.adapters.persistence.models import AppSetting, IngestionJob
+from exegesis.application.facades.database import Base
+from exegesis.infrastructure.api.app.analytics.topics import TopicDigest
+from exegesis.infrastructure.api.app.workers import tasks
 
 
 def _task(obj: Any) -> Task:
@@ -65,7 +65,7 @@ def test_process_url_retry_uses_exponential_backoff(
         raise failure
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.library.ingest.pipeline.run_pipeline_for_url",
+        "exegesis.infrastructure.api.app.library.ingest.pipeline.run_pipeline_for_url",
         failing_pipeline,
     )
 
@@ -149,7 +149,7 @@ def test_topic_digest_task_is_idempotent(
         return digest
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.workers.tasks.generate_topic_digest",
+        "exegesis.infrastructure.api.app.workers.tasks.generate_topic_digest",
         fake_generate_topic_digest,
     )
 
@@ -160,7 +160,7 @@ def test_topic_digest_task_is_idempotent(
         return _Document()
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.workers.tasks.upsert_digest_document",
+        "exegesis.infrastructure.api.app.workers.tasks.upsert_digest_document",
         fake_upsert_digest_document,
     )
 
@@ -171,7 +171,7 @@ def test_topic_digest_task_is_idempotent(
             published_events.append(event)
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.analytics.topics.get_event_publisher",
+        "exegesis.infrastructure.api.app.analytics.topics.get_event_publisher",
         lambda: _Publisher(),
     )
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Agent Confinement Framework ensures that AI agents accessing Theoria through the MCP (Model Context Protocol) server operate within strict security boundaries. This framework enforces authentication, input validation, rate limiting, and content filtering to prevent abuse while enabling safe theological research capabilities.
+The Agent Confinement Framework ensures that AI agents accessing Exegesis AI through the MCP (Model Context Protocol) server operate within strict security boundaries. This framework enforces authentication, input validation, rate limiting, and content filtering to prevent abuse while enabling safe theological research capabilities.
 
 ## Architecture
 
@@ -297,7 +297,7 @@ export MCP_WRITE_RATE_LIMITS="note_write=5;evidence_card_create=10;index_refresh
 export MCP_WRITE_ALLOWLIST="note_write=org-seminary,org-ministry;evidence_card_create=org-seminary;index_refresh=admin-user"
 
 # Schema base URL
-export MCP_SCHEMA_BASE_URL="https://Theoria.dev/mcp/schemas"
+export MCP_SCHEMA_BASE_URL="https://Exegesis AI.dev/mcp/schemas"
 ```
 
 ### Development Environment
@@ -427,4 +427,4 @@ alerts:
 ---
 
 **Last Updated:** 2024-10-12  
-**Maintainer:** Theoria Security Team
+**Maintainer:** Exegesis AI Security Team

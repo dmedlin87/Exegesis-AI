@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from theo.domain.biblical_texts import (
+from exegesis.domain.biblical_texts import (
     BiblicalVerse,
     Language,
     MorphologicalTag,
@@ -12,7 +12,7 @@ from theo.domain.biblical_texts import (
     SemanticAnalysis,
     TextContent,
 )
-from theo.domain.repositories.biblical_texts import (
+from exegesis.domain.repositories.biblical_texts import (
     BiblicalTextRepository,
     CrossTranslationAnalyzer,
     TheologicalResearchRepository,

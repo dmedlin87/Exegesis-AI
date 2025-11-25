@@ -1,0 +1,144 @@
+"""Shared runtime guards used during API application startup."""
+
+from __future__ import annotations
+
+import logging
+import os
+from typing import Callable, Protocol
+
+
+class _AllowInsecureStartup(Protocol):
+    def __call__(self) -> bool:  # pragma: no cover - protocol definition
+        ...
+
+
+class _GetEnvironmentLabel(Protocol):
+    def __call__(self) -> str:  # pragma: no cover - protocol definition
+        ...
+
+
+class _GenerateEphemeralDevKey(Protocol):
+    def __call__(self) -> str | None:  # pragma: no cover - protocol definition
+        ...
+
+
+class _ConsoleTracer(Protocol):
+    def __call__(self) -> None:  # pragma: no cover - protocol definition
+        ...
+
+
+class _GetSecret(Protocol):
+    def __call__(self) -> str | None:  # pragma: no cover - protocol definition
+        ...
+
+
+def should_enable_console_traces(env_get: Callable[[str, str], str] = os.getenv) -> bool:
+    """Return ``True`` when console traces should be enabled."""
+
+    value = env_get("EXEGESIS_ENABLE_CONSOLE_TRACES", "0").lower()
+    return value in {"1", "true", "yes"}
+
+
+def configure_console_traces(
+    settings: object,
+    *,
+    console_tracer: _ConsoleTracer,
+    should_enable: Callable[[], bool],
+) -> None:
+    """Invoke the console tracer when the runtime flag is enabled."""
+
+    del settings  # Reserved for future conditional configuration
+    if should_enable():
+        console_tracer()
+
+
+def enforce_authentication_requirements(
+    settings: object,
+    *,
+    allow_insecure_startup: _AllowInsecureStartup,
+    get_environment_label: _GetEnvironmentLabel,
+    generate_ephemeral_dev_key: _GenerateEphemeralDevKey | None = None,
+    logger: logging.Logger,
+) -> None:
+    """Validate the authentication configuration prior to boot.
+
+    In development environments without configured API keys, this function will
+    automatically generate an ephemeral dev key and add it to the settings.
+    """
+
+    insecure_ok = allow_insecure_startup()
+    # auth_allow_anonymous is deprecated/removed
+    api_keys = getattr(settings, "api_keys", [])
+    has_jwt = getattr(settings, "has_auth_jwt_credentials", lambda: False)
+    environment = (get_environment_label() or "").strip().lower() or "production"
+    allows_anonymous = environment in {"development", "dev", "local", "test", "testing"}
+
+    if api_keys or has_jwt():
+        return
+
+    # In development environments, auto-generate an ephemeral API key
+    if allows_anonymous and generate_ephemeral_dev_key is not None:
+        generated_key = generate_ephemeral_dev_key()
+        if generated_key:
+            # Update settings with the generated key
+            current_keys = list(getattr(settings, "api_keys", []))
+            current_keys.append(generated_key)
+            # Settings allows mutation since it's not frozen
+            object.__setattr__(settings, "api_keys", current_keys)
+            return
+
+    # If we are here, we have no keys and we are not auto-generating one (or failed to).
+    # Even if insecure_ok is True, we don't want to allow completely anonymous access anymore
+    # for the API itself, unless we really want to support that.
+    # The plan says: "Modify ... to auto-generate ephemeral development keys instead of allowing anonymous access"
+    # and "Remove allow_insecure_startup logic that permits bypassing auth checks completely".
+
+    # So we raise error even if insecure_ok is True, because we should have generated a key.
+    # But wait, what if generate_ephemeral_dev_key is None? (It's optional in the signature)
+    # It shouldn't be None in the real app.
+
+    message = (
+        "API authentication is not configured. Set EXEGESIS_API_KEYS or JWT settings"
+        " before starting the service."
+    )
+    if allows_anonymous:
+         message += " In development, an ephemeral key should have been generated."
+
+    logger.critical(message)
+    raise RuntimeError(message)
+
+
+def enforce_secret_requirements(
+    get_settings_secret: _GetSecret,
+    *,
+    allow_insecure_startup: _AllowInsecureStartup,
+    logger: logging.Logger,
+) -> None:
+    """Ensure the SETTINGS_SECRET_KEY prerequisite has been met."""
+
+    if get_settings_secret():
+        return
+
+    if allow_insecure_startup():
+        logger.warning(
+            "Starting without SETTINGS_SECRET_KEY because EXEGESIS_ALLOW_INSECURE_STARTUP"
+            " is enabled. Secrets will not be persisted securely."
+        )
+        return
+
+    message = (
+        "SETTINGS_SECRET_KEY must be configured before starting the service. Set the"
+        " environment variable and restart the service or enable"
+        " EXEGESIS_ALLOW_INSECURE_STARTUP=1 for local development."
+    )
+    logger.error(message)
+    raise RuntimeError(message)
+
+
+__all__ = [
+    "configure_console_traces",
+    "enforce_authentication_requirements",
+    "enforce_secret_requirements",
+    "should_enable_console_traces",
+]
+

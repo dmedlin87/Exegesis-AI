@@ -4,11 +4,11 @@ import math
 
 import pytest
 
-from theo.domain.discoveries.anomaly_engine import (
+from exegesis.domain.discoveries.anomaly_engine import (
     AnomalyDiscovery,
     AnomalyDiscoveryEngine,
 )
-from theo.domain.discoveries.models import DocumentEmbedding
+from exegesis.domain.discoveries.models import DocumentEmbedding
 
 
 def _document(

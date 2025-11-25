@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
-from theo.infrastructure.api.app.adapters.security import require_principal
-from theo.infrastructure.api.app.bootstrap import ROUTER_REGISTRATIONS, create_app
+from exegesis.infrastructure.api.app.adapters.security import require_principal
+from exegesis.infrastructure.api.app.bootstrap import ROUTER_REGISTRATIONS, create_app
 
 
 def test_router_registration_metadata(monkeypatch):
@@ -15,18 +15,18 @@ def test_router_registration_metadata(monkeypatch):
         recorded_calls.append((router, dict(kwargs)))
         return original_include_router(self, router, *args, **kwargs)
 
-    monkeypatch.setenv("THEO_API_KEYS", '["router-test-key"]')
+    monkeypatch.setenv("EXEGESIS_API_KEYS", '["router-test-key"]')
     monkeypatch.setenv("SETTINGS_SECRET_KEY", "router-test-secret")
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.lifecycle.Base.metadata.create_all",
+        "exegesis.infrastructure.api.app.bootstrap.lifecycle.Base.metadata.create_all",
         lambda *_, **__: None,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.lifecycle.run_sql_migrations",
+        "exegesis.infrastructure.api.app.bootstrap.lifecycle.run_sql_migrations",
         lambda *_, **__: None,
     )
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.bootstrap.lifecycle.seed_reference_data",
+        "exegesis.infrastructure.api.app.bootstrap.lifecycle.seed_reference_data",
         lambda *_, **__: None,
     )
     monkeypatch.setattr(FastAPI, "include_router", capture_include_router)

@@ -1,12 +1,12 @@
 > **Archived on 2025-10-26**
 
-# Theoria Codebase Review
+# Exegesis AI Codebase Review
 
 _Last updated: 2025-10-13_
 
 ## Repository Overview
 
-Theoria is a polyglot monorepo that ships a FastAPI research API, a Next.js web
+Exegesis AI is a polyglot monorepo that ships a FastAPI research API, a Next.js web
 client, Celery-powered background workers, and a library of supporting domain
 services. The backend code lives under `theo/`, while the modern React
 experience resides in `theo/services/web`. Supporting documentation, runbooks,
@@ -84,7 +84,7 @@ and architectural plans are organized under `docs/`.
   and performance baselines documented in `docs/ui-quality-gates.md`. Playwright
   tags cover smoke, visual, and accessibility runs for CI pipelines.
 - **Integration** – Environment variables `NEXT_PUBLIC_API_BASE_URL` and
-  `THEO_SEARCH_API_KEY` (see `README.md`) connect the web proxy to the FastAPI
+  `EXEGESIS_SEARCH_API_KEY` (see `README.md`) connect the web proxy to the FastAPI
   backend, forwarding credentials as either `Authorization` or `X-API-Key`
   headers.
 

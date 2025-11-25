@@ -3,8 +3,8 @@ from typing import Any
 
 import pytest
 
-from theo.application.facades import telemetry as telemetry_facade
-from theo.application.core.telemetry import TelemetryProvider, WorkflowSpan
+from exegesis.application.facades import telemetry as telemetry_facade
+from exegesis.application.core.telemetry import TelemetryProvider, WorkflowSpan
 
 
 class _Span:

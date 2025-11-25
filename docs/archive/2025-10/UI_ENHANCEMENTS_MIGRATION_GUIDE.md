@@ -1,6 +1,6 @@
 # UI Enhancements Migration Guide
 
-Quick reference for integrating the new UI enhancements into the Theoria application.
+Quick reference for integrating the new UI enhancements into the Exegesis AI application.
 
 ---
 
@@ -22,7 +22,7 @@ Add to `theo/services/web/app/layout.tsx` in the `<head>` section:
 
 ```tsx
 export const metadata = {
-  title: "Theoria",
+  title: "Exegesis AI",
   description: "Research engine for theology",
   manifest: "/manifest.json", // Add this
   themeColor: "#6366f1",      // Add this
@@ -30,7 +30,7 @@ export const metadata = {
 
 // Or if using Next.js app directory metadata:
 export const metadata: Metadata = {
-  title: "Theoria",
+  title: "Exegesis AI",
   description: "Research engine for theology",
   manifest: "/manifest.json",
   themeColor: [
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Theoria"
+    title: "Exegesis AI"
   }
 };
 ```

@@ -208,7 +208,7 @@ jobs:
               if: env.OPENAI_API_KEY != ''
               env:
                   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-                  THEO_REDTEAM_REAL_LLM: "1"
+                  EXEGESIS_REDTEAM_REAL_LLM: "1"
               run: |
                   pytest tests/redteam -v --redteam \
                     -k "real_llm" \

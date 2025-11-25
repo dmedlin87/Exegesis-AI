@@ -6,8 +6,8 @@ import pytest
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
-from theo.infrastructure.api.app.models.search import HybridSearchResponse, HybridSearchResult
-from theo.infrastructure.api.app.routes.search import (
+from exegesis.infrastructure.api.app.models.search import HybridSearchResponse, HybridSearchResult
+from exegesis.infrastructure.api.app.routes.search import (
     _parse_experiment_tokens,
     _validate_experiment_tokens,
 )

@@ -12,8 +12,8 @@ from fastapi import Request
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.adapters.persistence import Base
-from theo.adapters.persistence.models import (
+from exegesis.adapters.persistence import Base
+from exegesis.adapters.persistence.models import (
     Discovery,
     Document,
     FeedbackEvent,
@@ -33,20 +33,20 @@ def _import_module(preferred: str, fallback: str):
 
 
 telemetry_module = _import_module(
-    "theo.services.api.app.analytics.telemetry",
-    "theo.infrastructure.api.app.analytics.telemetry",
+    "exegesis.services.api.app.analytics.telemetry",
+    "exegesis.infrastructure.api.app.analytics.telemetry",
 )
 topics_module = _import_module(
-    "theo.services.api.app.analytics.topics",
-    "theo.infrastructure.api.app.analytics.topics",
+    "exegesis.services.api.app.analytics.topics",
+    "exegesis.infrastructure.api.app.analytics.topics",
 )
 dashboard_module = _import_module(
-    "theo.services.api.app.routes.dashboard",
-    "theo.infrastructure.api.app.routes.dashboard",
+    "exegesis.services.api.app.routes.dashboard",
+    "exegesis.infrastructure.api.app.routes.dashboard",
 )
 analytics_models = _import_module(
-    "theo.services.api.app.models.analytics",
-    "theo.infrastructure.api.app.models.analytics",
+    "exegesis.services.api.app.models.analytics",
+    "exegesis.infrastructure.api.app.models.analytics",
 )
 
 TelemetryBatch = getattr(analytics_models, "TelemetryBatch")

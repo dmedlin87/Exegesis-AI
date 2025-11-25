@@ -1,22 +1,22 @@
-# Theoria API
+# Exegesis AI API
 
-Theoria exposes a FastAPI application located at
+Exegesis AI exposes a FastAPI application located at
 `theo/infrastructure/api/app`. The service is designed around JSON responses and
 multipart uploads for binary content.
 
 - **Base URL:** `/` (all paths below are relative to the FastAPI root)
 
 - **Content type:** `application/json` unless noted otherwise
-- **Authentication:** required. Supply either an API key (`THEO_API_KEYS`) or
-  a JWT bearer token (`THEO_AUTH_JWT_*`). For isolated local testing you may
-  opt into anonymous requests by setting `THEO_ALLOW_INSECURE_STARTUP=1` and
-  `THEO_AUTH_ALLOW_ANONYMOUS=1` before launching the service.
+- **Authentication:** required. Supply either an API key (`EXEGESIS_API_KEYS`) or
+  a JWT bearer token (`EXEGESIS_AUTH_JWT_*`). For isolated local testing you may
+  opt into anonymous requests by setting `EXEGESIS_ALLOW_INSECURE_STARTUP=1` and
+  `EXEGESIS_AUTH_ALLOW_ANONYMOUS=1` before launching the service.
 - **Error format:** errors follow FastAPI's default structure:
 
 The API validates these authentication settings during startup. If neither
-`THEO_API_KEYS` nor JWT settings are provided and anonymous access remains
+`EXEGESIS_API_KEYS` nor JWT settings are provided and anonymous access remains
 disabled, the process exits with a configuration error. Enable
-`THEO_ALLOW_INSECURE_STARTUP=1` and `THEO_AUTH_ALLOW_ANONYMOUS=1` only for
+`EXEGESIS_ALLOW_INSECURE_STARTUP=1` and `EXEGESIS_AUTH_ALLOW_ANONYMOUS=1` only for
 ephemeral local testing—production deployments must configure real credentials.
 When the runtime environment resolves to anything other than development or
 test, the API fails fast if anonymous access remains enabled.
@@ -42,14 +42,14 @@ Example WebSocket connection with an API key:
 
 ```bash
 websocat \
-  -H "X-API-Key: $THEO_API_KEYS" \
+  -H "X-API-Key: $EXEGESIS_API_KEYS" \
   wss://api.theo.app/realtime/notebooks/<notebook-id>
 ```
 
 Polling clients use the same header conventions:
 
 ```bash
-curl -H "Authorization: Bearer $THEO_API_TOKEN" \
+curl -H "Authorization: Bearer $EXEGESIS_API_TOKEN" \
   https://api.theo.app/realtime/notebooks/<notebook-id>/poll
 ```
 
@@ -871,7 +871,7 @@ the 0–1 range for consistent UI rendering.
 
 ## Reference datasets & seeds
 
-Theoria bundles starter datasets to light up the research dock without
+Exegesis AI bundles starter datasets to light up the research dock without
 external dependencies:
 
 - `data/seeds/contradictions.json` – community-curated tensions/harmonies.
@@ -888,7 +888,7 @@ intersections.
 
 ## AI routing and guardrails
 
-Theoria's `/ai/*` workflows call a routing service layered on top of the LLM
+Exegesis AI's `/ai/*` workflows call a routing service layered on top of the LLM
 registry. Each registered model can optionally include three metadata
 containers:
 

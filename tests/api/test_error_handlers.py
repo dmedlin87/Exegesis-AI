@@ -8,7 +8,7 @@ import pytest
 from fastapi import Request
 from fastapi.testclient import TestClient
 
-from theo.domain.errors import (
+from exegesis.domain.errors import (
     AuthorizationError,
     ConflictError,
     DomainError,
@@ -17,12 +17,12 @@ from theo.domain.errors import (
     RateLimitError,
     ValidationError,
 )
-from theo.infrastructure.api.app.core.error_handlers import (
+from exegesis.infrastructure.api.app.core.error_handlers import (
     ERROR_STATUS_MAP,
     _build_error_response,
     domain_error_handler,
 )
-from theo.infrastructure.api.app.core.tracing import TRACE_ID_HEADER_NAME
+from exegesis.infrastructure.api.app.core.tracing import TRACE_ID_HEADER_NAME
 
 
 class TestErrorStatusMapping:
@@ -366,14 +366,14 @@ class TestUnhandledExceptions:
         self, api_test_client: TestClient, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test that unhandled exceptions return 500."""
-        from theo.infrastructure.api.app.main import app
+        from exegesis.infrastructure.api.app.main import app
 
         def _raise_error(*args, **kwargs):
             raise RuntimeError("Unexpected error")
 
         # Patch a retrieval function to raise
         monkeypatch.setattr(
-            "theo.infrastructure.api.app.routes.documents.list_documents",
+            "exegesis.infrastructure.api.app.routes.documents.list_documents",
             _raise_error,
         )
 
@@ -388,17 +388,17 @@ class TestUnhandledExceptions:
         self, api_test_client: TestClient, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test that unhandled exceptions include trace ID for debugging."""
-        from theo.infrastructure.api.app.main import app
+        from exegesis.infrastructure.api.app.main import app
 
         def _raise_error(*args, **kwargs):
             raise ValueError("Unexpected value error")
 
         monkeypatch.setattr(
-            "theo.infrastructure.api.app.routes.documents.get_document",
+            "exegesis.infrastructure.api.app.routes.documents.get_document",
             _raise_error,
         )
         monkeypatch.setattr(
-            "theo.infrastructure.api.app.bootstrap.middleware.get_current_trace_headers",
+            "exegesis.infrastructure.api.app.bootstrap.middleware.get_current_trace_headers",
             lambda: {TRACE_ID_HEADER_NAME: "trace-500"},
         )
 

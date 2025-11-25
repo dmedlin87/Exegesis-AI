@@ -1,4 +1,4 @@
-from theo.domain.biblical_texts import (
+from exegesis.domain.biblical_texts import (
     BiblicalVerse,
     Language,
     MorphologicalTag,
@@ -7,8 +7,8 @@ from theo.domain.biblical_texts import (
     SemanticAnalysis,
     TextContent,
 )
-from theo.adapters.persistence.models import Passage
-from theo.domain.mappers import PassageMapper
+from exegesis.adapters.persistence.models import Passage
+from exegesis.domain.mappers import PassageMapper
 
 
 def test_to_domain_parses_biblical_payload() -> None:

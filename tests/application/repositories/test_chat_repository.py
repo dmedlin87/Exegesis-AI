@@ -7,8 +7,8 @@ from datetime import UTC, datetime, timedelta
 import pytest
 from sqlalchemy.orm import Session
 
-from theo.adapters.persistence.chat_repository import SQLAlchemyChatSessionRepository
-from theo.adapters.persistence.models import ChatSession
+from exegesis.adapters.persistence.chat_repository import SQLAlchemyChatSessionRepository
+from exegesis.adapters.persistence.models import ChatSession
 
 
 pytestmark = pytest.mark.db

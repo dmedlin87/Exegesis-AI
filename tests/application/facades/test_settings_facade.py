@@ -4,9 +4,9 @@ from cryptography.fernet import Fernet
 
 import pytest
 
-from theo.application.facades import settings as settings_module
-from theo.application.facades.runtime import allow_insecure_startup
-from theo.application.ports.secrets import SecretRequest
+from exegesis.application.facades import settings as settings_module
+from exegesis.application.facades.runtime import allow_insecure_startup
+from exegesis.application.ports.secrets import SecretRequest
 
 
 @pytest.fixture(autouse=True)
@@ -16,30 +16,30 @@ def reset_settings_state(monkeypatch: pytest.MonkeyPatch) -> None:
     for variable in (
         "SETTINGS_SECRET_KEY",
         "SETTINGS_SECRET_BACKEND",
-        "THEO_SETTINGS_SECRET_BACKEND",
+        "EXEGESIS_SETTINGS_SECRET_BACKEND",
         "SETTINGS_SECRET_NAME",
-        "THEO_SETTINGS_SECRET_NAME",
+        "EXEGESIS_SETTINGS_SECRET_NAME",
         "SETTINGS_SECRET_FIELD",
-        "THEO_SETTINGS_SECRET_FIELD",
+        "EXEGESIS_SETTINGS_SECRET_FIELD",
         "SECRETS_VAULT_ADDR",
-        "THEO_SECRETS_VAULT_ADDR",
+        "EXEGESIS_SECRETS_VAULT_ADDR",
         "SECRETS_VAULT_TOKEN",
-        "THEO_SECRETS_VAULT_TOKEN",
+        "EXEGESIS_SECRETS_VAULT_TOKEN",
         "SECRETS_VAULT_NAMESPACE",
-        "THEO_SECRETS_VAULT_NAMESPACE",
+        "EXEGESIS_SECRETS_VAULT_NAMESPACE",
         "SECRETS_VAULT_MOUNT_POINT",
-        "THEO_SECRETS_VAULT_MOUNT_POINT",
+        "EXEGESIS_SECRETS_VAULT_MOUNT_POINT",
         "SECRETS_VAULT_VERIFY",
-        "THEO_SECRETS_VAULT_VERIFY",
+        "EXEGESIS_SECRETS_VAULT_VERIFY",
         "SECRETS_AWS_PROFILE",
-        "THEO_SECRETS_AWS_PROFILE",
+        "EXEGESIS_SECRETS_AWS_PROFILE",
         "SECRETS_AWS_REGION",
-        "THEO_SECRETS_AWS_REGION",
-        "THEO_ALLOW_INSECURE_STARTUP",
-        "THEORIA_ENVIRONMENT",
-        "THEO_ENVIRONMENT",
+        "EXEGESIS_SECRETS_AWS_REGION",
+        "EXEGESIS_ALLOW_INSECURE_STARTUP",
+        "EXEGESIS_ENVIRONMENT",
+        "EXEGESIS_ENVIRONMENT",
         "ENVIRONMENT",
-        "THEORIA_PROFILE",
+        "EXEGESIS_PROFILE",
     ):
         monkeypatch.delenv(variable, raising=False)
 
@@ -127,9 +127,9 @@ def test_get_settings_cipher_uses_configured_secret(
     cipher = settings_module.get_settings_cipher()
 
     assert cipher is not None
-    token = cipher.encrypt(b"theoria")
+    token = cipher.encrypt(b"Exegesis AI")
     mirror = Fernet(settings_module._derive_fernet_key("application-secret"))
-    assert mirror.decrypt(token) == b"theoria"
+    assert mirror.decrypt(token) == b"Exegesis AI"
 
 
 def test_get_settings_cipher_uses_secrets_backend(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -141,7 +141,7 @@ def test_get_settings_cipher_uses_secrets_backend(monkeypatch: pytest.MonkeyPatc
             return "remote-secret"
 
     monkeypatch.setenv("SETTINGS_SECRET_BACKEND", "vault")
-    monkeypatch.setenv("SETTINGS_SECRET_NAME", "theoria/app")
+    monkeypatch.setenv("SETTINGS_SECRET_NAME", "Exegesis AI/app")
     monkeypatch.setattr(
         settings_module,
         "build_secrets_adapter",
@@ -151,7 +151,7 @@ def test_get_settings_cipher_uses_secrets_backend(monkeypatch: pytest.MonkeyPatc
     cipher = settings_module.get_settings_cipher()
 
     assert cipher is not None
-    assert calls and calls[0].identifier == "theoria/app"
+    assert calls and calls[0].identifier == "Exegesis AI/app"
     token = cipher.encrypt(b"secret")
     mirror = Fernet(settings_module._derive_fernet_key("remote-secret"))
     assert mirror.decrypt(token) == b"secret"
@@ -166,17 +166,17 @@ def test_get_settings_cipher_returns_none_without_secret() -> None:
 def test_get_settings_cipher_uses_insecure_fallback_when_allowed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("THEO_ALLOW_INSECURE_STARTUP", "true")
-    monkeypatch.setenv("THEORIA_ENVIRONMENT", "development")
+    monkeypatch.setenv("EXEGESIS_ALLOW_INSECURE_STARTUP", "true")
+    monkeypatch.setenv("EXEGESIS_ENVIRONMENT", "development")
     allow_insecure_startup.cache_clear()
 
     cipher = settings_module.get_settings_cipher()
 
     assert cipher is not None
-    token = cipher.encrypt(b"theoria")
-    fallback_key = settings_module._derive_fernet_key("theoria-insecure-test-secret")
+    token = cipher.encrypt(b"Exegesis AI")
+    fallback_key = settings_module._derive_fernet_key("Exegesis AI-insecure-test-secret")
     mirror = Fernet(fallback_key)
-    assert mirror.decrypt(token) == b"theoria"
+    assert mirror.decrypt(token) == b"Exegesis AI"
 
 
 def test_get_settings_cipher_is_cached(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -240,9 +240,9 @@ def test_has_auth_jwt_credentials_returns_false_when_unset(
         "AUTH_JWT_SECRET",
         "AUTH_JWT_PUBLIC_KEY",
         "AUTH_JWT_PUBLIC_KEY_PATH",
-        "THEO_AUTH_JWT_SECRET",
-        "THEO_AUTH_JWT_PUBLIC_KEY",
-        "THEO_AUTH_JWT_PUBLIC_KEY_PATH",
+        "EXEGESIS_AUTH_JWT_SECRET",
+        "EXEGESIS_AUTH_JWT_PUBLIC_KEY",
+        "EXEGESIS_AUTH_JWT_PUBLIC_KEY_PATH",
     ]:
         monkeypatch.delenv(variable, raising=False)
 

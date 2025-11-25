@@ -2,7 +2,7 @@
 
 # Frontmatter Conventions
 
-Theoria optionally reads YAML or JSON frontmatter blocks to enrich metadata
+Exegesis AI optionally reads YAML or JSON frontmatter blocks to enrich metadata
 and deduplicate documents.
 
 ## Supported Keys

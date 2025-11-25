@@ -16,7 +16,7 @@ The **Discovery Feed** is your AI research assistant that works in the backgroun
 ## Access It Now
 
 ### Option 1: Sidebar
-1. Start Theoria: `.\start-theoria.ps1`
+1. Start Exegesis AI: `.\start-Exegesis AI.ps1`
 2. Open http://localhost:3000
 3. Click **"Discoveries"** in the sidebar (Library section)
 

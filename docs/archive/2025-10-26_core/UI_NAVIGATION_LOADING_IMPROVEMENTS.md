@@ -4,7 +4,7 @@
 
 ## Overview
 
-Comprehensive enhancements to navigation and loading states across the Theoria web UI, improving user feedback, accessibility, and overall user experience.
+Comprehensive enhancements to navigation and loading states across the Exegesis AI web UI, improving user feedback, accessibility, and overall user experience.
 
 ## Components Updated
 

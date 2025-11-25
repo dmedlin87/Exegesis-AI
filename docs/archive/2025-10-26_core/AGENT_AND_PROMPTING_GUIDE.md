@@ -1,10 +1,10 @@
 > **Archived on 2025-10-26**
 
-# Agent & Prompting Architecture in Theoria
+# Agent & Prompting Architecture in Exegesis AI
 
 ## Overview
 
-Theoria uses a **multi-layered agent architecture** that combines RAG (Retrieval-Augmented Generation), chain-of-thought reasoning, and specialized prompting strategies to provide grounded theological research assistance. The system is designed to be **evidence-first**, **transparent**, and **self-critical**.
+Exegesis AI uses a **multi-layered agent architecture** that combines RAG (Retrieval-Augmented Generation), chain-of-thought reasoning, and specialized prompting strategies to provide grounded theological research assistance. The system is designed to be **evidence-first**, **transparent**, and **self-critical**.
 
 ---
 
@@ -360,10 +360,10 @@ class Insight:
 
 ---
 
-## Layer 3: Theoria Research Orchestrator (TRO)
+## Layer 3: Exegesis AI Research Orchestrator (TRO)
 
 ### Location
-- `docs/theoria_instruction_prompt.md`
+- `docs/EXEGESIS_instruction_prompt.md`
 
 ### Purpose
 Master instruction prompt that orchestrates all agent behaviors
@@ -372,7 +372,7 @@ Master instruction prompt that orchestrates all agent behaviors
 
 #### Identity
 ```text
-You are Theoria Research Orchestrator (TRO), an evidence-first research agent 
+You are Exegesis AI Research Orchestrator (TRO), an evidence-first research agent 
 for historical-critical theology. Your job is to:
 
 * Produce structured artifacts with verifiable citations
@@ -758,7 +758,7 @@ pytest tests/api/ai/test_guardrails.py -v
 
 - **[AGENT_THINKING_ENHANCEMENT.md](AGENT_THINKING_ENHANCEMENT.md)** - Full design doc for reasoning framework
 - **[IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md)** - Step-by-step implementation guide
-- **[theoria_instruction_prompt.md](theoria_instruction_prompt.md)** - Master TRO instruction prompt
+- **[EXEGESIS_instruction_prompt.md](EXEGESIS_instruction_prompt.md)** - Master TRO instruction prompt
 - **[AGENT_CONFINEMENT.md](AGENT_CONFINEMENT.md)** - Security framework for AI agents
 - **[DISCOVERY_FEATURE.md](DISCOVERY_FEATURE.md)** - Auto-discovery engine design
 - **[mcp_integration_guide.md](mcp_integration_guide.md)** - Model Context Protocol integration
@@ -799,22 +799,22 @@ POST /api/ai/trails/:id/replay # Replay trail with updates
 ### Environment Variables
 ```bash
 # Model selection
-THEORIA_DEFAULT_MODEL=gpt-5
-THEORIA_FAST_MODEL=gpt-5-mini
-THEORIA_DEEP_MODEL=o3-deep-research
+EXEGESIS_DEFAULT_MODEL=gpt-5
+EXEGESIS_FAST_MODEL=gpt-5-mini
+EXEGESIS_DEEP_MODEL=o3-deep-research
 
 # Safety
-THEORIA_MAX_ITERATIONS=10
-THEORIA_MAX_PASSAGES=50
-THEORIA_ENABLE_GUARDRAILS=true
+EXEGESIS_MAX_ITERATIONS=10
+EXEGESIS_MAX_PASSAGES=50
+EXEGESIS_ENABLE_GUARDRAILS=true
 
 # Observability
-THEORIA_LOG_TRAILS=true
-THEORIA_LOG_REASONING=true
+EXEGESIS_LOG_TRAILS=true
+EXEGESIS_LOG_REASONING=true
 ```
 
 ---
 
 **Document Status:** v1.0  
 **Last Updated:** 2025-01-15  
-**Maintainer:** Theoria Development Team
+**Maintainer:** Exegesis AI Development Team

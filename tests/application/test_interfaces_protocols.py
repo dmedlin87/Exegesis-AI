@@ -1,7 +1,7 @@
 import pytest
 
-from theo.application.interfaces import CommandService, QueryService, SessionProtocol
-from theo.domain import Document, DocumentId, DocumentMetadata
+from exegesis.application.interfaces import CommandService, QueryService, SessionProtocol
+from exegesis.domain import Document, DocumentId, DocumentMetadata
 
 
 class _FakeSession:

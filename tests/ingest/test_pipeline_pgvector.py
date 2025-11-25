@@ -10,12 +10,12 @@ import pytest
 from sqlalchemy import delete
 from sqlalchemy.orm import sessionmaker
 
-from theo.application.facades.settings import get_settings
-from theo.infrastructure.api.app.library.ingest import pipeline
-from theo.infrastructure.api.app.library.ingest.exceptions import UnsupportedSourceError
-from theo.infrastructure.api.app.library.ingest.stages import ErrorDecision, ErrorPolicy
-from theo.infrastructure.api.app.persistence_models import Document, Passage
-from theo.infrastructure.api.app.library.ingest import persistence as ingest_persistence
+from exegesis.application.facades.settings import get_settings
+from exegesis.infrastructure.api.app.library.ingest import pipeline
+from exegesis.infrastructure.api.app.library.ingest.exceptions import UnsupportedSourceError
+from exegesis.infrastructure.api.app.library.ingest.stages import ErrorDecision, ErrorPolicy
+from exegesis.infrastructure.api.app.persistence_models import Document, Passage
+from exegesis.infrastructure.api.app.library.ingest import persistence as ingest_persistence
 
 
 class _StubEmbeddingService:

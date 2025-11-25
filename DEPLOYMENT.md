@@ -12,7 +12,7 @@
 | Step | Tooling | Notes |
 | --- | --- | --- |
 | SBOM | `cyclonedx-bom`, `@cyclonedx/cyclonedx-npm` | Generated automatically in CI; review before release. |
-| Provenance | `cosign attest --predicate build-attestation.json --type https://theoria.dev/attestations/container-build` | Predicate bundles build metadata plus SBOM digest for downstream verification. |
+| Provenance | `cosign attest --predicate build-attestation.json --type https://Exegesis AI.dev/attestations/container-build` | Predicate bundles build metadata plus SBOM digest for downstream verification. |
 | Image Signing | `cosign sign --keyless` | GitHub OIDC identity is recorded in the Sigstore transparency log; no long-lived keys required. |
 | Verification | `cosign verify` & `cosign verify-attestation` in CD pipeline | Fail deployment if signature or attestation missing/invalid. |
 
@@ -24,21 +24,21 @@
   transparency log. Any tampering or re-build without the workflow identity is rejected during verification.
 - `anchore/sbom-action` generates the image SBOM and the workflow constructs a `build-attestation.json` predicate that bundles
   the SBOM hash together with Git reference, workflow metadata, and run identifiers. This predicate is signed with
-  `cosign attest --type https://theoria.dev/attestations/container-build` so both provenance and bill-of-materials are
+  `cosign attest --type https://Exegesis AI.dev/attestations/container-build` so both provenance and bill-of-materials are
   traceable.
 - Workflow artifacts (`sbom-image.cdx.json`, `build-attestation.json`, `image-metadata.json`, `image-signature.sig`, and
   `image-provenance.in-toto.jsonl`) are uploaded as run artifacts and published to the matching GitHub release tag to satisfy
   archival requirements.
 - Consumers should verify signatures and attestations before rollout:
   ```bash
-  IMAGE="ghcr.io/<org>/theoria-api@sha256:<digest>"
+  IMAGE="ghcr.io/<org>/Exegesis AI-api@sha256:<digest>"
   cosign verify \
     --certificate-identity "https://github.com/<org>/<repo>/.github/workflows/deployment-sign.yml@refs/tags/<tag>" \
     --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
     "${IMAGE}"
 
   cosign verify-attestation \
-    --type https://theoria.dev/attestations/container-build \
+    --type https://Exegesis AI.dev/attestations/container-build \
     --certificate-identity "https://github.com/<org>/<repo>/.github/workflows/deployment-sign.yml@refs/tags/<tag>" \
     --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
     "${IMAGE}"
@@ -68,7 +68,7 @@
 
 - **Secrets:** Provision via cloud secret manager and inject at runtime; do not bake into images.
 - **Authentication:** Provision API keys or JWT credentials for every non-local profile. The runtime fails fast when
-  `THEO_AUTH_ALLOW_ANONYMOUS=1` is detected outside development/testing, preventing accidental public deployments.
+  `EXEGESIS_AUTH_ALLOW_ANONYMOUS=1` is detected outside development/testing, preventing accidental public deployments.
 - **Runtime Policies:** Enable read-only filesystem, non-root users, network policies restricting egress to approved providers.
 - **Observability:** Export OpenTelemetry traces + Prometheus metrics for deployment verification.
 

@@ -1,8 +1,8 @@
 import pytest
 from datetime import datetime
 from unittest.mock import MagicMock, Mock, patch
-from theo.infrastructure.api.app.mcp.tools import handle_note_write, MCPToolError
-from theo.infrastructure.api.app.models.research import ResearchNote as ResearchNoteSchema
+from exegesis.infrastructure.api.app.mcp.tools import handle_note_write, MCPToolError
+from exegesis.infrastructure.api.app.models.research import ResearchNote as ResearchNoteSchema
 
 def test_handle_note_write_creates_note(integration_session):
     payload = {
@@ -13,7 +13,7 @@ def test_handle_note_write_creates_note(integration_session):
     }
 
     # Mock get_research_service to return a mock service
-    with patch("theo.infrastructure.api.app.mcp.tools.get_research_service") as mock_get_service:
+    with patch("exegesis.infrastructure.api.app.mcp.tools.get_research_service") as mock_get_service:
         mock_service = Mock()
         mock_get_service.return_value = mock_service
 
@@ -54,7 +54,7 @@ def test_handle_note_write_missing_osis():
 
 def test_handle_note_write_resolves_doc_id(integration_session):
     # Mock _resolve_document_osis
-    with patch("theo.infrastructure.api.app.mcp.tools._resolve_document_osis") as mock_resolve:
+    with patch("exegesis.infrastructure.api.app.mcp.tools._resolve_document_osis") as mock_resolve:
         mock_resolve.return_value = "John.1.1"
 
         payload = {
@@ -64,7 +64,7 @@ def test_handle_note_write_resolves_doc_id(integration_session):
             "osis": ""  # Required by schema, but empty to trigger doc_id resolution
         }
 
-        with patch("theo.infrastructure.api.app.mcp.tools.get_research_service") as mock_get_service:
+        with patch("exegesis.infrastructure.api.app.mcp.tools.get_research_service") as mock_get_service:
             mock_service = Mock()
             mock_get_service.return_value = mock_service
 

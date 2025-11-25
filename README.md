@@ -1,12 +1,12 @@
-# Theoria
+# Exegesis AI
 
 **Your theological research, unified and verse-anchored.**
 
-Stop losing citations in scattered notes and unreliable AI summaries. Theoria transforms your research library into a searchable, verse-aware knowledge graph where every automated insight traces back to canonical text. Index your sources, normalize Scripture references, and retrieve evidence with AI assistance you can trust.
+Stop losing citations in scattered notes and unreliable AI summaries. Exegesis AI transforms your research library into a searchable, verse-aware knowledge graph where every automated insight traces back to canonical text. Index your sources, normalize Scripture references, and retrieve evidence with AI assistance you can trust.
 
 ## Table of Contents
 
-1. [Why Theoria](#why-theoria)
+1. [Why Exegesis AI](#why-Exegesis AI)
 2. [Core Capabilities](#core-capabilities)
 3. [System Requirements](#system-requirements)
 4. [Real-World Workflows](#real-world-workflows)
@@ -19,9 +19,9 @@ Stop losing citations in scattered notes and unreliable AI summaries. Theoria tr
 
 ---
 
-## Why Theoria
+## Why Exegesis AI
 
-Theoria unifies your theological research library—papers, notes, transcripts, and audio—into a single verse-aware knowledge graph. Every result is anchored to normalized OSIS references, so citations remain verifiable whether you are preparing sermons, running comparative studies, or drafting devotionals.
+Exegesis AI unifies your theological research library—papers, notes, transcripts, and audio—into a single verse-aware knowledge graph. Every result is anchored to normalized OSIS references, so citations remain verifiable whether you are preparing sermons, running comparative studies, or drafting devotionals.
 
 **What you can expect:**
 
@@ -29,7 +29,7 @@ Theoria unifies your theological research library—papers, notes, transcripts, 
 - **Productivity workflows** that combine AI summarization with strict reference enforcement.
 - **Operational confidence** with observability, testing, and performance guardrails baked in.
 
-> "Theoria keeps our exegetical work anchored to the text, even when we move fast." — Early access user
+> "Exegesis AI keeps our exegetical work anchored to the text, even when we move fast." — Early access user
 
 ---
 
@@ -79,8 +79,8 @@ GPU acceleration is optional. When available, configure the ML extras (see [`doc
 1. **Clone & prepare environment**
 
    ```bash
-   git clone https://github.com/dmedlin87/theoria.git
-   cd theoria
+   git clone https://github.com/dmedlin87/Exegesis AI.git
+   cd Exegesis AI
    python -m venv .venv && source .venv/bin/activate
    pip install ".[api]" -c constraints/prod.txt
    pip install ".[ml]" -c constraints/prod.txt
@@ -107,16 +107,16 @@ GPU acceleration is optional. When available, configure the ML extras (see [`doc
 
 3. **Configure authentication**
 
-   In development mode (`THEORIA_ENVIRONMENT=development`), the API auto-generates an ephemeral API key when none is configured and prints it to the console. Just start the server and copy the key from the output.
+   In development mode (`EXEGESIS_ENVIRONMENT=development`), the API auto-generates an ephemeral API key when none is configured and prints it to the console. Just start the server and copy the key from the output.
 
    For persistent or production keys:
 
    ```bash
    # Option A: API key (simple)
-   export THEO_API_KEY="your-key-here"
+   export EXEGESIS_API_KEY="your-key-here"
 
    # Option B: JWT (for production)
-   export THEO_JWT_SECRET="your-jwt-secret"
+   export EXEGESIS_JWT_SECRET="your-jwt-secret"
    # Generate JWT with: python -m theo.infrastructure.api.auth.token generate
    ```
 
@@ -130,9 +130,9 @@ GPU acceleration is optional. When available, configure the ML extras (see [`doc
 1. **Launch background services**
 
    ```bash
-   docker run --rm --name theoria-db -e POSTGRES_PASSWORD=theoria -e POSTGRES_USER=theoria -e POSTGRES_DB=theoria \
+   docker run --rm --name Exegesis AI-db -e POSTGRES_PASSWORD=Exegesis AI -e POSTGRES_USER=Exegesis AI -e POSTGRES_DB=Exegesis AI \
      -p 5432:5432 postgres:16
-   export DATABASE_URL="postgresql://theoria:theoria@127.0.0.1:5432/theoria"
+   export DATABASE_URL="postgresql://Exegesis AI:Exegesis AI@127.0.0.1:5432/Exegesis AI"
    ```
 
 2. **Launch API**
@@ -148,7 +148,7 @@ GPU acceleration is optional. When available, configure the ML extras (see [`doc
    ```bash
    cd theo/services/web
    export NEXT_PUBLIC_API_BASE_URL="http://127.0.0.1:8000"
-   export THEO_SEARCH_API_KEY="Bearer local-dev-key"  # remove "Bearer" to send via X-API-Key header
+   export EXEGESIS_SEARCH_API_KEY="Bearer local-dev-key"  # remove "Bearer" to send via X-API-Key header
    npm run dev
    ```
 
@@ -253,7 +253,7 @@ For staging and production scenarios-including container images, Fly.io, and bar
 | Category | Start Here |
 | --- | --- |
 | Architecture | [`docs/architecture.md`](docs/architecture.md) |
-| API & Agents | [`docs/API.md`](docs/API.md), [`docs/theoria_instruction_prompt.md`](docs/theoria_instruction_prompt.md), [`docs/AGENT_CONFINEMENT.md`](docs/AGENT_CONFINEMENT.md) |
+| API & Agents | [`docs/API.md`](docs/API.md), [`docs/EXEGESIS_instruction_prompt.md`](docs/EXEGESIS_instruction_prompt.md), [`docs/AGENT_CONFINEMENT.md`](docs/AGENT_CONFINEMENT.md) |
 | User Research | [`docs/research/adjacent_user_needs.md`](docs/research/adjacent_user_needs.md) |
 | Operations | [`docs/Repo-Health.md`](docs/Repo-Health.md) |
 | Documentation Index | [`docs/document_inventory.md`](docs/document_inventory.md), [`docs/INDEX.md`](docs/INDEX.md) |

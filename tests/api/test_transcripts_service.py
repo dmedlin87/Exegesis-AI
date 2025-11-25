@@ -8,11 +8,11 @@ import pytest
 from sqlalchemy import event
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.adapters.persistence.models import Document, TranscriptSegment, Video
-from theo.adapters.persistence.transcript_repository import SQLAlchemyTranscriptRepository
-from theo.application.dtos import TranscriptSegmentDTO, TranscriptVideoDTO
-from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference
-from theo.infrastructure.api.app.library.transcripts.service import (
+from exegesis.adapters.persistence.models import Document, TranscriptSegment, Video
+from exegesis.adapters.persistence.transcript_repository import SQLAlchemyTranscriptRepository
+from exegesis.application.dtos import TranscriptSegmentDTO, TranscriptVideoDTO
+from exegesis.infrastructure.api.app.library.ingest.osis import expand_osis_reference
+from exegesis.infrastructure.api.app.library.transcripts.service import (
     build_source_ref,
     canonical_primary_osis,
     search_transcript_segments,

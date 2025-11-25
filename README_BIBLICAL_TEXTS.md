@@ -1,4 +1,4 @@
-# Biblical Text Analysis System for Theoria
+# Biblical Text Analysis System for Exegesis AI
 
 📖 **Advanced multi-layer biblical text analysis with AI-enhanced morphological and semantic research capabilities.**
 
@@ -32,7 +32,7 @@ This system provides sophisticated biblical text analysis specifically designed 
 ## 📦 Project Structure
 
 ```text
-theoria/
+Exegesis AI/
 ├── docs/
 │   └── BIBLE_TEXT_SCHEMA.md      # Complete schema documentation
 ├── data/bibles/                # Biblical text storage

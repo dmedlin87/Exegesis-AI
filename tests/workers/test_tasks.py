@@ -41,7 +41,7 @@ def _stub_pythonbible(monkeypatch: pytest.MonkeyPatch):
     """Replace heavy pythonbible lookups with a lightweight stub during worker tests."""
 
     try:
-        from theo.infrastructure.api.app.library.ingest import osis as ingest_osis
+        from exegesis.infrastructure.api.app.library.ingest import osis as ingest_osis
     except ModuleNotFoundError:  # pragma: no cover - dependency not installed
         yield
         return
@@ -59,27 +59,27 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades.database import (  # noqa: E402  (import after path tweak)
+from exegesis.application.facades.database import (  # noqa: E402  (import after path tweak)
     Base,
     configure_engine,
     get_engine,
     get_settings,
 )
-from theo.adapters.persistence.models import (  # noqa: E402
+from exegesis.adapters.persistence.models import (  # noqa: E402
     ChatSession,
     Document,
     IngestionJob,
     Passage,
 )
 
-from theo.infrastructure.api.app.models.export import (  # noqa: E402
+from exegesis.infrastructure.api.app.models.export import (  # noqa: E402
     DeliverableAsset,
     DeliverableManifest,
     DeliverablePackage,
 )
 
 try:  # noqa: E402 - optional dependency fallback for lightweight profiling
-    from theo.infrastructure.api.app.research.ai.rag import RAGCitation
+    from exegesis.infrastructure.api.app.research.ai.rag import RAGCitation
 except ModuleNotFoundError:  # pragma: no cover - minimal fallback for lean environments
     @dataclass(slots=True)
     class RAGCitation:
@@ -88,7 +88,7 @@ except ModuleNotFoundError:  # pragma: no cover - minimal fallback for lean envi
         anchor: str
 
 try:  # noqa: E402 - optional dependency fallback for lightweight profiling
-    from theo.infrastructure.api.app.models.ai import ChatMemoryEntry
+    from exegesis.infrastructure.api.app.models.ai import ChatMemoryEntry
 except ModuleNotFoundError:  # pragma: no cover - minimal fallback for lean environments
     @dataclass(slots=True)
     class ChatMemoryEntry:
@@ -119,7 +119,7 @@ except ModuleNotFoundError:  # pragma: no cover - minimal fallback for lean envi
             }
 
 try:  # noqa: E402 - optional dependency fallback for lightweight profiling
-    from theo.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
+    from exegesis.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
 except ModuleNotFoundError:  # pragma: no cover - minimal fallback for lean environments
     @dataclass(slots=True)
     class HybridSearchFilters:
@@ -142,7 +142,7 @@ except ModuleNotFoundError:  # pragma: no cover - minimal fallback for lean envi
         passage_id: str
         distance: float
         title: str | None = None
-from theo.infrastructure.api.app.workers import tasks  # noqa: E402
+from exegesis.infrastructure.api.app.workers import tasks  # noqa: E402
 
 
 def _task(obj: Any) -> Task:
@@ -488,7 +488,7 @@ def test_enrich_document_missing_document_marks_job_failed(worker_engine, caplog
         session.commit()
         job_id = job.id
 
-    caplog.set_level("WARNING", logger="theo.infrastructure.api.app.workers.tasks")
+    caplog.set_level("WARNING", logger="exegesis.infrastructure.api.app.workers.tasks")
 
     _task(tasks.enrich_document).run(document_id="missing", job_id=job_id)
 
@@ -801,7 +801,7 @@ def test_validate_citations_logs_mismatch(
     worker_stubs.set_hybrid_results(mismatched_search(None, None))
     monkeypatch.setattr(tasks, "CITATION_DRIFT_EVENTS", metric)
 
-    caplog.set_level("WARNING", logger="theo.infrastructure.api.app.workers.tasks")
+    caplog.set_level("WARNING", logger="exegesis.infrastructure.api.app.workers.tasks")
     result = _task(tasks.validate_citations).run(limit=1)
 
     assert result["failed"] == 1

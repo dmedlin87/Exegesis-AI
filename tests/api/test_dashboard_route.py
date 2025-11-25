@@ -5,9 +5,9 @@ from datetime import UTC, datetime, timedelta
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.adapters.persistence import models
-from theo.application.facades.database import get_session
-from theo.infrastructure.api.app.main import app
+from exegesis.adapters.persistence import models
+from exegesis.application.facades.database import get_session
+from exegesis.infrastructure.api.app.main import app
 
 
 def _override_session_factory(engine):

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from theo.infrastructure.api.app.research.ai.rag.guardrails import (
+from exegesis.infrastructure.api.app.research.ai.rag.guardrails import (
     GuardrailError,
     ensure_completion_safe,
 )

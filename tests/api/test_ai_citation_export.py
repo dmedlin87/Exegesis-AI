@@ -21,18 +21,18 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from theo.application.facades import database as database_module
-from theo.application.facades.database import configure_engine, get_engine
-from theo.adapters.persistence.models import (
+from exegesis.application.facades import database as database_module
+from exegesis.application.facades.database import configure_engine, get_engine
+from exegesis.adapters.persistence.models import (
     ContradictionSeed,
     Document,
     Passage,
     PassageVerse,
 )
-from theo.infrastructure.api.app.db.seeds import CONTRADICTION_NAMESPACE
-from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference
-from theo.infrastructure.api.app.main import app
-from theo.infrastructure.api.app.routes.ai.workflows.exports import _CSL_TYPE_MAP, _build_csl_entry
+from exegesis.infrastructure.api.app.db.seeds import CONTRADICTION_NAMESPACE
+from exegesis.infrastructure.api.app.library.ingest.osis import expand_osis_reference
+from exegesis.infrastructure.api.app.main import app
+from exegesis.infrastructure.api.app.routes.ai.workflows.exports import _CSL_TYPE_MAP, _build_csl_entry
 
 
 CONTRADICTIONS_PATH = PROJECT_ROOT / "data" / "seeds" / "contradictions.json"
@@ -450,17 +450,17 @@ def test_sqlite_migration_backfills_contradiction_perspective(
     database_url = f"sqlite:///{tmp_path / 'pre-migration.db'}"
     monkeypatch.setenv("DATABASE_URL", database_url)
 
-    from theo.application.facades import database as database_module
-    from theo.application.facades import settings as settings_module
-    from theo.infrastructure.api.app.db import run_sql_migrations as migrations_module
-    from theo.infrastructure.api.app.db import seeds as seeds_module
+    from exegesis.application.facades import database as database_module
+    from exegesis.application.facades import settings as settings_module
+    from exegesis.infrastructure.api.app.db import run_sql_migrations as migrations_module
+    from exegesis.infrastructure.api.app.db import seeds as seeds_module
 
     migrations_dir = tmp_path / "migrations"
     migrations_dir.mkdir()
     migration_source = (
         PROJECT_ROOT
         / "theo"
-        / "services"
+        / "infrastructure"
         / "api"
         / "app"
         / "db"

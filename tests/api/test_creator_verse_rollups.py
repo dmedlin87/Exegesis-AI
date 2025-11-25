@@ -8,8 +8,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from theo.application.facades.database import Base
-from theo.adapters.persistence.models import (
+from exegesis.application.facades.database import Base
+from exegesis.adapters.persistence.models import (
     Creator,
     CreatorClaim,
     CreatorVerseRollup,
@@ -20,9 +20,9 @@ from theo.adapters.persistence.models import (
     TranscriptSegmentVerse,
     Video,
 )
-from theo.infrastructure.api.app.library.ingest.osis import expand_osis_reference
-from theo.infrastructure.api.app.library.ingest.persistence import refresh_creator_verse_rollups
-from theo.infrastructure.api.app.library.ingest.stages import IngestContext, Instrumentation
+from exegesis.infrastructure.api.app.library.ingest.osis import expand_osis_reference
+from exegesis.infrastructure.api.app.library.ingest.persistence import refresh_creator_verse_rollups
+from exegesis.infrastructure.api.app.library.ingest.stages import IngestContext, Instrumentation
 
 
 class _DummyEmbeddingService:

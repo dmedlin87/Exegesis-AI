@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from theo.infrastructure.api.app.export.citations import (
+from exegesis.infrastructure.api.app.export.citations import (
     _apa_author,
     _chicago_author,
     _format_anchor_summary,

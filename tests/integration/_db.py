@@ -12,10 +12,10 @@ except (ModuleNotFoundError, ImportError):  # pragma: no cover - lightweight env
     Engine = Session = object  # type: ignore[assignment]
 
 try:  # pragma: no cover - optional dependency guard
-    from theo.adapters.persistence import Base
-    from theo.application.facades.database import configure_engine, get_engine
-    from theo.infrastructure.api.app.persistence_models import Document as DocumentRecord
-    from theo.infrastructure.api.app.persistence_models import Passage
+    from exegesis.adapters.persistence import Base
+    from exegesis.application.facades.database import configure_engine, get_engine
+    from exegesis.infrastructure.api.app.persistence_models import Document as DocumentRecord
+    from exegesis.infrastructure.api.app.persistence_models import Passage
 except (ModuleNotFoundError, ImportError):  # pragma: no cover - lightweight envs
     Base = None  # type: ignore[assignment]
     configure_engine = get_engine = None  # type: ignore[assignment]

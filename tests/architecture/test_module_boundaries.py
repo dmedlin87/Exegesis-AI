@@ -71,13 +71,13 @@ def _gather_imports(path: Path) -> set[str]:
 
 def test_domain_isolation() -> None:
     forbidden_prefixes = (
-        "theo.adapters",
-        "theo.infrastructure",
+        "exegesis.adapters",
+        "exegesis.infrastructure",
         "fastapi",
         "sqlalchemy",
         "celery",
     )
-    for path in _iter_python_files("theo.domain"):
+    for path in _iter_python_files("exegesis.domain"):
         for module in _gather_imports(path):
             if not module.startswith("theo"):
                 continue
@@ -88,12 +88,12 @@ def test_domain_isolation() -> None:
 
 def test_application_depends_only_on_domain_and_platform() -> None:
     allowed_prefixes = (
-        "theo.application",
-        "theo.domain",
-        "theo.adapters",
+        "exegesis.application",
+        "exegesis.domain",
+        "exegesis.adapters",
     )
-    forbidden_prefixes = ("theo.infrastructure",)
-    for path in _iter_python_files("theo.application"):
+    forbidden_prefixes = ("exegesis.infrastructure",)
+    for path in _iter_python_files("exegesis.application"):
         if "facades" in path.parts:
             continue
         if "tests" in path.parts:
@@ -114,8 +114,8 @@ def test_application_depends_only_on_domain_and_platform() -> None:
 
 
 def test_application_does_not_import_service_database() -> None:
-    forbidden_prefix = "theo.infrastructure.api.app.db"
-    for path in _iter_python_files("theo.application"):
+    forbidden_prefix = "exegesis.infrastructure.api.app.db"
+    for path in _iter_python_files("exegesis.application"):
         for module in _gather_imports(path):
             if not module.startswith("theo"):
                 continue
@@ -125,13 +125,13 @@ def test_application_does_not_import_service_database() -> None:
 
 
 def test_application_does_not_import_service_runtimes_or_fastapi() -> None:
-    forbidden_service_prefix = "theo.infrastructure.api.app"
+    forbidden_service_prefix = "exegesis.infrastructure.api.app"
     forbidden_adapters = (
-        "theo.infrastructure.api.app.adapters.telemetry",
-        "theo.infrastructure.api.app.adapters.resilience",
-        "theo.infrastructure.api.app.adapters.security",
+        "exegesis.infrastructure.api.app.adapters.telemetry",
+        "exegesis.infrastructure.api.app.adapters.resilience",
+        "exegesis.infrastructure.api.app.adapters.security",
     )
-    for path in _iter_python_files("theo.application"):
+    for path in _iter_python_files("exegesis.application"):
         if "tests" in path.parts:
             continue
         if path.name == "bootstrap.py" and "services" in path.parts:
@@ -156,9 +156,9 @@ def test_application_does_not_import_service_runtimes_or_fastapi() -> None:
 
 def test_adapters_do_not_cross_import() -> None:
     forbidden_edges = {
-        "theo.adapters.interfaces": ("theo.adapters.persistence", "theo.adapters.search", "theo.adapters.ai"),
+        "exegesis.adapters.interfaces": ("exegesis.adapters.persistence", "exegesis.adapters.search", "exegesis.adapters.ai"),
     }
-    for path in _iter_python_files("theo.adapters"):
+    for path in _iter_python_files("exegesis.adapters"):
         imports = _gather_imports(path)
         for source_prefix, disallowed_targets in forbidden_edges.items():
             if not path.as_posix().startswith((REPO_ROOT / source_prefix.replace(".", "/")).as_posix()):
@@ -171,7 +171,7 @@ def test_adapters_do_not_cross_import() -> None:
 
 
 def test_routes_depend_on_application_facades() -> None:
-    required_prefix = "theo.application.facades"
+    required_prefix = "exegesis.application.facades"
     for path in _iter_python_files("theo/infrastructure/api/app/routes"):
         imports = _gather_imports(path)
         assert any(module.startswith(required_prefix) for module in imports), (
@@ -185,7 +185,7 @@ def test_workers_use_application_bootstrap() -> None:
         if path.name == "__init__.py":
             continue
         imports = _gather_imports(path)
-        assert "theo.application.services.bootstrap" in imports, (
+        assert "exegesis.application.services.bootstrap" in imports, (
             f"Worker module {path} must resolve adapters via theo.application.services.bootstrap"
         )
 
@@ -196,24 +196,24 @@ def test_cli_commands_use_application_bootstrap() -> None:
         if "/tests/" in path.as_posix():
             continue
         imports = _gather_imports(path)
-        assert "theo.application.services.bootstrap" in imports, (
+        assert "exegesis.application.services.bootstrap" in imports, (
             f"CLI module {path} must resolve adapters via theo.application.services.bootstrap"
         )
 
 
 def test_platform_package_removed() -> None:
     platform_path = REPO_ROOT / "theo/platform"
-    assert not platform_path.exists(), "Legacy 'theo.platform' package should be removed."
+    assert not platform_path.exists(), "Legacy 'exegesis.platform' package should be removed."
 
     violating_modules: list[tuple[Path, str]] = []
     for package in ("theo", "tests"):
         for path in _iter_python_files(package):
             for module in _gather_imports(path):
-                if module == "theo.platform" or module.startswith("theo.platform."):
+                if module == "exegesis.platform" or module.startswith("exegesis.platform."):
                     violating_modules.append((path, module))
 
     assert not violating_modules, (
-        "Modules import removed package 'theo.platform': "
+        "Modules import removed package 'exegesis.platform': "
         + ", ".join(f"{path}:{module}" for path, module in violating_modules)
     )
 
@@ -224,7 +224,7 @@ def test_async_workers_do_not_depend_on_domain_layer() -> None:
         if path.name == "__init__.py":
             continue
         for module in _gather_imports(path):
-            assert not module.startswith("theo.domain"), (
+            assert not module.startswith("exegesis.domain"), (
                 f"Async worker module {path} must not import domain layer module '{module}'"
             )
 

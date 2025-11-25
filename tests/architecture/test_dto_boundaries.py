@@ -50,7 +50,7 @@ def test_repositories_use_dtos_not_orm():
 
         # Should import from application layer
         has_dto_import = any(
-            "theo.application.dtos" in imp for imp in imports
+            "exegesis.application.dtos" in imp for imp in imports
         )
 
         if "repository" in path.stem:
@@ -62,7 +62,7 @@ def test_repositories_use_dtos_not_orm():
 def test_services_no_direct_orm_imports():
     """Service layer should not import ORM models directly."""
     forbidden_imports = [
-        "theo.adapters.persistence.models",
+        "exegesis.adapters.persistence.models",
     ]
 
     for path in _iter_python_files("theo/infrastructure/api/app"):
@@ -78,7 +78,7 @@ def test_services_no_direct_orm_imports():
 
             assert not violations, (
                 f"Service module {path} imports ORM models directly: {violations}. "
-                f"Use DTOs from theo.application.dtos instead."
+                f"Use DTOs from exegesis.application.dtos instead."
             )
 
 

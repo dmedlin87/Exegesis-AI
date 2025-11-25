@@ -1,4 +1,4 @@
-"""Global pytest configuration and fixtures for Theoria test suite.
+"""Global pytest configuration and fixtures for Exegesis AI test suite.
 
 Auto-Use Fixtures
 -----------------
@@ -40,10 +40,10 @@ hatch markers to opt-out when necessary.
 
 Environment Variables
 ---------------------
-- ``THEORIA_SKIP_HEAVY_FIXTURES=1``: Skip loading mocks.py fixtures.
-- ``THEORIA_MEMCHECK=1``: Enable per-test memory leak detection.
-- ``THEO_ALLOW_INSECURE_STARTUP=1``: Allow insecure startup (set by default in tests).
-- ``THEORIA_TESTING=1``: Signal test mode to application code.
+- ``EXEGESIS_SKIP_HEAVY_FIXTURES=1``: Skip loading mocks.py fixtures.
+- ``EXEGESIS_MEMCHECK=1``: Enable per-test memory leak detection.
+- ``EXEGESIS_ALLOW_INSECURE_STARTUP=1``: Allow insecure startup (set by default in tests).
+- ``EXEGESIS_TESTING=1``: Signal test mode to application code.
 """
 
 from __future__ import annotations
@@ -69,8 +69,8 @@ from unittest.mock import AsyncMock, patch
 from urllib.request import OpenerDirector, Request
 
 if TYPE_CHECKING:  # pragma: no cover - imported only for type checking
-    from theo.adapters import AdapterRegistry
-    from theo.application import ApplicationContainer
+    from exegesis.adapters import AdapterRegistry
+    from exegesis.application import ApplicationContainer
     from tests.fixtures import RegressionDataFactory
     from testcontainers.postgres import PostgresContainer
 
@@ -156,7 +156,7 @@ def _install_optional_dependency_stubs() -> None:
 
     # 4. Workers Tasks Stub
     # If workers module exists but tasks fails to import (due to missing deps), stub it
-    workers_module = "theo.infrastructure.api.app.workers.tasks"
+    workers_module = "exegesis.infrastructure.api.app.workers.tasks"
     if workers_module not in sys.modules:
         try:
             importlib.import_module(workers_module)
@@ -184,7 +184,7 @@ def _install_optional_dependency_stubs() -> None:
 
             # Register in parent
             try:
-                parent = importlib.import_module("theo.infrastructure.api.app.workers")
+                parent = importlib.import_module("exegesis.infrastructure.api.app.workers")
                 setattr(parent, "tasks", tasks)
             except ImportError:
                 pass
@@ -323,7 +323,7 @@ class _DowngradeIngestionErrorFilter(logging.Filter):
 def downgrade_ingestion_error_logs():
     """Suppress noisy ingestion failure errors emitted during retry scenarios."""
 
-    logger = logging.getLogger("theo.infrastructure.api.app.workers.tasks")
+    logger = logging.getLogger("exegesis.infrastructure.api.app.workers.tasks")
     flt = _DowngradeIngestionErrorFilter()
     logger.addFilter(flt)
     try:
@@ -334,7 +334,7 @@ class _BootstrapEmbeddingServiceStub:
     """Lightweight embedding backend used in bootstrap-oriented tests."""
 
     def __init__(self) -> None:
-        from theo.application.facades.settings import get_settings
+        from exegesis.application.facades.settings import get_settings
 
         settings = get_settings()
         self._dimension = settings.embedding_dim
@@ -360,7 +360,7 @@ class _BootstrapEmbeddingServiceStub:
 def _bootstrap_embedding_service_stub(monkeypatch: pytest.MonkeyPatch):
     """Patch bootstrap to provide a deterministic embedding service stub."""
 
-    from theo.infrastructure.api.app.library.ingest import embeddings as embeddings_module
+    from exegesis.infrastructure.api.app.library.ingest import embeddings as embeddings_module
 
     stub = _BootstrapEmbeddingServiceStub()
     monkeypatch.setattr(embeddings_module, "get_embedding_service", lambda: stub)
@@ -498,7 +498,7 @@ def _require_application_factory() -> None:
 
 pytest_plugins: list[str] = ["celery.contrib.pytest"]
 
-if os.environ.get("THEORIA_SKIP_HEAVY_FIXTURES", "0") not in {"1", "true", "TRUE"}:
+if os.environ.get("EXEGESIS_SKIP_HEAVY_FIXTURES", "0") not in {"1", "true", "TRUE"}:
     try:
         import pydantic  # type: ignore  # noqa: F401
     except ModuleNotFoundError:  # pragma: no cover - exercised in lightweight envs
@@ -527,7 +527,7 @@ else:  # pragma: no cover - process lookup can fail in sandboxes
     except Exception:
         _PSUTIL_PROCESS = None
 
-_ENABLE_MEMCHECK = os.getenv("THEORIA_MEMCHECK", "").strip().lower() in {
+_ENABLE_MEMCHECK = os.getenv("EXEGESIS_MEMCHECK", "").strip().lower() in {
     "1",
     "true",
     "yes",
@@ -819,18 +819,18 @@ def pytest_pyfunc_call(pyfuncitem: pytest.Function) -> bool | None:
     return True
 
 
-os.environ.setdefault("THEO_ALLOW_INSECURE_STARTUP", "1")
-os.environ.setdefault("THEORIA_ENVIRONMENT", "development")
+os.environ.setdefault("EXEGESIS_ALLOW_INSECURE_STARTUP", "1")
+os.environ.setdefault("EXEGESIS_ENVIRONMENT", "development")
 
 
 @pytest.fixture(scope="session", autouse=True)
 def _configure_celery_for_tests() -> Generator[None, None, None]:
     """Execute Celery tasks inline to avoid external broker dependencies."""
 
-    os.environ.setdefault("THEORIA_TESTING", "1")
+    os.environ.setdefault("EXEGESIS_TESTING", "1")
 
     try:
-        from theo.infrastructure.api.app.workers import tasks as worker_tasks
+        from exegesis.infrastructure.api.app.workers import tasks as worker_tasks
     except Exception:  # pragma: no cover - Celery optional in some test subsets
         yield
         return
@@ -923,8 +923,8 @@ def pgvector_migrated_database_url(pgvector_db: PGVectorDatabase) -> str:
 
 
 def _initialise_shared_database(db_path: Path) -> str:
-    from theo.application.facades.database import Base
-    from theo.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
+    from exegesis.application.facades.database import Base
+    from exegesis.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
 
     url = f"sqlite:///{db_path}"
     engine = create_engine(url, future=True)
@@ -941,11 +941,11 @@ def _load_model_from_registry(model_name: str) -> Any:
     """Attempt to import an expensive ML model using common naming conventions."""
 
     candidate_modules = [
-        f"theo.ml.models.{model_name}",
-        f"theo.infrastructure.ml.{model_name}",
-        f"theo.infrastructure.ml.models.{model_name}",
-        f"theo.infrastructure.api.app.ml.{model_name}",
-        f"theo.infrastructure.api.app.ml.models.{model_name}",
+        f"exegesis.ml.models.{model_name}",
+        f"exegesis.infrastructure.ml.{model_name}",
+        f"exegesis.infrastructure.ml.models.{model_name}",
+        f"exegesis.infrastructure.api.app.ml.{model_name}",
+        f"exegesis.infrastructure.api.app.ml.models.{model_name}",
     ]
 
     for module_path in candidate_modules:
@@ -960,8 +960,8 @@ def _load_model_from_registry(model_name: str) -> Any:
 
 def _sqlite_database_url(tmp_path_factory: pytest.TempPathFactory) -> Iterator[str]:
     """Create a SQLite database URL with migrations applied."""
-    from theo.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
-    from theo.application.facades.database import Base
+    from exegesis.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
+    from exegesis.application.facades.database import Base
 
     database_dir = tmp_path_factory.mktemp("sqlite", numbered=True)
     path = database_dir / "test.db"
@@ -974,7 +974,7 @@ def _sqlite_database_url(tmp_path_factory: pytest.TempPathFactory) -> Iterator[s
         Base.metadata.create_all(bind=engine)
         # Then run migrations to ensure schema is up-to-date
         migrations_module = importlib.import_module(
-            "theo.infrastructure.api.app.db.run_sql_migrations"
+            "exegesis.infrastructure.api.app.db.run_sql_migrations"
         )
         original_index_helper = getattr(
             migrations_module, "_ensure_performance_indexes", None

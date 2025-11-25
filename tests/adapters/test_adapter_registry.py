@@ -1,6 +1,6 @@
 import pytest
 
-from theo.adapters import AdapterRegistry
+from exegesis.adapters import AdapterRegistry
 
 
 def test_register_and_resolve_returns_factory_result():

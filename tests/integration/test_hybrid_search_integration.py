@@ -5,10 +5,10 @@ from datetime import datetime, timezone
 import pytest
 from sqlalchemy.orm import Session
 
-from theo.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchRequest
-from theo.infrastructure.api.app.persistence_models import Document as DocumentRecord
-from theo.infrastructure.api.app.persistence_models import Passage
-from theo.infrastructure.api.app.retrieval.retriever import hybrid as hybrid_module
+from exegesis.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchRequest
+from exegesis.infrastructure.api.app.persistence_models import Document as DocumentRecord
+from exegesis.infrastructure.api.app.persistence_models import Passage
+from exegesis.infrastructure.api.app.retrieval.retriever import hybrid as hybrid_module
 
 pytestmark = pytest.mark.schema
 

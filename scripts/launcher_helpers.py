@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Support utilities for the Theoria PowerShell launcher."""
+"""Support utilities for the Exegesis AI PowerShell launcher."""
 from __future__ import annotations
 
 import argparse
@@ -203,7 +203,7 @@ def generate_certificate(args: argparse.Namespace) -> None:
 
     key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
     subject = issuer = x509.Name([
-        x509.NameAttribute(NameOID.COMMON_NAME, args.common_name or "Theoria Local"),
+        x509.NameAttribute(NameOID.COMMON_NAME, args.common_name or "Exegesis AI Local"),
     ])
 
     alt_names = ["localhost", "127.0.0.1"]
@@ -232,7 +232,7 @@ def generate_certificate(args: argparse.Namespace) -> None:
         .sign(key, hashes.SHA256())
     )
 
-    cert_basename = f"theoria-{args.profile}-dev"
+    cert_basename = f"Exegesis AI-{args.profile}-dev"
     cert_path = output_dir / f"{cert_basename}.crt.pem"
     key_path = output_dir / f"{cert_basename}.key.pem"
 
@@ -319,7 +319,7 @@ def render_dashboard(entries: List[Dict[str, Any]]) -> str:
     html = f"""
     <html>
       <head>
-        <title>Theoria Launcher Telemetry</title>
+        <title>Exegesis AI Launcher Telemetry</title>
         <style>
           body {{ font-family: Arial, sans-serif; margin: 2rem; background: #0f172a; color: #e2e8f0; }}
           h1 {{ color: #38bdf8; }}
@@ -330,7 +330,7 @@ def render_dashboard(entries: List[Dict[str, Any]]) -> str:
         </style>
       </head>
       <body>
-        <h1>Theoria Launcher Telemetry</h1>
+        <h1>Exegesis AI Launcher Telemetry</h1>
         <section>
           <div class="metric">Total events recorded: <strong>{total}</strong></div>
           <div>Last event: <strong>{last_event}</strong></div>
@@ -382,7 +382,7 @@ def run_dashboard(args: argparse.Namespace) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Helpers for the Theoria launcher")
+    parser = argparse.ArgumentParser(description="Helpers for the Exegesis AI launcher")
     parser.add_argument("--project-root", default=Path.cwd(), type=Path)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -393,7 +393,7 @@ def build_parser() -> argparse.ArgumentParser:
     cert_parser = subparsers.add_parser("generate-cert", help="Generate self-signed development certificates")
     cert_parser.add_argument("--profile", default="dev")
     cert_parser.add_argument("--output-dir", required=True)
-    cert_parser.add_argument("--common-name", default="Theoria Local")
+    cert_parser.add_argument("--common-name", default="Exegesis AI Local")
     cert_parser.add_argument("--additional-san", nargs="*")
     cert_parser.set_defaults(func=generate_certificate)
 

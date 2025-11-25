@@ -3,10 +3,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from theo.infrastructure.api.app.research.ai.rag.guardrails import GuardrailError
-from theo.infrastructure.api.app.research.ai.rag.models import RAGAnswer
-from theo.infrastructure.api.app.models.search import HybridSearchFilters
-from theo.infrastructure.api.app.routes.ai.workflows.guardrails import (
+from exegesis.infrastructure.api.app.research.ai.rag.guardrails import GuardrailError
+from exegesis.infrastructure.api.app.research.ai.rag.models import RAGAnswer
+from exegesis.infrastructure.api.app.models.search import HybridSearchFilters
+from exegesis.infrastructure.api.app.routes.ai.workflows.guardrails import (
     build_guardrail_metadata,
     extract_refusal_text,
     guardrail_advisory,
@@ -61,7 +61,7 @@ def test_guardrail_http_exception_embeds_error_payload(
     fake_answer = RAGAnswer(summary="Refused", citations=[])
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.routes.ai.workflows.guardrails.build_guardrail_refusal",
+        "exegesis.infrastructure.api.app.routes.ai.workflows.guardrails.build_guardrail_refusal",
         lambda _session, reason=None: fake_answer,
     )
 
@@ -121,7 +121,7 @@ def test_guardrail_http_exception_marks_safe_refusals(
     fake_answer = RAGAnswer(summary="Refused", citations=[])
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.routes.ai.workflows.guardrails.build_guardrail_refusal",
+        "exegesis.infrastructure.api.app.routes.ai.workflows.guardrails.build_guardrail_refusal",
         lambda _session, reason=None: fake_answer,
     )
 
@@ -156,7 +156,7 @@ def test_guardrail_http_exception_handles_invalid_metadata(
     fake_answer = RAGAnswer(summary="Refused", citations=[])
 
     monkeypatch.setattr(
-        "theo.infrastructure.api.app.routes.ai.workflows.guardrails.build_guardrail_refusal",
+        "exegesis.infrastructure.api.app.routes.ai.workflows.guardrails.build_guardrail_refusal",
         lambda _session, reason=None: fake_answer,
     )
 
