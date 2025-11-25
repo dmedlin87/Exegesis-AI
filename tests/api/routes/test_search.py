@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import pytest
 from fastapi.testclient import TestClient
+from pydantic import ValidationError
 
+from theo.infrastructure.api.app.models.search import HybridSearchResponse, HybridSearchResult
 from theo.infrastructure.api.app.routes.search import (
     _parse_experiment_tokens,
     _validate_experiment_tokens,
@@ -24,6 +26,32 @@ class TestSearchEndpoint:
         assert data["query"] == "faith"
         assert "results" in data
         assert isinstance(data["results"], list)
+
+    def test_search_response_matches_pydantic_model(
+        self, api_test_client: TestClient
+    ) -> None:
+        """Test that search response conforms to HybridSearchResponse schema."""
+        response = api_test_client.get("/search/", params={"q": "grace", "k": 5})
+
+        assert response.status_code == 200
+        data = response.json()
+
+        # Validate entire response against Pydantic model
+        try:
+            validated = HybridSearchResponse.model_validate(data)
+        except ValidationError as e:
+            pytest.fail(f"Response does not match HybridSearchResponse schema: {e}")
+
+        assert validated.query == "grace"
+        assert isinstance(validated.results, list)
+
+        # If results are present, validate each result item
+        for i, result in enumerate(validated.results):
+            assert isinstance(result, HybridSearchResult), f"Result {i} is not HybridSearchResult"
+            # Required fields from HybridSearchResult
+            assert hasattr(result, "snippet"), f"Result {i} missing snippet"
+            assert hasattr(result, "rank"), f"Result {i} missing rank"
+            assert isinstance(result.rank, int), f"Result {i} rank should be int"
 
     def test_search_with_osis_filter(self, api_test_client: TestClient) -> None:
         """Test search with OSIS reference filter."""
@@ -298,15 +326,22 @@ class TestSearchExperiments:
     def test_search_reranker_header_in_response(
         self, api_test_client: TestClient
     ) -> None:
-        """Test that X-Reranker header is included when reranking occurs."""
+        """Test that X-Reranker header is present in search responses."""
         response = api_test_client.get(
             "/search/",
             params={"q": "test", "k": 10},
         )
 
         assert response.status_code == 200
-        # X-Reranker header should be present if reranking happened
-        # (implementation-dependent)
+        # X-Reranker header indicates which reranker was used (or 'none')
+        # Implementation may omit it if no reranking occurred
+        reranker = response.headers.get("X-Reranker")
+        if reranker is not None:
+            # Header should be a non-empty identifier when present
+            assert len(reranker) > 0, "X-Reranker header should not be empty"
+            assert reranker in {"none", "bge", "cross", "colbert", "default"}, (
+                f"Unexpected reranker value: {reranker}"
+            )
 
 
 class TestExperimentHelpers:
@@ -410,13 +445,46 @@ class TestExperimentHelpers:
 
 @pytest.mark.no_auth_override
 class TestSearchAuthentication:
-    """Test search endpoint authentication requirements."""
+    """Test search endpoint authentication requirements.
 
-    def test_search_requires_authentication(self, api_test_client: TestClient) -> None:
-        """Test that search endpoint requires authentication when enabled."""
-        # This test uses no_auth_override marker, so authentication is enforced
+    These tests run with authentication enforcement enabled (no_auth_override marker).
+    The search endpoint behavior depends on the API's authentication configuration:
+    - Public access: Returns 200 OK without credentials
+    - Protected: Returns 401 Unauthorized without valid credentials
+    """
+
+    def test_search_unauthenticated_returns_expected_status(self, api_test_client: TestClient) -> None:
+        """Test search endpoint returns consistent status without authentication.
+
+        The search endpoint is configured as publicly accessible in the current
+        implementation, so this should return 200 OK even without credentials.
+        If the auth policy changes, update this test accordingly.
+        """
         response = api_test_client.get("/search/", params={"q": "test"})
 
-        # Depending on authentication configuration, this may require auth
-        # Implementation should be consistent with other authenticated endpoints
-        assert response.status_code in [200, 401]
+        # Search endpoint is publicly accessible (no auth required)
+        # If this starts failing with 401, the auth policy has changed
+        assert response.status_code == 200, (
+            f"Expected 200 for public search endpoint, got {response.status_code}. "
+            "If auth policy changed, update this test to expect 401."
+        )
+
+    def test_search_with_invalid_api_key(self, api_test_client: TestClient) -> None:
+        """Test search endpoint behavior with an invalid API key.
+
+        Since search is publicly accessible, invalid API keys should not
+        block access. The endpoint should either:
+        - Ignore the invalid key (200 OK)
+        - Reject only if auth is enforced (401/403)
+        """
+        response = api_test_client.get(
+            "/search/",
+            params={"q": "test"},
+            headers={"X-API-Key": "invalid-key-12345"},
+        )
+
+        # Public endpoint: invalid key is ignored (200)
+        # Protected endpoint: invalid key is rejected (401/403)
+        assert response.status_code in [200, 401, 403], (
+            f"Unexpected status {response.status_code} with invalid API key"
+        )

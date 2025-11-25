@@ -1,4 +1,45 @@
-"""Shared test configuration for API-level tests."""
+"""Shared test configuration for API-level tests.
+
+Architecture Overview
+---------------------
+All API tests share a single FastAPI ``app`` instance and a session-scoped
+``_global_test_client`` (``TestClient(app)``). This design minimizes overhead
+by avoiding repeated app startup/shutdown cycles.
+
+Fixture Layering
+^^^^^^^^^^^^^^^^
+::
+
+    Test
+      └─ api_test_client (function-scoped, yields _global_test_client)
+           ├─ api_engine: per-test connection + transaction with SAVEPOINT isolation
+           ├─ _bypass_authentication: overrides require_principal (unless @no_auth_override)
+           └─ _stub_external_integrations: session-scoped stubs for Zotero, telemetry, etc.
+
+DB Isolation
+^^^^^^^^^^^^
+- ``api_engine`` creates a per-test connection on a shared SQLite engine
+- A ``Session`` with ``join_transaction_mode="create_savepoint"`` ensures that
+  ``session.commit()`` in routes/services operates within nested transactions
+- The outer transaction is rolled back at teardown, guaranteeing no persistent changes
+
+Thread Safety
+^^^^^^^^^^^^^
+The shared app design relies on:
+1. **xdist grouping**: Tests in the same module run in the same worker (``xdist_group``
+   is set per-module in ``pytest_collection_modifyitems``)
+2. **Per-test cleanup**: ``api_engine`` and ``_bypass_authentication`` set/clear
+   ``app.dependency_overrides`` per test
+
+This is safe for current pytest-xdist parallelisation but would need revisiting if
+tests within a module ever run concurrently against the same app object.
+
+External Services
+^^^^^^^^^^^^^^^^^
+- Embeddings, PDFs, sklearn, opentelemetry are stubbed at import time (top of file)
+- Zotero, realtime, telemetry, AI trails are stubbed via ``_stub_external_integrations``
+- Auth is bypassed by default; use ``@pytest.mark.no_auth_override`` to enforce auth
+"""
 from __future__ import annotations
 
 import contextlib

@@ -1,3 +1,42 @@
+"""Ingest API endpoint tests.
+
+Architecture Notes
+------------------
+These tests exercise the HTTP routing layer of ingestion endpoints WITHOUT
+touching the database. This is by design:
+
+1. **No DB Session**: ``get_session`` is overridden to yield a bare ``object()``,
+   so any code path that calls ``session.commit()`` or ``session.add()`` will
+   fail immediately with an ``AttributeError``. This ensures tests exercise
+   only the HTTP validation and routing layers.
+
+2. **Pipeline Stubs**: All ingestion pipelines (``run_pipeline_for_file``,
+   ``run_pipeline_for_url``, etc.) are monkeypatched to fakes that do NOT touch
+   the DB and drive URL/network behavior via custom openers and fake responses.
+
+3. **No Transactional Isolation**: Unlike ``tests/api/conftest.py::api_engine``,
+   the fixture here does NOT provide SAVEPOINT-based isolation. If a test
+   exercises a code path that reaches the DB before being stubbed, it will fail
+   loudly rather than silently leaking state.
+
+Implications for Future Changes
+-------------------------------
+- If ingestion routes are refactored to perform DB work BEFORE the pipeline layer,
+  tests will crash with ``AttributeError``. This is intentional—update the fixture
+  to use transactional isolation (like ``api_test_client``) when DB work is needed.
+
+- If adding tests that require real DB persistence, either:
+  a) Move them to a separate file using ``api_test_client`` from ``conftest.py``, or
+  b) Update the ``api_client`` fixture here to use a real Session with rollback.
+
+Shared App Instance
+-------------------
+All tests in this file share a single ``app`` import. The ``api_client`` fixture
+sets and clears ``app.dependency_overrides`` per test. This is safe as long as:
+- Tests do not run concurrently within the same worker (xdist groups by module).
+- No test modifies ``app.state`` without cleanup.
+"""
+
 from __future__ import annotations
 
 import logging

@@ -8,9 +8,12 @@ from typing import Tuple
 
 from importlib import import_module
 
-from sqlalchemy.orm import load_only, selectinload
-
-from theo.adapters.persistence.sqlalchemy_support import Session, select
+from theo.adapters.persistence.sqlalchemy_support import (
+    Session,
+    select,
+    load_only,
+    selectinload,
+)
 
 from theo.adapters import AdapterRegistry
 from theo.adapters.persistence.embedding_repository import (

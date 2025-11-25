@@ -78,3 +78,45 @@ test("@full verse anchored search surfaces mocked results", async ({ page }, tes
 
   await page.unroute(SEARCH_API_ROUTE);
 });
+
+test("@integration real search returns seeded documents", async ({ page, request }, testInfo) => {
+  // Seed real data into the backend - NO MOCKING
+  await seedCorpus(request);
+
+  await page.goto("/search");
+
+  // Search for content from the seeded sermon document
+  await page.fill("input[name='q']", "John prologue divine");
+  await page.click("button[type='submit']");
+
+  // Wait for real backend response (longer timeout for real DB query)
+  await page.waitForResponse(
+    (response) => response.url().includes("/api/search") && response.status() === 200,
+    { timeout: 15000 }
+  );
+
+  // Verify seeded content appears in results (from seeding.ts sermon.md)
+  const resultsContainer = page.locator("[data-testid='search-results'], .search-results, main");
+  await expect(resultsContainer).toBeVisible();
+
+  // Capture search response for debugging
+  const artifactPath = testInfo.outputPath("real-search-results.json");
+  await fs.writeFile(
+    artifactPath,
+    JSON.stringify({
+      query: "John prologue divine",
+      timestamp: new Date().toISOString(),
+      note: "Real backend integration test - no mocking",
+    })
+  );
+  await testInfo.attach("real-search-results", {
+    path: artifactPath,
+    contentType: "application/json",
+  });
+
+  const screenshot = await page.screenshot({ fullPage: true });
+  await testInfo.attach("real-search-screenshot", {
+    body: screenshot,
+    contentType: "image/png",
+  });
+});

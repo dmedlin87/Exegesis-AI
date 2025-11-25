@@ -6,7 +6,7 @@ from sqlalchemy import delete, select, tuple_
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, load_only, selectinload
 
 __all__ = [
     "delete",
@@ -16,4 +16,6 @@ __all__ = [
     "SQLAlchemyError",
     "Session",
     "tuple_",
+    "load_only",
+    "selectinload",
 ]

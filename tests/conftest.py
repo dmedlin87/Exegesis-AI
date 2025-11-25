@@ -1,3 +1,51 @@
+"""Global pytest configuration and fixtures for Theoria test suite.
+
+Auto-Use Fixtures
+-----------------
+The following fixtures are applied automatically to all tests. Use the escape
+hatch markers to opt-out when necessary.
+
+**Function-scoped (per test):**
+
+- ``stub_example_com_requests``
+    Intercepts urllib requests to example.com/* and returns deterministic HTML.
+    No opt-out marker (network isolation is always enforced).
+
+- ``_bootstrap_embedding_service_stub``
+    Replaces ``get_embedding_service()`` with a deterministic stub that returns
+    predictable embedding vectors. Access the stub via ``bootstrap_embedding_service_stub``.
+
+- ``mock_sleep``
+    Patches ``time.sleep`` and ``asyncio.sleep`` to return immediately.
+    **Opt-out:** ``@pytest.mark.allow_sleep``
+
+**Session-scoped (once per session):**
+
+- ``downgrade_ingestion_error_logs``
+    Demotes expected ingestion error logs to WARNING level.
+
+- ``_configure_celery_for_tests``
+    Forces Celery into eager mode (``task_always_eager=True``).
+
+- ``_set_database_url_env``
+    Sets ``DATABASE_URL`` environment variable from ``integration_database_url``.
+    Skipped in ``--fast`` mode.
+
+- ``mock_sleep_session``
+    Session-scoped companion to ``mock_sleep``; holds the patchers.
+
+- ``optimize_mocks`` (from ``tests.fixtures.mocks``)
+    Patches ``httpx.AsyncClient`` and ``Celery.__init__`` for deterministic behavior.
+    Call history is reset per-test by ``_reset_session_mocks``.
+
+Environment Variables
+---------------------
+- ``THEORIA_SKIP_HEAVY_FIXTURES=1``: Skip loading mocks.py fixtures.
+- ``THEORIA_MEMCHECK=1``: Enable per-test memory leak detection.
+- ``THEO_ALLOW_INSECURE_STARTUP=1``: Allow insecure startup (set by default in tests).
+- ``THEORIA_TESTING=1``: Signal test mode to application code.
+"""
+
 from __future__ import annotations
 
 import asyncio
@@ -173,6 +221,16 @@ _SUITE_CONFIG: dict[str, dict[str, Any]] = {
     "gpu": {
         "flag": "--gpu",
         "help": "Enable tests requiring GPU acceleration.",
+        "implies": [],
+    },
+    "redteam": {
+        "flag": "--redteam",
+        "help": "Enable adversarial LLM guardrail security tests.",
+        "implies": [],
+    },
+    "performance": {
+        "flag": "--performance",
+        "help": "Enable performance regression tests with timing assertions.",
         "implies": [],
     },
 }
@@ -588,7 +646,12 @@ def pytest_addoption(parser: pytest.Parser) -> None:
 
 
 def pytest_configure(config: pytest.Config) -> None:
-    """Register custom markers used throughout the test suite."""
+    """Register custom markers and configure optional plugins.
+
+    This hook centralizes plugin configuration that was previously handled
+    by run_tests.py, enabling direct ``pytest`` invocation with identical
+    behavior.
+    """
 
     # Handle implications: e.g. --pgvector implies --schema
     for marker, conf in _SUITE_CONFIG.items():
@@ -597,6 +660,11 @@ def pytest_configure(config: pytest.Config) -> None:
                 setattr(config.option, implied, True)
 
     is_fast = config.getoption("--fast", default=False)
+
+    # Configure pytest-timeout if available (previously in run_tests.py)
+    if config.pluginmanager.hasplugin("timeout"):
+        if not hasattr(config.option, "timeout") or config.option.timeout is None:
+            config.option.timeout = 60
 
     if _register_randomly_plugin(config.pluginmanager):
         config.option.randomly_seed = 1337
@@ -631,7 +699,7 @@ def _resolve_xdist_group(item: pytest.Item) -> str | None:
 
 
 def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
-    """Skip tests that require disabled suite options."""
+    """Skip tests that require disabled suite options and apply auto-fixtures."""
 
     skip_markers = {}
     for marker, conf in _SUITE_CONFIG.items():
@@ -644,6 +712,16 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
         for marker, skip_mark in skip_markers.items():
             if marker in item.keywords:
                 item.add_marker(skip_mark)
+
+        # Auto-attach schema_isolation fixture to @pytest.mark.schema tests
+        # This ensures all schema-marked tests automatically get transactional DB isolation
+        if "schema" in item.keywords and "schema" not in skip_markers:
+            existing_fixtures = {
+                marker.args[0] if marker.args else None
+                for marker in item.iter_markers(name="usefixtures")
+            }
+            if "schema_isolation" not in existing_fixtures:
+                item.add_marker(pytest.mark.usefixtures("schema_isolation"))
 
         if not _ENABLE_MEMCHECK and item.get_closest_marker("memcheck"):
             item.add_marker(pytest.mark.usefixtures("manage_memory"))
