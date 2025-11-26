@@ -167,7 +167,7 @@ export default function ChatWorkspace({
 
   const heroEmphasis = useMemo(() => formatEmphasisSummary(mode), [mode]);
 
-  const handleSampleQuestionClick = (prompt: string, index: number) => {
+  const handleSampleQuestionClick = useCallback((prompt: string, index: number) => {
     setInputValue(prompt);
     const textarea = textareaRef.current;
     if (textarea) {
@@ -185,7 +185,7 @@ export default function ChatWorkspace({
       ],
       { page: "chat" },
     );
-  };
+  }, []);
 
   useEffect(() => {
     return () => {
