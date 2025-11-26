@@ -430,6 +430,27 @@ def test_api_boots_contradiction_seeding_without_migrations(
         "run_sql_migrations",
         lambda *_, **__: [],
     )
+    # Restore seed_reference_data if it was patched by session-scoped fixtures
+    # from tests/api/conftest.py (_skip_heavy_startup)
+    from exegesis.infrastructure.api.app.db import seeds as real_seeds_module
+    monkeypatch.setattr(
+        lifecycle_module,
+        "seed_reference_data",
+        real_seeds_module.seed_reference_data,
+    )
+    # Stub schedulers if they exist (only patched in by API conftest)
+    if hasattr(lifecycle_module, "start_discovery_scheduler"):
+        monkeypatch.setattr(
+            lifecycle_module,
+            "start_discovery_scheduler",
+            lambda: None,
+        )
+    if hasattr(lifecycle_module, "stop_discovery_scheduler"):
+        monkeypatch.setattr(
+            lifecycle_module,
+            "stop_discovery_scheduler",
+            lambda: None,
+        )
 
     seed_dir = tmp_path / "seeds"
     seed_dir.mkdir()

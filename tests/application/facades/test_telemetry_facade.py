@@ -1,9 +1,9 @@
 from contextlib import AbstractContextManager, contextmanager
+import importlib
 from typing import Any
 
 import pytest
 
-from exegesis.application.facades import telemetry as telemetry_facade
 from exegesis.application.core.telemetry import TelemetryProvider, WorkflowSpan
 
 
@@ -57,22 +57,27 @@ class _Provider(TelemetryProvider):
         self.histograms.append((metric_name, value, dict(labels or {})))
 
 
-@pytest.fixture(autouse=True)
-def _reset_provider() -> None:
-    previous = getattr(telemetry_facade, "_provider", None)
-    telemetry_facade._provider = None  # type: ignore[attr-defined]
-    try:
-        yield
-    finally:
-        telemetry_facade._provider = previous  # type: ignore[attr-defined]
+@pytest.fixture
+def telemetry_facade():
+    """Provide a fresh telemetry facade module for each test.
+
+    This fixture reloads the module to ensure we get the real implementation,
+    not any patched version from other test fixtures (e.g., tests/api/conftest.py).
+    """
+    from exegesis.application.facades import telemetry as facade_module
+    # Reload to clear any patches from other test suites
+    reloaded = importlib.reload(facade_module)
+    reloaded._provider = None
+    yield reloaded
+    reloaded._provider = None
 
 
-def test_get_provider_requires_configuration() -> None:
+def test_get_provider_requires_configuration(telemetry_facade) -> None:
     with pytest.raises(RuntimeError):
         telemetry_facade.get_telemetry_provider()
 
 
-def test_facade_delegates_to_provider() -> None:
+def test_facade_delegates_to_provider(telemetry_facade) -> None:
     provider = _Provider()
     telemetry_facade.set_telemetry_provider(provider)
 
@@ -91,7 +96,7 @@ def test_facade_delegates_to_provider() -> None:
     assert provider.instrumented[0][0] == "workflow"
 
 
-def test_facade_handles_missing_provider_gracefully() -> None:
+def test_facade_handles_missing_provider_gracefully(telemetry_facade) -> None:
     with telemetry_facade.instrument_workflow("noop") as span:
         telemetry_facade.set_span_attribute(span, "ignored", True)
     telemetry_facade.log_workflow_event("noop", workflow="noop")

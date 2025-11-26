@@ -8,6 +8,7 @@ import time
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
+from threading import Lock
 from typing import Mapping, Protocol
 
 from exegesis.application.interfaces import SessionProtocol
@@ -28,6 +29,27 @@ class EmbeddingBackendProtocol(Protocol):
     def embed(
         self, texts: Sequence[str], *, batch_size: int
     ) -> Sequence[Sequence[float]]: ...
+
+
+class LazyEmbeddingBackend(EmbeddingBackendProtocol):
+    """Wrapper that lazily instantiates the real backend on first use."""
+
+    def __init__(self, factory: Callable[[], EmbeddingBackendProtocol]) -> None:
+        self._factory = factory
+        self._lock = Lock()
+        self._delegate: EmbeddingBackendProtocol | None = None
+
+    def _ensure_delegate(self) -> EmbeddingBackendProtocol:
+        if self._delegate is None:
+            with self._lock:
+                if self._delegate is None:
+                    self._delegate = self._factory()
+        assert self._delegate is not None
+        return self._delegate
+
+    def embed(self, texts: Sequence[str], *, batch_size: int) -> Sequence[Sequence[float]]:
+        delegate = self._ensure_delegate()
+        return delegate.embed(texts, batch_size=batch_size)
 
 
 @dataclass(frozen=True)
@@ -329,4 +351,5 @@ __all__ = [
     "EmbeddingRebuildService",
     "EmbeddingRebuildStart",
     "EmbeddingRebuildState",
+    "LazyEmbeddingBackend",
 ]

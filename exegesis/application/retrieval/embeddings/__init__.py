@@ -8,6 +8,7 @@ from .rebuild_service import (
     EmbeddingRebuildService,
     EmbeddingRebuildStart,
     EmbeddingRebuildState,
+    LazyEmbeddingBackend,
 )
 from .store import PassageEmbeddingService, PassageEmbeddingStore
 
@@ -19,6 +20,7 @@ __all__ = [
     "EmbeddingRebuildService",
     "EmbeddingRebuildStart",
     "EmbeddingRebuildState",
+    "LazyEmbeddingBackend",
     "PassageEmbeddingService",
     "PassageEmbeddingStore",
 ]

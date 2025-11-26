@@ -1249,3 +1249,73 @@ def resource_pool() -> Generator[TestResourcePool, None, None]:
         yield pool
     finally:
         pool.cleanup()
+
+
+def _do_reset_global_state(*, skip_database: bool = False) -> None:
+    """Reset all facade global state to prevent isolation issues.
+
+    Args:
+        skip_database: If True, don't reset database module state. This is used
+            when the api_engine fixture has already set up database overrides.
+    """
+    # Import lazily to avoid circular imports during collection
+
+    # 1. Reset database module state (unless skipped)
+    if not skip_database:
+        try:
+            from exegesis.application.facades import database as database_module
+        except ImportError:
+            pass
+        else:
+            # Dispose any active engine to release file handles (important on Windows)
+            if database_module._engine is not None:
+                try:
+                    database_module._engine.dispose()
+                except Exception:
+                    pass
+
+            # Reset all global state
+            database_module._engine = None
+            database_module._SessionLocal = None
+            database_module._engine_url_override = None
+
+    # 2. Clear settings cache which may hold stale database URLs
+    try:
+        from exegesis.application.facades import settings as settings_module
+        settings_module.get_settings.cache_clear()
+        if hasattr(settings_module, "get_settings_cipher"):
+            settings_module.get_settings_cipher.cache_clear()
+    except Exception:
+        pass
+
+    # 3. Reset telemetry provider
+    try:
+        from exegesis.application.facades import telemetry as telemetry_module
+        telemetry_module._provider = None
+    except Exception:
+        pass
+
+
+@pytest.fixture(autouse=True)
+def _reset_global_state(request: pytest.FixtureRequest) -> Generator[None, None, None]:
+    """Reset all facade global state before and after each test.
+
+    Many tests directly manipulate global singletons like ``database_module._engine``
+    and ``telemetry_module._provider``. This fixture ensures those changes don't leak
+    between tests by resetting state both before and after each test runs.
+
+    Note: If the test uses the ``api_engine`` fixture, we skip resetting database
+    state since that fixture manages its own database session override.
+    """
+    # Check if this test uses api_engine or api_test_client (which manages its own DB state)
+    uses_api_engine = "api_engine" in request.fixturenames or "api_test_client" in request.fixturenames
+
+    # Reset BEFORE test to ensure clean state
+    # Skip database reset if api_engine will handle it
+    _do_reset_global_state(skip_database=uses_api_engine)
+
+    yield
+
+    # Reset AFTER test to clean up
+    # Always reset after, even if api_engine was used (it cleans up its own state)
+    _do_reset_global_state()

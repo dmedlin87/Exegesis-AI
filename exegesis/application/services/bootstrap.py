@@ -24,7 +24,10 @@ from exegesis.adapters.research import (
     SqlAlchemyHypothesisRepositoryFactory,
     SqlAlchemyResearchNoteRepositoryFactory,
 )
-from exegesis.application.retrieval.embeddings import EmbeddingRebuildService
+from exegesis.application.retrieval.embeddings import (
+    EmbeddingRebuildService,
+    LazyEmbeddingBackend,
+)
 from exegesis.application.facades.database import get_engine
 from exegesis.application.facades.settings import get_settings
 from exegesis.application.research import ResearchService
@@ -306,7 +309,7 @@ def resolve_application() -> Tuple[ApplicationContainer, AdapterRegistry]:
             sanitizer_module, "sanitize_passage_text"
         )
 
-        embedding_service = get_embedding_service()
+        embedding_service = LazyEmbeddingBackend(get_embedding_service)
 
         def _session_factory() -> Session:
             engine = registry.resolve("engine")

@@ -1,48 +1,51 @@
 # Architecture Dependency Boundaries
 
-The Theo codebase follows a layered architecture that keeps the domain model
-isolated from infrastructure concerns. The enforced dependency direction is:
+The Exegesis AI codebase (formerly the Theo project) follows a layered
+architecture that keeps the domain model isolated from infrastructure concerns.
+The enforced dependency direction is:
 
 ```
-theo.domain  →  theo.application  →  theo.services
+exegesis.domain -> exegesis.application -> exegesis.infrastructure
 ```
 
-* **Domain (`theo.domain`)** contains core business concepts. It must not depend
-  on the application or service layers.
-* **Application (`theo.application`)** coordinates domain workflows and exposes
-  facades for services. It may import the domain layer (and vetted adapters),
-  but it must not reach into service runtimes or framework code such as
-  FastAPI.
-* **Services (`theo.services`)** provide delivery mechanisms (API, CLI, UI) and
-  may depend on both the application and domain layers.
+* **Domain (`exegesis.domain`)** contains core business concepts. It must not
+  depend on the application or infrastructure layers.
+* **Application (`exegesis.application`)** coordinates domain workflows and
+  exposes facades for infrastructure adapters. It may import the domain layer,
+  but it must not reach into service runtimes, FastAPI, or infrastructure-level
+  telemetry/resilience helpers.
+* **Infrastructure (`exegesis.infrastructure`)** provides delivery mechanisms
+  (API, CLI, UI) and may depend on both the application and domain layers.
 
 ## Enforced rules
 
 The dependency graph is verified in two complementary ways:
 
 1. **Architecture tests** (`tests/architecture/test_module_boundaries.py`)
-   assert that application modules never import
-   `theo.infrastructure.api.app.*`, the telemetry/resilience/security adapters, or
-   `fastapi`. Existing tests also prevent domain modules from depending on
-   services and ensure other adapter constraints.
-2. **Import Linter** (`importlinter.ini`) encodes the layered contract so that
-   no package can import “up” the stack. Any attempt to import from services to
-   application (or from application to domain) will fail the lint step.
+   assert that application modules never import infrastructure runtime modules,
+   telemetry/resilience/security adapters, FastAPI, or platform helpers.
+   Symmetric tests also prevent domain modules from depending on infrastructure
+   and ensure that workers/CLI entries resolve adapters through the shared
+   bootstrap helpers.
+2. **Import Linter** (`importlinter.ini`) encodes the layered contract so that no
+   package can import “up” the stack. Any attempt to import from infrastructure
+   to application (or from application to domain) fails during the lint step.
 
-## Platform event bus retirement
+## Legacy platform retirement
 
-The legacy `theo.platform` package (bootstrap helpers and an event bus facade)
-has been fully removed in favour of direct orchestration through
-`theo.application.services.bootstrap`. The bootstrap module now wires adapters
-and services synchronously without the indirection of the former platform
-events layer.【F:theo/application/services/bootstrap.py†L215-L303】 Architecture
-tests enforce that the package stays deleted and that no module attempts to
-import the retired namespace.【F:tests/architecture/test_module_boundaries.py†L182-L218】
+The legacy `exegesis.platform` package (formerly `theo.platform` and its event
+bus facade) has been fully removed in favour of direct orchestration through
+`exegesis.application.services.bootstrap`. The bootstrap module now wires
+adapters and services synchronously without the indirection of the former
+platform events layer.【F:exegesis/application/services/bootstrap.py†L215-L303】
+The architecture tests enforce that the package stays deleted and that no
+module imports the retired namespace.【F:tests/architecture/test_module_boundaries.py†L182-L218】
 
 Developers should resolve adapters or repositories by calling
-`theo.application.services.bootstrap.resolve_application()` or the relevant
-facade. Event publishers live under `theo.adapters.events` and are resolved via
-`theo.application.facades.events`, matching the simplified interaction model.【F:theo/application/facades/events.py†L1-L64】
+`exegesis.application.services.bootstrap.resolve_application()` or the relevant
+facade. Event publishers live under `exegesis.adapters.events` and are resolved
+via `exegesis.application.facades.events`, matching the simplified interaction
+model.【F:exegesis/application/facades/events.py†L1-L64】
 
 ## Running the checks locally
 
