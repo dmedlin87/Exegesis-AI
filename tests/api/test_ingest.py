@@ -72,15 +72,21 @@ if PAYLOAD_TOO_LARGE is None:  # pragma: no cover - compatibility path
 
 @pytest.fixture(scope="module")
 def api_engine(tmp_path_factory: pytest.TempPathFactory):
+    # Save original global state to restore after module tests
+    original_engine = database_module._engine
+    original_session_local = database_module._SessionLocal
+    original_url_override = getattr(database_module, "_engine_url_override", None)
+
     db_path = tmp_path_factory.mktemp("api-ingest") / "ingest.db"
     engine = configure_engine(f"sqlite:///{db_path}")
     try:
         yield engine
     finally:
         engine.dispose()
-        database_module._engine = None  # type: ignore[attr-defined]
-        database_module._SessionLocal = None  # type: ignore[attr-defined]
-        database_module._engine_url_override = None  # type: ignore[attr-defined]
+        # Restore original state instead of nullifying
+        database_module._engine = original_engine  # type: ignore[attr-defined]
+        database_module._SessionLocal = original_session_local  # type: ignore[attr-defined]
+        database_module._engine_url_override = original_url_override  # type: ignore[attr-defined]
 
 
 @pytest.fixture()

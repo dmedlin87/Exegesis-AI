@@ -62,6 +62,10 @@ def _reset_watchlist_database(engine: Engine) -> None:
         session.commit()
 @pytest.fixture(scope="module")
 def _watchlist_engine(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Engine]:
+    # Save original global state to restore after module tests
+    original_engine = database_module._engine
+    original_session_local = database_module._SessionLocal
+
     database_path = tmp_path_factory.mktemp("watchlists") / "watchlists.db"
     configure_engine(f"sqlite:///{database_path}")
     engine = get_engine()
@@ -70,8 +74,9 @@ def _watchlist_engine(tmp_path_factory: pytest.TempPathFactory) -> Iterator[Engi
         yield engine
     finally:
         engine.dispose()
-        database_module._engine = None  # type: ignore[attr-defined]
-        database_module._SessionLocal = None  # type: ignore[attr-defined]
+        # Restore original state instead of nullifying
+        database_module._engine = original_engine  # type: ignore[attr-defined]
+        database_module._SessionLocal = original_session_local  # type: ignore[attr-defined]
 
 
 @pytest.fixture(scope="module")

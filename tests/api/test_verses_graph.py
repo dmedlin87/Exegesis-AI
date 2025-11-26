@@ -4,7 +4,6 @@ from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
 
 from exegesis.infrastructure.api.app.main import app
 from exegesis.adapters.persistence.models import (
@@ -19,116 +18,118 @@ from exegesis.infrastructure.api.app.library.ingest.osis import expand_osis_refe
 
 
 @pytest.fixture()
-def api_client(api_engine) -> TestClient:
+def api_client(api_session) -> TestClient:
+    """Provide a test client with transaction-isolated database."""
     with TestClient(app) as client:
         yield client
 
 
-def _seed_graph_data(engine) -> None:
-    with Session(engine) as session:
-        doc_pdf = Document(
-            id="doc-pdf",
-            title="PDF Sermon",
-            source_type="pdf",
-            collection="Sermons",
-            authors=["Alice"],
-        )
-        doc_markdown = Document(
-            id="doc-md",
-            title="Markdown Notes",
-            source_type="markdown",
-            collection="Notes",
-            authors=["Bob"],
-        )
-        session.add_all([doc_pdf, doc_markdown])
-        session.flush()
+def _seed_graph_data(session) -> None:
+    """Seed test data for verse graph tests."""
 
-        john_ids = list(sorted(expand_osis_reference("John.3.16")))
-        passage_pdf = Passage(
-            id="passage-pdf",
-            document_id=doc_pdf.id,
-            text="For God so loved the world",
-            osis_ref="John.3.16",
-            osis_verse_ids=john_ids,
-            page_no=3,
-            t_start=12.5,
-            t_end=18.0,
-        )
-        passage_markdown = Passage(
-            id="passage-md",
-            document_id=doc_markdown.id,
-            text="Study notes on John 3:16",
-            osis_ref="John.3.16",
-            osis_verse_ids=john_ids,
-        )
-        session.add_all([passage_pdf, passage_markdown])
-        session.add_all(
-            [
-                PassageVerse(passage_id=passage_pdf.id, verse_id=verse_id)
-                for verse_id in john_ids
-            ]
-            + [
-                PassageVerse(passage_id=passage_markdown.id, verse_id=verse_id)
-                for verse_id in john_ids
-            ]
-        )
+    doc_pdf = Document(
+        id="doc-pdf",
+        title="PDF Sermon",
+        source_type="pdf",
+        collection="Sermons",
+        authors=["Alice"],
+    )
+    doc_markdown = Document(
+        id="doc-md",
+        title="Markdown Notes",
+        source_type="markdown",
+        collection="Notes",
+        authors=["Bob"],
+    )
+    session.add_all([doc_pdf, doc_markdown])
+    session.flush()
 
-        def _range(osis: str) -> tuple[int | None, int | None]:
-            ids = expand_osis_reference(osis)
-            if not ids:
-                return None, None
-            return min(ids), max(ids)
+    john_ids = list(sorted(expand_osis_reference("John.3.16")))
+    passage_pdf = Passage(
+        id="passage-pdf",
+        document_id=doc_pdf.id,
+        text="For God so loved the world",
+        osis_ref="John.3.16",
+        osis_verse_ids=john_ids,
+        page_no=3,
+        t_start=12.5,
+        t_end=18.0,
+    )
+    passage_markdown = Passage(
+        id="passage-md",
+        document_id=doc_markdown.id,
+        text="Study notes on John 3:16",
+        osis_ref="John.3.16",
+        osis_verse_ids=john_ids,
+    )
+    session.add_all([passage_pdf, passage_markdown])
+    session.add_all(
+        [
+            PassageVerse(passage_id=passage_pdf.id, verse_id=verse_id)
+            for verse_id in john_ids
+        ]
+        + [
+            PassageVerse(passage_id=passage_markdown.id, verse_id=verse_id)
+            for verse_id in john_ids
+        ]
+    )
 
-        start_a, end_a = _range("John.3.16")
-        start_b, end_b = _range("Matthew.5.44")
-        contradiction = ContradictionSeed(
-            id=str(uuid4()),
-            osis_a="John.3.16",
-            osis_b="Matthew.5.44",
-            summary="Perceived tension between love and enemies",
-            source="Skeptic Digest",
-            tags=["tension"],
-            weight=1.2,
-            perspective="skeptical",
-            start_verse_id=start_a,
-            end_verse_id=end_a,
-            start_verse_id_b=start_b,
-            end_verse_id_b=end_b,
-        )
-        h_start_a, h_end_a = _range("John.3.16")
-        h_start_b, h_end_b = _range("Luke.6.27")
-        harmony = HarmonySeed(
-            id=str(uuid4()),
-            osis_a="John.3.16",
-            osis_b="Luke.6.27",
-            summary="Shared emphasis on love",
-            source="Harmony Notes",
-            tags=["love"],
-            weight=0.8,
-            perspective="apologetic",
-            start_verse_id=h_start_a,
-            end_verse_id=h_end_a,
-            start_verse_id_b=h_start_b,
-            end_verse_id_b=h_end_b,
-        )
-        c_start, c_end = _range("John.3.16")
-        commentary = CommentaryExcerptSeed(
-            id=str(uuid4()),
-            osis="John.3.16",
-            title="Ancient Commentary",
-            excerpt="Insight into the verse context",
-            source="Church Fathers",
-            tags=["historical"],
-            perspective=None,
-            start_verse_id=c_start,
-            end_verse_id=c_end,
-        )
-        session.add_all([contradiction, harmony, commentary])
-        session.commit()
+    def _range(osis: str) -> tuple[int | None, int | None]:
+        ids = expand_osis_reference(osis)
+        if not ids:
+            return None, None
+        return min(ids), max(ids)
+
+    start_a, end_a = _range("John.3.16")
+    start_b, end_b = _range("Matthew.5.44")
+    contradiction = ContradictionSeed(
+        id=str(uuid4()),
+        osis_a="John.3.16",
+        osis_b="Matthew.5.44",
+        summary="Perceived tension between love and enemies",
+        source="Skeptic Digest",
+        tags=["tension"],
+        weight=1.2,
+        perspective="skeptical",
+        start_verse_id=start_a,
+        end_verse_id=end_a,
+        start_verse_id_b=start_b,
+        end_verse_id_b=end_b,
+    )
+    h_start_a, h_end_a = _range("John.3.16")
+    h_start_b, h_end_b = _range("Luke.6.27")
+    harmony = HarmonySeed(
+        id=str(uuid4()),
+        osis_a="John.3.16",
+        osis_b="Luke.6.27",
+        summary="Shared emphasis on love",
+        source="Harmony Notes",
+        tags=["love"],
+        weight=0.8,
+        perspective="apologetic",
+        start_verse_id=h_start_a,
+        end_verse_id=h_end_a,
+        start_verse_id_b=h_start_b,
+        end_verse_id_b=h_end_b,
+    )
+    c_start, c_end = _range("John.3.16")
+    commentary = CommentaryExcerptSeed(
+        id=str(uuid4()),
+        osis="John.3.16",
+        title="Ancient Commentary",
+        excerpt="Insight into the verse context",
+        source="Church Fathers",
+        tags=["historical"],
+        perspective=None,
+        start_verse_id=c_start,
+        end_verse_id=c_end,
+    )
+    session.add_all([contradiction, harmony, commentary])
+    session.flush()  # Flush only, let the outer transaction handle commit/rollback
 
 
-def test_verse_graph_endpoint_combines_mentions_and_seeds(api_client: TestClient, api_engine) -> None:
-    _seed_graph_data(api_engine)
+def test_verse_graph_endpoint_combines_mentions_and_seeds(api_client: TestClient, api_session) -> None:
+    _seed_graph_data(api_session)
 
     response = api_client.get("/verses/John.3.16/graph")
     assert response.status_code == 200
@@ -162,8 +163,8 @@ def test_verse_graph_endpoint_combines_mentions_and_seeds(api_client: TestClient
     assert sorted(payload["filters"]["source_types"]) == ["markdown", "pdf"]
 
 
-def test_verse_graph_respects_source_type_filter(api_client: TestClient, api_engine) -> None:
-    _seed_graph_data(api_engine)
+def test_verse_graph_respects_source_type_filter(api_client: TestClient, api_session) -> None:
+    _seed_graph_data(api_session)
 
     response = api_client.get("/verses/John.3.16/graph", params={"source_type": "pdf"})
     assert response.status_code == 200

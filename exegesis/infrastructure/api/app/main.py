@@ -160,6 +160,11 @@ def _patch_httpx_testclient_compat() -> None:
     async_client_cls = getattr(httpx, "AsyncClient", None)
     if async_client_cls is None:
         return
+    if not inspect.isclass(async_client_cls):
+        return
+    # Skip patching if the class is a mock (e.g., from pytest fixtures)
+    if hasattr(async_client_cls, "_mock_name") or hasattr(async_client_cls, "assert_called"):
+        return
     original_async_init = async_client_cls.__init__
     try:
         async_signature = inspect.signature(original_async_init)
@@ -175,7 +180,11 @@ def _patch_httpx_testclient_compat() -> None:
         return original_async_init(self, *args, transport=transport, **kwargs)
 
     compat_async_init.__EXEGESIS_patched__ = True  # type: ignore[attr-defined]
-    async_client_cls.__init__ = compat_async_init  # type: ignore[assignment]
+    try:
+        async_client_cls.__init__ = compat_async_init  # type: ignore[assignment]
+    except AttributeError:
+        # Cannot patch (e.g., mock objects don't allow __init__ assignment)
+        pass
 
 
 if _should_patch_httpx():

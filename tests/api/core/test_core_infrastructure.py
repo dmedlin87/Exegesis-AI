@@ -81,7 +81,12 @@ FACADE_DEFINITIONS = [
 
 
 def _import_module(name: str):
-    sys.modules.pop(name, None)
+    """Import a module, optionally reloading it.
+
+    Note: We no longer pop from sys.modules because that breaks module identity
+    for modules that have state set by test fixtures (e.g., database._engine).
+    If fresh import is needed, use importlib.reload() instead.
+    """
     return importlib.import_module(name)
 
 
@@ -133,6 +138,17 @@ def test_runtime_allow_insecure_startup_respects_environment(
 
 def test_database_connection_helpers_create_sessions() -> None:
     database_module = _import_module("exegesis.application.facades.database")
+
+    # Save original state to restore after test
+    original_engine = getattr(database_module, "_engine", None)
+    original_session_local = getattr(database_module, "_SessionLocal", None)
+    original_url_override = getattr(database_module, "_engine_url_override", None)
+
+    # Clear state for test isolation
+    setattr(database_module, "_engine", None)
+    setattr(database_module, "_SessionLocal", None)
+    setattr(database_module, "_engine_url_override", None)
+
     engine = database_module.configure_engine("sqlite:///:memory:")
     try:
         assert str(engine.url) == "sqlite:///:memory:"
@@ -147,9 +163,10 @@ def test_database_connection_helpers_create_sessions() -> None:
             session_gen.close()
     finally:
         engine.dispose()
-        setattr(database_module, "_engine", None)
-        setattr(database_module, "_SessionLocal", None)
-        setattr(database_module, "_engine_url_override", None)
+        # Restore original state instead of nullifying
+        setattr(database_module, "_engine", original_engine)
+        setattr(database_module, "_SessionLocal", original_session_local)
+        setattr(database_module, "_engine_url_override", original_url_override)
 
 
 class FakeCipher:

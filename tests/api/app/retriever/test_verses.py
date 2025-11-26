@@ -36,14 +36,19 @@ def _prepare_engine(tmp_path: Path):
 
 @contextmanager
 def _session(tmp_path: Path):
+    # Save original global state to restore after test
+    original_engine = database_module._engine
+    original_session_local = database_module._SessionLocal
+
     engine = _prepare_engine(tmp_path)
     try:
         with Session(engine) as session:
             yield session
     finally:
         engine.dispose()
-        database_module._engine = None  # type: ignore[attr-defined]
-        database_module._SessionLocal = None  # type: ignore[attr-defined]
+        # Restore original state instead of nullifying
+        database_module._engine = original_engine  # type: ignore[attr-defined]
+        database_module._SessionLocal = original_session_local  # type: ignore[attr-defined]
 
 
 def test_get_mentions_for_osis_uses_verse_ids(tmp_path: Path) -> None:

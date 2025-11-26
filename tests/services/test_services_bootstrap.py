@@ -61,13 +61,12 @@ def test_resolve_application_returns_container_and_registry(
 
         rebuild_service = registry.resolve("embedding_rebuild_service")
         assert isinstance(rebuild_service, EmbeddingRebuildService)
-        assert (
-            rebuild_service._embedding_service is bootstrap_embedding_service_stub
-        )
 
+        # The embedding service is wrapped in a LazyEmbeddingBackend in bootstrap
         sample_vectors = rebuild_service._embedding_service.embed(
             ["Doc 1"], batch_size=1
         )
+        # Verify the stub was invoked (meaning the lazy backend resolved to it)
         assert bootstrap_embedding_service_stub.embed_calls[-1] == (("Doc 1",), 1)
         assert len(sample_vectors[0]) == bootstrap_embedding_service_stub.dimension
 

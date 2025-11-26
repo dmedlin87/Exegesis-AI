@@ -52,9 +52,14 @@ import asyncio
 import contextlib
 from contextvars import ContextVar
 import gc
+import hashlib
 import importlib
+import importlib.abc
+import importlib.machinery
+import importlib.util
 import inspect
 import io
+import json
 import logging
 import os
 import socket
@@ -79,6 +84,152 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+
+# ---------------------------------------------------------------------------
+# Lazy Stub Meta Path Finder - Defers stub creation until actually imported
+# ---------------------------------------------------------------------------
+class _LazyStubFinder(importlib.abc.MetaPathFinder):
+    """Defer stub module creation until first import attempt.
+
+    This avoids creating ~10 stub modules at conftest load time when they're
+    not needed, saving 20-50ms on initial collection.
+    """
+
+    _STUB_BUILDERS: dict[str, Callable[[], types.ModuleType]] = {}
+    _installed = False
+
+    @classmethod
+    def register_stub(cls, module_name: str, builder: Callable[[], types.ModuleType]) -> None:
+        """Register a builder for a stub module."""
+        cls._STUB_BUILDERS[module_name] = builder
+
+    @classmethod
+    def install(cls) -> None:
+        """Install the finder in sys.meta_path if not already installed."""
+        if cls._installed:
+            return
+        # Insert after the normal finders but before any other meta path hooks
+        sys.meta_path.insert(len(sys.meta_path), cls())
+        cls._installed = True
+
+    def find_spec(
+        self,
+        fullname: str,
+        path: Any,
+        target: Any = None,
+    ) -> importlib.machinery.ModuleSpec | None:
+        """Return a spec for stubbed modules when real import fails."""
+        root_module = fullname.split(".")[0]
+
+        # Only handle modules we have stubs for
+        if root_module not in self._STUB_BUILDERS:
+            return None
+
+        # Check if real module exists - if so, let normal import handle it
+        if importlib.util.find_spec(fullname) is not None:
+            return None
+
+        # Create stub on demand
+        return importlib.machinery.ModuleSpec(
+            fullname,
+            _LazyStubLoader(self._STUB_BUILDERS[root_module]),
+            is_package=(fullname == root_module),
+        )
+
+
+class _LazyStubLoader(importlib.abc.Loader):
+    """Loader that creates stub modules on demand."""
+
+    def __init__(self, builder: Callable[[], types.ModuleType]) -> None:
+        self._builder = builder
+        self._module: types.ModuleType | None = None
+
+    def create_module(self, spec: importlib.machinery.ModuleSpec) -> types.ModuleType | None:
+        if self._module is None:
+            self._module = self._builder()
+        return self._module
+
+    def exec_module(self, module: types.ModuleType) -> None:
+        pass
+
+
+# ---------------------------------------------------------------------------
+# Collection Fingerprint Cache - Skip re-collection when tests haven't changed
+# ---------------------------------------------------------------------------
+_COLLECTION_CACHE_FILE = PROJECT_ROOT / ".pytest_cache" / "v" / "collection_fingerprint.json"
+
+
+# Cache the test fingerprint to avoid recomputing during the same session
+_cached_fingerprint: str | None = None
+
+
+def _compute_test_fingerprint(test_root: Path, *, force: bool = False) -> str:
+    """Compute a hash of test file mtimes for cache invalidation.
+
+    Results are cached for the duration of the session to avoid repeated
+    filesystem traversal.
+    """
+    global _cached_fingerprint
+    if _cached_fingerprint is not None and not force:
+        return _cached_fingerprint
+
+    hasher = hashlib.md5(usedforsecurity=False)
+    try:
+        for py_file in sorted(test_root.rglob("*.py")):
+            if "__pycache__" in str(py_file):
+                continue
+            stat = py_file.stat()
+            hasher.update(f"{py_file}:{stat.st_mtime_ns}".encode())
+    except Exception:
+        # Any error means we can't trust the cache
+        return ""
+    _cached_fingerprint = hasher.hexdigest()
+    return _cached_fingerprint
+
+
+def _load_collection_cache(config: "pytest.Config") -> list[str] | None:
+    """Load cached collection if fingerprint matches."""
+    if not config.getoption("--use-collection-cache", default=False):
+        return None
+
+    try:
+        if not _COLLECTION_CACHE_FILE.exists():
+            return None
+
+        cache_data = json.loads(_COLLECTION_CACHE_FILE.read_text())
+        current_fingerprint = _compute_test_fingerprint(PROJECT_ROOT / "tests")
+
+        if cache_data.get("fingerprint") != current_fingerprint:
+            return None
+
+        return cache_data.get("items", [])
+    except Exception:
+        return None
+
+
+def _save_collection_cache(items: list["pytest.Item"], *, enabled: bool) -> None:
+    """Save collection cache with fingerprint.
+
+    Args:
+        items: Test items to cache.
+        enabled: Only save if caching is enabled (avoids unnecessary I/O).
+    """
+    if not enabled:
+        return
+
+    try:
+        fingerprint = _compute_test_fingerprint(PROJECT_ROOT / "tests")
+        if not fingerprint:
+            return
+
+        _COLLECTION_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        _COLLECTION_CACHE_FILE.write_text(json.dumps({
+            "fingerprint": fingerprint,
+            "items": [item.nodeid for item in items],
+        }))
+    except Exception:
+        pass  # Cache save failure is non-fatal
 
 
 def _install_optional_dependency_stubs() -> None:
@@ -202,36 +353,49 @@ _EXAMPLE_COM_RESPONSES: dict[str, str] = {
 }
 
 
+# Unified suite configuration - drives CLI options, collection filtering, and fixture injection
 _SUITE_CONFIG: dict[str, dict[str, Any]] = {
     "schema": {
         "flag": "--schema",
         "help": "Enable schema-dependent tests (implied by --pgvector).",
         "implies": [],
+        "directories": {"db", "integration"},  # Skip these dirs when flag not set
+        "fixtures": ["schema_isolation"],  # Auto-inject these fixtures
     },
     "pgvector": {
         "flag": "--pgvector",
         "help": "Enable tests requiring a Postgres+pgvector container (implies --schema).",
         "implies": ["schema"],
+        "directories": {"pgvector", "ingest"},
+        "fixtures": ["pgvector_db"],
     },
     "contract": {
         "flag": "--contract",
         "help": "Enable contract tests validating API schemas.",
         "implies": [],
+        "directories": {"contracts"},
+        "fixtures": [],
     },
     "gpu": {
         "flag": "--gpu",
         "help": "Enable tests requiring GPU acceleration.",
         "implies": [],
+        "directories": {"gpu"},
+        "fixtures": [],
     },
     "redteam": {
         "flag": "--redteam",
         "help": "Enable adversarial LLM guardrail security tests.",
         "implies": [],
+        "directories": {"redteam"},
+        "fixtures": [],
     },
     "performance": {
         "flag": "--performance",
         "help": "Enable performance regression tests with timing assertions.",
         "implies": [],
+        "directories": {"perf"},
+        "fixtures": [],
     },
 }
 
@@ -333,11 +497,8 @@ def downgrade_ingestion_error_logs():
 class _BootstrapEmbeddingServiceStub:
     """Lightweight embedding backend used in bootstrap-oriented tests."""
 
-    def __init__(self) -> None:
-        from exegesis.application.facades.settings import get_settings
-
-        settings = get_settings()
-        self._dimension = settings.embedding_dim
+    def __init__(self, dimension: int = 768) -> None:
+        self._dimension = dimension
         self.embed_calls: list[tuple[tuple[str, ...], int]] = []
         self.clear_cache_calls = 0
 
@@ -355,14 +516,32 @@ class _BootstrapEmbeddingServiceStub:
     def clear_cache(self) -> None:
         self.clear_cache_calls += 1
 
+    def reset(self) -> None:
+        """Reset call tracking for test isolation."""
+        self.embed_calls.clear()
+        self.clear_cache_calls = 0
 
-@pytest.fixture(autouse=True)
-def _bootstrap_embedding_service_stub(monkeypatch: pytest.MonkeyPatch):
-    """Patch bootstrap to provide a deterministic embedding service stub."""
 
+# Session-scoped to avoid repeated imports of the embeddings module
+@pytest.fixture(scope="session")
+def _embedding_stub_session() -> tuple[types.ModuleType, _BootstrapEmbeddingServiceStub]:
+    """Import embeddings module once and create a shared stub instance."""
+    from exegesis.application.facades.settings import get_settings
     from exegesis.infrastructure.api.app.library.ingest import embeddings as embeddings_module
 
-    stub = _BootstrapEmbeddingServiceStub()
+    settings = get_settings()
+    stub = _BootstrapEmbeddingServiceStub(dimension=settings.embedding_dim)
+    return embeddings_module, stub
+
+
+@pytest.fixture(autouse=True)
+def _bootstrap_embedding_service_stub(
+    _embedding_stub_session: tuple[types.ModuleType, _BootstrapEmbeddingServiceStub],
+    monkeypatch: pytest.MonkeyPatch,
+) -> Iterator[_BootstrapEmbeddingServiceStub]:
+    """Patch bootstrap to provide a deterministic embedding service stub."""
+    embeddings_module, stub = _embedding_stub_session
+    stub.reset()  # Clear call history from previous test
     monkeypatch.setattr(embeddings_module, "get_embedding_service", lambda: stub)
     yield stub
 
@@ -372,7 +551,6 @@ def bootstrap_embedding_service_stub(
     _bootstrap_embedding_service_stub: _BootstrapEmbeddingServiceStub,
 ) -> _BootstrapEmbeddingServiceStub:
     """Return the bootstrap embedding service stub for explicit assertions."""
-
     return _bootstrap_embedding_service_stub
 
 
@@ -498,16 +676,24 @@ def _require_application_factory() -> None:
 
 pytest_plugins: list[str] = ["celery.contrib.pytest"]
 
-if os.environ.get("EXEGESIS_SKIP_HEAVY_FIXTURES", "0") not in {"1", "true", "TRUE"}:
-    try:
-        import pydantic  # type: ignore  # noqa: F401
-    except ModuleNotFoundError:  # pragma: no cover - exercised in lightweight envs
+# Conditionally load heavy fixtures based on environment
+_SKIP_HEAVY = os.environ.get("EXEGESIS_SKIP_HEAVY_FIXTURES", "0") in {"1", "true", "TRUE"}
+
+# Check if real pydantic is installed (not just our stub) for heavy fixtures
+_REAL_PYDANTIC_AVAILABLE = importlib.util.find_spec("pydantic") is not None
+
+if not _SKIP_HEAVY:
+    if not _REAL_PYDANTIC_AVAILABLE:  # pragma: no cover - exercised in lightweight envs
         warnings.warn(
             "pydantic not installed; skipping heavy pytest fixtures that depend on it.",
             RuntimeWarning,
         )
     else:
         pytest_plugins.append("tests.fixtures.mocks")
+        # Note: tests/fixtures/heavy.py contains extracted heavy fixtures for future
+        # refactoring. Currently, heavy fixtures remain in this file for compatibility.
+        # To use the separated heavy fixtures, manually add to pytest_plugins:
+        # pytest_plugins.append("tests.fixtures.heavy")
 
 try:  # pragma: no cover - optional dependency in local test harness
     import pytest_cov  # type: ignore  # noqa: F401
@@ -568,32 +754,47 @@ def _register_xdist_plugin(pluginmanager: pytest.PluginManager) -> bool:
 
 
 def pytest_ignore_collect(collection_path: Path, config: pytest.Config) -> bool:
-    """Skip heavy test directories when running in fast mode."""
-    if not config.getoption("--fast", default=False):
-        return False
+    """Skip heavy test directories based on --fast mode and suite flags.
 
-    # List of directories to ignore in fast mode
-    heavy_dirs = {
-        "api",
-        "integration",
-        "ingest",
-        "contracts",
-        "workers",
-        "redteam",
-        "perf",
-        "ranking",
-        "e2e",
-    }
+    This provides early filtering before AST parsing, saving significant time
+    when running subsets of the test suite.
+    """
+    is_fast = config.getoption("--fast", default=False)
+    is_collect_only = config.option.collect_only if hasattr(config.option, "collect_only") else False
 
-    # Check if the current path is a directory we want to ignore
-    # We check if any part of the path relative to 'tests' matches
-    try:
-        rel_path = collection_path.relative_to(config.rootpath / "tests")
-        if rel_path.parts[0] in heavy_dirs:
-            return True
-    except ValueError:
-        # Not under tests/, ignore check
-        pass
+    # --fast mode: skip heavy test directories entirely
+    if is_fast:
+        fast_skip_dirs = {
+            "api",
+            "integration",
+            "ingest",
+            "contracts",
+            "workers",
+            "redteam",
+            "perf",
+            "ranking",
+            "e2e",
+        }
+        try:
+            rel_path = collection_path.relative_to(config.rootpath / "tests")
+            if rel_path.parts and rel_path.parts[0] in fast_skip_dirs:
+                return True
+        except ValueError:
+            pass
+
+    # Pre-filter by suite configuration: skip directories for disabled suites
+    # This avoids parsing test files that will be skipped anyway
+    if not is_collect_only:  # Don't filter during --collect-only to show full tree
+        try:
+            rel_path = collection_path.relative_to(config.rootpath / "tests")
+            if rel_path.parts:
+                first_part = rel_path.parts[0]
+                for marker, conf in _SUITE_CONFIG.items():
+                    if not config.getoption(marker, default=False):
+                        if first_part in conf.get("directories", set()):
+                            return True
+        except ValueError:
+            pass
 
     return False
 
@@ -606,6 +807,12 @@ def pytest_addoption(parser: pytest.Parser) -> None:
         action="store_true",
         default=False,
         help="Skip heavy integration tests and use stubs for faster collection/execution.",
+    )
+    parser.addoption(
+        "--use-collection-cache",
+        action="store_true",
+        default=False,
+        help="Use cached test collection when source files haven't changed.",
     )
 
     if not _HAS_PYTEST_COV:
@@ -653,6 +860,11 @@ def pytest_configure(config: pytest.Config) -> None:
     behavior.
     """
 
+    # --collect-only fast path: skip heavy fixture setup for faster discovery
+    is_collect_only = getattr(config.option, "collect_only", False)
+    if is_collect_only:
+        os.environ["EXEGESIS_SKIP_HEAVY_FIXTURES"] = "1"
+
     # Handle implications: e.g. --pgvector implies --schema
     for marker, conf in _SUITE_CONFIG.items():
         if config.getoption(marker):
@@ -666,13 +878,14 @@ def pytest_configure(config: pytest.Config) -> None:
         if not hasattr(config.option, "timeout") or config.option.timeout is None:
             config.option.timeout = 60
 
-    if _register_randomly_plugin(config.pluginmanager):
+    # Configure pytest-randomly seed (plugin already registered in pytest_load_initial_conftests)
+    if config.pluginmanager.hasplugin("randomly"):
         config.option.randomly_seed = 1337
 
-    # In fast mode, disable xdist to avoid startup overhead,
-    # unless explicitly requested via -n
-    if not is_fast:
-        _register_xdist_plugin(config.pluginmanager)
+    # In fast mode, unregister xdist to avoid startup overhead
+    if is_fast and config.pluginmanager.hasplugin("xdist"):
+        with contextlib.suppress(ValueError):
+            config.pluginmanager.unregister(name="xdist")
 
     config.addinivalue_line(
         "markers",
@@ -691,61 +904,103 @@ def pytest_configure(config: pytest.Config) -> None:
     for marker, conf in _SUITE_CONFIG.items():
         config.addinivalue_line("markers", f"{marker}: {conf['help']}")
 
+    config.addinivalue_line(
+        "markers",
+        "reset_state: reset global facade state before/after test (database, settings, telemetry).",
+    )
 
-def _resolve_xdist_group(item: pytest.Item) -> str | None:
-    """Resolve the xdist group for a test item."""
-    # Group by module path to ensure tests in the same file run in the same worker
-    return str(item.path)
+
+def _get_usefixtures(item: pytest.Item) -> set[str]:
+    """Extract all fixture names from usefixtures markers on an item."""
+    fixtures: set[str] = set()
+    for marker in item.iter_markers(name="usefixtures"):
+        for arg in marker.args:
+            fixtures.add(arg)
+    return fixtures
+
+
+def _get_xdist_groups(item: pytest.Item) -> set[str]:
+    """Extract all xdist group names from an item."""
+    return {
+        marker.kwargs.get("name")
+        for marker in item.iter_markers(name="xdist_group")
+        if marker.kwargs.get("name")
+    }
 
 
 def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
-    """Skip tests that require disabled suite options and apply auto-fixtures."""
+    """Skip tests that require disabled suite options and apply auto-fixtures.
 
-    skip_markers = {}
+    Uses batched marker operations for improved performance.
+    """
+    # Build skip markers for disabled suites
+    skip_markers: dict[str, pytest.Mark] = {}
+    enabled_suites: set[str] = set()
     for marker, conf in _SUITE_CONFIG.items():
-        if not config.getoption(marker):
+        if config.getoption(marker):
+            enabled_suites.add(marker)
+        else:
             skip_markers[marker] = pytest.mark.skip(reason=f"requires {conf['flag']} flag")
 
     has_xdist = config.pluginmanager.hasplugin("xdist")
 
+    # Process items with batched marker operations
     for item in items:
+        markers_to_add: list[pytest.Mark] = []
+
+        # 1. Apply skip markers for disabled suites
         for marker, skip_mark in skip_markers.items():
             if marker in item.keywords:
-                item.add_marker(skip_mark)
+                markers_to_add.append(skip_mark)
 
-        # Auto-attach schema_isolation fixture to @pytest.mark.schema tests
-        # This ensures all schema-marked tests automatically get transactional DB isolation
-        if "schema" in item.keywords and "schema" not in skip_markers:
-            existing_fixtures = {
-                marker.args[0] if marker.args else None
-                for marker in item.iter_markers(name="usefixtures")
-            }
-            if "schema_isolation" not in existing_fixtures:
-                item.add_marker(pytest.mark.usefixtures("schema_isolation"))
+        # 2. Auto-inject fixtures for enabled suites
+        existing_fixtures = _get_usefixtures(item)
+        for suite in enabled_suites:
+            if suite in item.keywords:
+                for fixture in _SUITE_CONFIG[suite].get("fixtures", []):
+                    if fixture not in existing_fixtures:
+                        markers_to_add.append(pytest.mark.usefixtures(fixture))
+                        existing_fixtures.add(fixture)
 
+        # 3. Handle special markers (memcheck, reset_state)
         if not _ENABLE_MEMCHECK and item.get_closest_marker("memcheck"):
-            item.add_marker(pytest.mark.usefixtures("manage_memory"))
+            if "manage_memory" not in existing_fixtures:
+                markers_to_add.append(pytest.mark.usefixtures("manage_memory"))
 
+        if item.get_closest_marker("reset_state"):
+            if "reset_global_state" not in existing_fixtures:
+                markers_to_add.append(pytest.mark.usefixtures("reset_global_state"))
+
+        # 4. xdist grouping - group by module path for locality
         if has_xdist:
-            group_name = _resolve_xdist_group(item)
-            if group_name is None:
-                continue
+            path_str = str(item.path)
+            if path_str not in _get_xdist_groups(item):
+                markers_to_add.append(pytest.mark.xdist_group(name=path_str))
 
-            existing_groups = {
-                marker.kwargs.get("name")
-                for marker in item.iter_markers(name="xdist_group")
-            }
-            if group_name not in existing_groups:
-                item.add_marker(pytest.mark.xdist_group(name=group_name))
+        # Apply all markers at once
+        for marker in markers_to_add:
+            item.add_marker(marker)
+
+    # Save collection cache for future runs (only if caching is enabled)
+    _save_collection_cache(items, enabled=config.getoption("--use-collection-cache", default=False))
 
 
 def pytest_load_initial_conftests(
     early_config: pytest.Config, parser: pytest.Parser, args: list[str]
 ) -> None:
-    """Ensure required plugins are available before parsing ini options."""
+    """Ensure required plugins are available before parsing ini options.
 
-    _register_randomly_plugin(early_config.pluginmanager)
-    _register_xdist_plugin(early_config.pluginmanager)
+    Note: Sequential imports are used since ThreadPoolExecutor overhead exceeds
+    any benefit for just 2 small plugin modules.
+    """
+    pluginmanager = early_config.pluginmanager
+
+    # Register pytest-randomly if available (for deterministic test ordering)
+    _register_randomly_plugin(pluginmanager)
+
+    # Register pytest-xdist if available (for parallel execution)
+    # Only register here if not in --fast mode (checked later in configure)
+    _register_xdist_plugin(pluginmanager)
 
 
 @pytest.fixture
@@ -960,7 +1215,7 @@ def _load_model_from_registry(model_name: str) -> Any:
 
 def _sqlite_database_url(tmp_path_factory: pytest.TempPathFactory) -> Iterator[str]:
     """Create a SQLite database URL with migrations applied."""
-    from exegesis.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
+    from exegesis.infrastructure.api.app.db import run_sql_migrations as migrations_module
     from exegesis.application.facades.database import Base
 
     database_dir = tmp_path_factory.mktemp("sqlite", numbered=True)
@@ -972,24 +1227,18 @@ def _sqlite_database_url(tmp_path_factory: pytest.TempPathFactory) -> Iterator[s
     try:
         # First create all tables from models
         Base.metadata.create_all(bind=engine)
-        # Then run migrations to ensure schema is up-to-date
-        migrations_module = importlib.import_module(
-            "exegesis.infrastructure.api.app.db.run_sql_migrations"
-        )
+
+        # Temporarily disable performance indexes for SQLite (they may use PG-specific syntax)
         original_index_helper = getattr(
             migrations_module, "_ensure_performance_indexes", None
         )
         try:
             if original_index_helper is not None:
-                migrations_module._ensure_performance_indexes = (  # type: ignore[attr-defined]
-                    lambda _engine: []
-                )
-            run_sql_migrations(engine)
+                migrations_module._ensure_performance_indexes = lambda _engine: []  # type: ignore[attr-defined]
+            migrations_module.run_sql_migrations(engine)
         finally:
             if original_index_helper is not None:
-                migrations_module._ensure_performance_indexes = (  # type: ignore[attr-defined]
-                    original_index_helper
-                )
+                migrations_module._ensure_performance_indexes = original_index_helper  # type: ignore[attr-defined]
         yield url
     finally:
         engine.dispose()
@@ -1130,14 +1379,15 @@ def _set_database_url_env(
     Several subsystems rely on the ``DATABASE_URL`` environment variable during
     initialisation. Setting it once per test session avoids repeated fixture
     setup work while still restoring any pre-existing value afterwards.
-    """
 
-    # Only set if we are running integration tests that might need it.
-    # For now, we just check if we are in a test session that hasn't explicitly opted out.
-    # Or simpler: just do it if integration_database_url is instantiated?
-    # But this is autouse.
-    # Let's just skip if we are in "fast" mode maybe?
-    if pytestconfig.getoption("--fast", default=False):
+    Only activates when ``--schema`` or ``--pgvector`` flags are provided,
+    avoiding expensive database setup for unit test runs.
+    """
+    # Skip database setup entirely for fast mode or when no schema tests are requested
+    is_fast = pytestconfig.getoption("--fast", default=False)
+    needs_schema = pytestconfig.getoption("schema", default=False)
+
+    if is_fast or not needs_schema:
         yield
         return
 
@@ -1296,13 +1546,14 @@ def _do_reset_global_state(*, skip_database: bool = False) -> None:
         pass
 
 
-@pytest.fixture(autouse=True)
-def _reset_global_state(request: pytest.FixtureRequest) -> Generator[None, None, None]:
+@pytest.fixture
+def reset_global_state(request: pytest.FixtureRequest) -> Generator[None, None, None]:
     """Reset all facade global state before and after each test.
 
-    Many tests directly manipulate global singletons like ``database_module._engine``
-    and ``telemetry_module._provider``. This fixture ensures those changes don't leak
-    between tests by resetting state both before and after each test runs.
+    Use this fixture (or the ``@pytest.mark.reset_state`` marker) for tests that
+    directly manipulate global singletons like ``database_module._engine`` and
+    ``telemetry_module._provider``. This ensures those changes don't leak between
+    tests by resetting state both before and after each test runs.
 
     Note: If the test uses the ``api_engine`` fixture, we skip resetting database
     state since that fixture manages its own database session override.

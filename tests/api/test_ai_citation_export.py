@@ -71,6 +71,10 @@ def _ledger_value() -> str:
 def module_api_engine(
     tmp_path_factory: pytest.TempPathFactory, _api_engine_template: Path
 ) -> Generator[Engine, None, None]:
+    # Save original global state to restore after module tests
+    original_engine = database_module._engine
+    original_session_local = database_module._SessionLocal
+
     database_path = tmp_path_factory.mktemp("ai-citation-export") / "api.sqlite"
     shutil.copy2(_api_engine_template, database_path)
     configure_engine(f"sqlite:///{database_path}")
@@ -81,8 +85,9 @@ def module_api_engine(
     finally:
         if engine is not None:
             engine.dispose()
-        database_module._engine = None  # type: ignore[attr-defined]
-        database_module._SessionLocal = None  # type: ignore[attr-defined]
+        # Restore original state instead of nullifying
+        database_module._engine = original_engine  # type: ignore[attr-defined]
+        database_module._SessionLocal = original_session_local  # type: ignore[attr-defined]
 
 
 @pytest.fixture(scope="module")

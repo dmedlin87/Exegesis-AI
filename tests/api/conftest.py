@@ -305,6 +305,7 @@ _register_sklearn_stubs()
 
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -317,11 +318,48 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from exegesis.infrastructure.api.app.main import app
-from exegesis.infrastructure.api.app.db import run_sql_migrations as migrations_module
-from exegesis.application.facades import database as database_module
-from exegesis.application.facades.database import Base, configure_engine, get_engine
-from exegesis.infrastructure.api.app.adapters.security import require_principal
+# Lazy imports: avoid triggering FastAPI app initialization at module load time.
+# These are imported inside fixtures when actually needed.
+if TYPE_CHECKING:  # pragma: no cover - type checking only
+    from fastapi import FastAPI
+    from exegesis.infrastructure.api.app.db import run_sql_migrations as migrations_module
+    from exegesis.application.facades import database as database_module
+    from exegesis.application.facades.database import Base
+
+# Cache for lazily loaded app and modules
+_app_cache: dict[str, object] = {}
+
+
+def _get_app() -> "FastAPI":
+    """Lazily import and cache the FastAPI app."""
+    if "app" not in _app_cache:
+        from exegesis.infrastructure.api.app.main import app
+        _app_cache["app"] = app
+    return _app_cache["app"]  # type: ignore[return-value]
+
+
+def _get_require_principal():
+    """Lazily import and cache the require_principal dependency."""
+    if "require_principal" not in _app_cache:
+        from exegesis.infrastructure.api.app.adapters.security import require_principal
+        _app_cache["require_principal"] = require_principal
+    return _app_cache["require_principal"]
+
+
+def _get_base():
+    """Lazily import and cache the SQLAlchemy Base."""
+    if "Base" not in _app_cache:
+        from exegesis.application.facades.database import Base
+        _app_cache["Base"] = Base
+    return _app_cache["Base"]
+
+
+def _get_migrations_module():
+    """Lazily import and cache the migrations module."""
+    if "migrations_module" not in _app_cache:
+        from exegesis.infrastructure.api.app.db import run_sql_migrations as migrations_module
+        _app_cache["migrations_module"] = migrations_module
+    return _app_cache["migrations_module"]
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -394,6 +432,9 @@ def _bypass_authentication(request: pytest.FixtureRequest):
         yield
         return
 
+    app = _get_app()
+    require_principal = _get_require_principal()
+
     def _principal_override(fastapi_request: FastAPIRequest):
         principal = {"method": "override", "subject": "test"}
         fastapi_request.state.principal = principal
@@ -431,7 +472,7 @@ def _disable_migrations(
         return []
 
     monkeypatch.setattr(
-        migrations_module,
+        _get_migrations_module(),
         "run_sql_migrations",
         _noop_run_sql_migrations,
     )
@@ -444,12 +485,20 @@ def _disable_migrations(
 
 
 @pytest.fixture(scope="session", autouse=True)
-def _skip_heavy_startup() -> None:
+def _skip_heavy_startup(_api_engine_template, _shared_api_engine) -> None:
+    """Disable expensive FastAPI lifespan setup steps for API tests.
+
+    Depends on _api_engine_template and _shared_api_engine to ensure the
+    template is created and engine is available for lifespan to use.
+    """
     monkeypatch = pytest.MonkeyPatch()
-    """Disable expensive FastAPI lifespan setup steps for API tests."""
 
     from sqlalchemy import text as _sql_text
     from exegesis.infrastructure.api.app.db import seeds as _seeds_module
+    from exegesis.application.facades import database as database_module
+
+    # Ensure the shared engine is set before any lifespan runs
+    database_module._engine = _shared_api_engine
 
     original_seed_reference_data = _seeds_module.seed_reference_data
 
@@ -518,6 +567,7 @@ def _api_engine_template(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Materialise a migrated SQLite database once per test session."""
     from exegesis.infrastructure.api.app.db.run_sql_migrations import run_sql_migrations
 
+    Base = _get_base()
     template_dir = tmp_path_factory.mktemp("api-engine-template")
     template_path = template_dir / "api.sqlite"
     engine = create_engine(f"sqlite:///{template_path}", future=True)
@@ -538,45 +588,68 @@ def _shared_api_engine(_api_engine_template: Path):
 
 
 @pytest.fixture()
-def api_engine(_shared_api_engine):
-    """Provide a transaction-isolated database environment.
+def api_engine(_api_engine_template, tmp_path, request):
+    """Provide a fresh database for each test by copying the template.
 
-    Instead of creating a new database file per test, this fixture:
-    1. Connects to the shared session-scoped engine
-    2. Starts a transaction
-    3. Uses nested transactions (SAVEPOINT) to isolate app commits
-    4. Overrides get_session to use a session bound to this transaction
-    5. Rolls back the transaction at teardown
+    This fixture:
+    1. Copies the template database to a temp location for this test
+    2. Creates a new engine connected to the copy
+    3. Overrides both get_engine and get_session to use this engine
+    4. Disposes the engine at teardown
 
-    This mimics a fresh database for every test but is much faster (~instant).
+    While slightly slower than transaction rollback, this ensures complete isolation.
     """
-    from sqlalchemy import event
     from sqlalchemy.orm import Session
     from exegesis.application.facades import database as database_module
+    # Import get_session directly to get the exact function object used by Depends()
+    from exegesis.application.facades.database import get_session as route_get_session
 
-    connection = _shared_api_engine.connect()
-    transaction = connection.begin()
-    session = Session(bind=connection, join_transaction_mode="create_savepoint")
+    # Copy template to get a fresh database
+    test_db = tmp_path / "api_test.sqlite"
+    shutil.copy(_api_engine_template, test_db)
+
+    engine = create_engine(f"sqlite:///{test_db}", future=True)
+    session = Session(bind=engine)
+
+    # Store session on request for api_session fixture access
+    request.node._api_session = session
+
+    app = _get_app()
+
+    # Store original state
+    original_engine = database_module._engine
+    original_module_get_session = database_module.get_session
+
+    # Override global _engine so that lifespan's get_engine() returns our engine
+    database_module._engine = engine
 
     # Override global get_session for direct usage in fixtures/tests
     def _stub_get_session():
         yield session
 
-    original_get_session = database_module.get_session
     database_module.get_session = _stub_get_session
 
     # Override FastAPI dependency for route handlers
-    # Note: We key off the *original* function object because that's what Depends uses
-    app.dependency_overrides[original_get_session] = _stub_get_session
+    # Use the imported function object which is what routes bind to via Depends()
+    app.dependency_overrides[route_get_session] = _stub_get_session
 
     try:
-        yield connection
+        yield engine
     finally:
-        app.dependency_overrides.pop(original_get_session, None)
-        database_module.get_session = original_get_session
+        app.dependency_overrides.pop(route_get_session, None)
+        database_module.get_session = original_module_get_session
+        database_module._engine = original_engine
         session.close()
-        transaction.rollback()
-        connection.close()
+        engine.dispose()
+
+
+@pytest.fixture()
+def api_session(api_engine, request):
+    """Provide direct access to the transaction-isolated session.
+
+    Use this fixture in test data setup to ensure data is visible to API routes.
+    """
+    return request.node._api_session
 
 
 @pytest.fixture(scope="session")
@@ -585,18 +658,21 @@ def _global_test_client() -> Iterator[TestClient]:
 
     This avoids the overhead of running FastAPI startup/shutdown events for every test.
     """
+    app = _get_app()
     with TestClient(app) as client:
         yield client
 
 
 @pytest.fixture()
-def api_test_client(api_engine, _global_test_client) -> TestClient:
-    """Yield a ``TestClient`` bound to the isolated transaction.
+def api_test_client(api_engine) -> Iterator[TestClient]:
+    """Yield a fresh ``TestClient`` for each test with DB isolation.
 
-    This fixture ensures:
-    1. The DB transaction is active (via api_engine)
-    2. The global TestClient is reused (via _global_test_client)
+    Creates a new TestClient per test to ensure dependency overrides from
+    api_engine are properly applied. We don't trigger lifespan events here
+    since the global client already did that at session start.
     """
-    # api_engine fixture handles the dependency overrides on the app
-    # The shared client will see these overrides because they are set on the app instance
-    return _global_test_client
+    app = _get_app()
+    # Create client without triggering lifespan (raise_server_exceptions=False
+    # is unrelated but useful for testing error responses)
+    with TestClient(app, raise_server_exceptions=False) as client:
+        yield client

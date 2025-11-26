@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from exegesis.application.retrieval.embeddings.rebuild_service import EmbeddingRebuildService
+from exegesis.application.retrieval.embeddings.rebuild_service import (
+    EmbeddingRebuildService,
+    LazyEmbeddingBackend,
+)
 from exegesis.adapters import AdapterRegistry
 from exegesis.domain import Document, DocumentId, DocumentMetadata
 from exegesis.application.services import bootstrap as bootstrap_module
@@ -111,7 +114,8 @@ def test_resolve_application_wires_container(
 
     rebuild_service = registry.resolve("embedding_rebuild_service")
     assert isinstance(rebuild_service, EmbeddingRebuildService)
-    assert rebuild_service._embedding_service is bootstrap_embedding_service_stub
+    # The embedding service is wrapped in LazyEmbeddingBackend for deferred initialization
+    assert isinstance(rebuild_service._embedding_service, LazyEmbeddingBackend)
 
 
 def test_resolve_application_caches_results():
@@ -143,7 +147,8 @@ def test_resolve_application_exposes_embedding_rebuild_service(
 
     rebuild_service = registry.resolve("embedding_rebuild_service")
     assert isinstance(rebuild_service, EmbeddingRebuildService)
-    assert rebuild_service._embedding_service is bootstrap_embedding_service_stub
+    # The embedding service is wrapped in LazyEmbeddingBackend for deferred initialization
+    assert isinstance(rebuild_service._embedding_service, LazyEmbeddingBackend)
 
     sample_vectors = rebuild_service._embedding_service.embed(
         ["Genesis 1:1"], batch_size=1

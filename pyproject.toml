@@ -184,6 +184,7 @@ markers = [
     "performance: benchmark-style performance checks",
     "flaky: known-intermittent tests",
     "xdist_group: marker for grouping tests by xdist",
+    "reset_state: reset global facade state (database, settings, telemetry) before/after test",
 ]
 filterwarnings = [
     "ignore:jsonschema.exceptions.RefResolutionError is deprecated:DeprecationWarning",

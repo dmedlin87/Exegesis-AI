@@ -10,17 +10,9 @@ from exegesis.adapters.persistence.models import Document, Passage
 
 
 @pytest.fixture
-def sample_document(api_engine) -> str:
+def sample_document(api_session) -> str:
     """Create a sample document for testing."""
-    from exegesis.application.facades.database import get_session
-
-    session = next(get_session())
-
-    # Ensure idempotency: delete if exists (in case of dirty DB from failed tests)
-    existing = session.get(Document, "test-doc-1")
-    if existing:
-        session.delete(existing)
-        session.commit()
+    session = api_session
 
     doc = Document(
         id="test-doc-1",
@@ -31,7 +23,7 @@ def sample_document(api_engine) -> str:
         abstract="Test abstract content",
     )
     session.add(doc)
-    session.commit()
+    session.flush()
 
     # Add a passage
     passage = Passage(
@@ -40,7 +32,7 @@ def sample_document(api_engine) -> str:
         text="Sample passage content for testing.",
     )
     session.add(passage)
-    session.commit()
+    session.flush()  # Flush only, let the outer transaction handle cleanup
 
     yield "test-doc-1"
 

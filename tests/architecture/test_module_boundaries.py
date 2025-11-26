@@ -100,6 +100,8 @@ def test_application_depends_only_on_domain_and_platform() -> None:
         "exegesis.application",
         "exegesis.domain",
         "exegesis.adapters",
+        # Deprecated shims are allowed to import from exegesis.services for backwards-compat
+        "exegesis.services",
     )
     forbidden_prefixes = ("exegesis.infrastructure",)
     for path in _iter_python_files("exegesis.application"):

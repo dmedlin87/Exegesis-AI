@@ -16,6 +16,16 @@ def test_allow_insecure_startup_requires_non_production_env(
     module = importlib.reload(facades_runtime)
     module.allow_insecure_startup.cache_clear()
 
+    # Clear all env vars that _resolve_environment checks (in priority order)
+    for var in (
+        "THEORIA_ENVIRONMENT",
+        "THEO_ENVIRONMENT",
+        "EXEGESIS_ENVIRONMENT",
+        "ENVIRONMENT",
+        "EXEGESIS_PROFILE",
+    ):
+        monkeypatch.delenv(var, raising=False)
+
     monkeypatch.setenv("EXEGESIS_ALLOW_INSECURE_STARTUP", "true")
     monkeypatch.setenv("EXEGESIS_ENVIRONMENT", "development")
     assert module.allow_insecure_startup() is True

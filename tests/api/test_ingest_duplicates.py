@@ -30,6 +30,10 @@ from exegesis.infrastructure.api.app.main import app  # noqa: E402
 
 @pytest.fixture(scope="module")
 def ingest_test_env(tmp_path_factory: pytest.TempPathFactory):
+    # Save original global state to restore after module tests
+    original_engine = database_module._engine
+    original_session_local = database_module._SessionLocal
+
     tmp_dir = tmp_path_factory.mktemp("ingest-db")
     storage_root = tmp_path_factory.mktemp("ingest-storage")
     db_path = tmp_dir / "ingest.db"
@@ -63,8 +67,9 @@ def ingest_test_env(tmp_path_factory: pytest.TempPathFactory):
         app.dependency_overrides.pop(get_session, None)
         settings.storage_root = original_storage
         engine.dispose()
-        database_module._engine = None  # type: ignore[attr-defined]
-        database_module._SessionLocal = None  # type: ignore[attr-defined]
+        # Restore original state instead of nullifying
+        database_module._engine = original_engine  # type: ignore[attr-defined]
+        database_module._SessionLocal = original_session_local  # type: ignore[attr-defined]
 
 
 @pytest.fixture()
