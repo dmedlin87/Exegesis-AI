@@ -1,4 +1,5 @@
 import React from 'react';
+import { FALLBACK_COPY, METRIC_LABELS, METRIC_UNITS, STATUS_COPY } from '../constants/ui';
 import type { ServiceMetrics } from '../types';
 import { formatUptime } from '../utils/metrics';
 
@@ -9,7 +10,7 @@ interface MetricCardProps {
 
 export const MetricCard: React.FC<MetricCardProps> = ({ serviceName, data }) => {
   const isHealthy = data.theoria_service_status === 1;
-  const status = isHealthy ? 'Healthy' : 'Degraded';
+  const status = isHealthy ? STATUS_COPY.healthy : STATUS_COPY.degraded;
   const statusClass = isHealthy ? 'healthy' : 'degraded';
   const restarts = data.theoria_service_restarts ?? 0;
   const avgResponse = data.theoria_service_average_response_ms ?? 0;
@@ -28,51 +29,51 @@ export const MetricCard: React.FC<MetricCardProps> = ({ serviceName, data }) => 
       </div>
       <div className="metrics-grid">
         <div className="metric">
-          <span className="metric-label">Uptime</span>
+          <span className="metric-label">{METRIC_LABELS.uptime}</span>
           <span className="metric-value">
             {formatUptime(data.theoria_service_uptime_seconds ?? 0)}
           </span>
         </div>
         <div className="metric">
-          <span className="metric-label">Restarts</span>
+          <span className="metric-label">{METRIC_LABELS.restarts}</span>
           <span className={`metric-value ${restarts > 0 ? 'warning' : ''}`}>
             {restarts}
           </span>
         </div>
         <div className="metric">
-          <span className="metric-label">Avg Response</span>
+          <span className="metric-label">{METRIC_LABELS.avgResponse}</span>
           <span
             className={`metric-value ${
               avgResponse > 500 ? 'warning' : avgResponse > 1000 ? 'danger' : ''
             }`}
           >
             {avgResponse.toFixed(1)}
-            <span className="metric-icon">ms</span>
+            <span className="metric-icon">{METRIC_UNITS.milliseconds}</span>
           </span>
         </div>
         <div className="metric">
-          <span className="metric-label">Last Response</span>
+          <span className="metric-label">{METRIC_LABELS.lastResponse}</span>
           <span className="metric-value">
             {(data.theoria_service_last_response_ms ?? 0).toFixed(1)}
-            <span className="metric-icon">ms</span>
+            <span className="metric-icon">{METRIC_UNITS.milliseconds}</span>
           </span>
         </div>
         <div className="metric">
-          <span className="metric-label">CPU Time</span>
+          <span className="metric-label">{METRIC_LABELS.cpuTime}</span>
           <span className="metric-value">
             {(data.theoria_service_cpu_seconds_total ?? 0).toFixed(1)}
-            <span className="metric-icon">s</span>
+            <span className="metric-icon">{METRIC_UNITS.seconds}</span>
           </span>
         </div>
         <div className="metric">
-          <span className="metric-label">Memory</span>
+          <span className="metric-label">{METRIC_LABELS.memory}</span>
           <span
             className={`metric-value ${
               memoryMB > 500 ? 'warning' : memoryMB > 1000 ? 'danger' : ''
             }`}
           >
-            {memoryMB > 0 ? memoryMB.toFixed(0) : 'N/A'}
-            {memoryMB > 0 && <span className="metric-icon">MB</span>}
+            {memoryMB > 0 ? memoryMB.toFixed(0) : FALLBACK_COPY.notAvailable}
+            {memoryMB > 0 && <span className="metric-icon">{METRIC_UNITS.megabytes}</span>}
           </span>
         </div>
       </div>

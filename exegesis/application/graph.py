@@ -34,10 +34,20 @@ class NullGraphProjector:
 
     __slots__ = ()
 
-    def project_document(self, projection: GraphDocumentProjection) -> None:  # noqa: D401
+    def project_document(self, projection: GraphDocumentProjection) -> None:
+        """No-op projection; discards the input.
+
+        Args:
+            projection: Document projection payload to discard.
+        """
         return None
 
-    def remove_document(self, document_id: str) -> None:  # noqa: D401
+    def remove_document(self, document_id: str) -> None:
+        """No-op removal; takes no action.
+
+        Args:
+            document_id: Identifier of the document to ignore.
+        """
         return None
 
 

@@ -5,6 +5,7 @@ import pytest
 
 from exegesis.application.facades import resilience as resilience_facade
 from exegesis.application.core.resilience import ResilienceError, ResilienceSettings
+from exegesis.domain.errors import ValidationError
 from exegesis.infrastructure.api.app.adapters import resilience as resilience_adapter
 
 
@@ -120,10 +121,11 @@ def test_resilient_operation_circuit_breaker(monkeypatch):
 
 
 def test_resilient_operation_requires_positive_attempts():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError) as exc_info:
         resilience_adapter.CircuitBreakerResiliencePolicy(
             ResilienceSettings(max_attempts=0)
         )
+    assert exc_info.value.field == "max_attempts"
 
 
 def test_resilient_async_operation_success():

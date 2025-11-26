@@ -2,6 +2,7 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
+from exegesis.domain.errors import ValidationError
 from exegesis.domain.references import ScriptureReference
 
 
@@ -36,8 +37,9 @@ def test_to_range_handles_partial_bounds():
 
 
 def test_constructor_rejects_empty_osis_id():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError) as exc_info:
         ScriptureReference("")
+    assert exc_info.value.field == "osis_id"
 
 
 def test_references_support_equality_and_value_semantics():

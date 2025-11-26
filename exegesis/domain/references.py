@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from exegesis.domain.errors import ValidationError
+
 
 @dataclass(frozen=True, slots=True)
 class ScriptureReference:
@@ -14,7 +16,7 @@ class ScriptureReference:
 
     def __post_init__(self) -> None:  # pragma: no cover - defensive check
         if not self.osis_id:
-            raise ValueError("osis_id must be non-empty")
+            raise ValidationError("osis_id must be non-empty", field="osis_id")
 
     def to_range(self) -> str:
         """Return a human-friendly representation of the verse range."""

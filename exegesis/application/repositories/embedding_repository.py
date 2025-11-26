@@ -38,10 +38,12 @@ class PassageEmbeddingRepository(ABC):
         ids: Sequence[str] | None,
     ) -> int:
         """Return number of passages matching the rebuild criteria."""
+        raise NotImplementedError
 
     @abstractmethod
     def existing_ids(self, ids: Sequence[str]) -> set[str]:
         """Return the subset of *ids* that exist in persistence."""
+        raise NotImplementedError
 
     @abstractmethod
     def fetch_candidates(
@@ -54,10 +56,12 @@ class PassageEmbeddingRepository(ABC):
         after_id: str | None = None,
     ) -> Sequence[PassageForEmbedding]:
         """Return a batch of passages requiring embedding updates."""
+        raise NotImplementedError
 
     @abstractmethod
     def update_embeddings(self, updates: Sequence[EmbeddingUpdate]) -> None:
         """Persist the provided embedding vectors for each passage."""
+        raise NotImplementedError
 
 
 Metadata = Mapping[str, object]

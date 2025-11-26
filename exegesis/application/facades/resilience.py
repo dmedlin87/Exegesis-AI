@@ -7,7 +7,7 @@ from typing import Awaitable, Callable, Optional, TypeVar
 
 from ..core.resilience import ResilienceError, ResilienceMetadata, ResiliencePolicy, ResilienceSettings
 
-T = TypeVar("T")
+ResultT = TypeVar("ResultT")
 
 _factory: Callable[[ResilienceSettings], ResiliencePolicy] | None = None
 
@@ -27,11 +27,11 @@ class _NoOpResiliencePolicy:
 
     def run(
         self,
-        operation: Callable[[], T],
+        operation: Callable[[], ResultT],
         *,
         key: str,
         classification: str,
-    ) -> tuple[T, ResilienceMetadata]:
+    ) -> tuple[ResultT, ResilienceMetadata]:
         start_time = time.perf_counter()
         result = operation()
         duration = time.perf_counter() - start_time
@@ -48,11 +48,11 @@ class _NoOpResiliencePolicy:
 
     async def run_async(
         self,
-        operation: Callable[[], Awaitable[T]],
+        operation: Callable[[], Awaitable[ResultT]],
         *,
         key: str,
         classification: str,
-    ) -> tuple[T, ResilienceMetadata]:
+    ) -> tuple[ResultT, ResilienceMetadata]:
         start_time = time.perf_counter()
         result = await operation()
         duration = time.perf_counter() - start_time
@@ -78,13 +78,13 @@ def create_policy(settings: Optional[ResilienceSettings] = None) -> ResiliencePo
 
 
 def resilient_operation(
-    operation: Callable[[], T],
+    operation: Callable[[], ResultT],
     *,
     key: str,
     classification: str,
     policy: Optional[ResiliencePolicy] = None,
     settings: Optional[ResilienceSettings] = None,
-) -> tuple[T, ResilienceMetadata]:
+) -> tuple[ResultT, ResilienceMetadata]:
     """Execute ``operation`` via the configured resilience policy."""
 
     active_policy = policy or create_policy(settings)
@@ -92,13 +92,13 @@ def resilient_operation(
 
 
 async def resilient_async_operation(
-    operation: Callable[[], Awaitable[T]],
+    operation: Callable[[], Awaitable[ResultT]],
     *,
     key: str,
     classification: str,
     policy: Optional[ResiliencePolicy] = None,
     settings: Optional[ResilienceSettings] = None,
-) -> tuple[T, ResilienceMetadata]:
+) -> tuple[ResultT, ResilienceMetadata]:
     """Async variant of :func:`resilient_operation`."""
 
     active_policy = policy or create_policy(settings)

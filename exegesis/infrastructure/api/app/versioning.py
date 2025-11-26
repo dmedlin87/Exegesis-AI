@@ -10,6 +10,8 @@ from typing import Callable
 
 from fastapi import APIRouter, FastAPI
 
+from exegesis.domain.errors import NotFoundError
+
 
 class APIVersion:
     """API version configuration."""
@@ -74,7 +76,7 @@ class APIVersionManager:
     def get_version(self, version: str) -> APIVersion:
         """Get API version by version string."""
         if version not in self.versions:
-            raise ValueError(f"API version {version} not registered")
+            raise NotFoundError("APIVersion", version)
         return self.versions[version]
 
     def mount_versions(self, app: FastAPI) -> None:

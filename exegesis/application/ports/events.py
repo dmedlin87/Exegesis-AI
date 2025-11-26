@@ -57,14 +57,19 @@ class EventDispatchError(RuntimeError):
 class NullEventPublisher(EventPublisher):
     """Fallback publisher used when no sinks are configured."""
 
-    def publish(self, event: DomainEvent) -> None:  # noqa: D401 - intentionally noop
+    def publish(self, event: DomainEvent) -> None:
+        """Discard event without publishing.
+
+        Args:
+            event: Domain event to discard.
+        """
         return
 
 
 @dataclass(slots=True)
 class CompositeEventPublisher(EventPublisher):
     """Dispatches events to all configured sinks with configurable error handling.
-    
+
     Supports two modes:
     - fail_fast=True (default): Stop on first failure for consistency
     - fail_fast=False: Attempt all publishers for best-effort delivery
@@ -75,17 +80,17 @@ class CompositeEventPublisher(EventPublisher):
 
     def publish(self, event: DomainEvent) -> None:
         """Publish event to all publishers with configurable error handling.
-        
+
         Args:
             event: Domain event to publish
-            
+
         Raises:
             EventDispatchError: When publishers fail (immediately if fail_fast=True,
                                after all attempts if fail_fast=False)
         """
         failures: list[Exception] = []
         successful_publishers = 0
-        
+
         for publisher in self.publishers:
             try:
                 publisher.publish(event)
@@ -93,14 +98,14 @@ class CompositeEventPublisher(EventPublisher):
             except Exception as exc:  # pragma: no cover - defensive logging occurs upstream
                 failures.append(exc)
                 _LOGGER.warning(
-                    "Publisher failed for event %s: %s", 
+                    "Publisher failed for event %s: %s",
                     event.type, exc, exc_info=True
                 )
-                
+
                 if self.fail_fast:
                     # Stop immediately on first failure to ensure consistency
                     raise EventDispatchError(event, failures)
-        
+
         # If we get here and have failures, we're in best-effort mode
         if failures:
             _LOGGER.error(
@@ -108,7 +113,7 @@ class CompositeEventPublisher(EventPublisher):
                 event.type, successful_publishers, len(failures)
             )
             raise EventDispatchError(event, failures)
-        
+
         # All publishers succeeded
         if successful_publishers > 0:
             _LOGGER.debug(

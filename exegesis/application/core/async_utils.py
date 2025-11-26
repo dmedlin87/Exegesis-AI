@@ -22,8 +22,8 @@ from typing import Any, Callable, ParamSpec, TypeVar
 
 logger = logging.getLogger(__name__)
 
-P = ParamSpec("P")
-T = TypeVar("T")
+CallableParams = ParamSpec("CallableParams")
+ReturnT = TypeVar("ReturnT")
 
 
 class BlockingCallWarning(UserWarning):
@@ -46,10 +46,10 @@ def is_async_context() -> bool:
 
 
 async def run_sync(
-    func: Callable[P, T],
-    *args: P.args,
-    **kwargs: P.kwargs,
-) -> T:
+    func: Callable[CallableParams, ReturnT],
+    *args: CallableParams.args,
+    **kwargs: CallableParams.kwargs,
+) -> ReturnT:
     """Run a synchronous blocking function in the default executor.
 
     This offloads CPU-bound or blocking I/O operations to a thread pool,
@@ -102,7 +102,7 @@ def warn_if_async(operation_name: str) -> None:
         )
 
 
-def blocking_operation(name: str | None = None) -> Callable[[Callable[P, T]], Callable[P, T]]:
+def blocking_operation(name: str | None = None) -> Callable[[Callable[CallableParams, ReturnT]], Callable[CallableParams, ReturnT]]:
     """Decorator to mark a function as a blocking operation.
 
     When the decorated function is called from an async context,
@@ -114,11 +114,11 @@ def blocking_operation(name: str | None = None) -> Callable[[Callable[P, T]], Ca
             with open(path, "rb") as f:
                 return f.read()
     """
-    def decorator(func: Callable[P, T]) -> Callable[P, T]:
+    def decorator(func: Callable[CallableParams, ReturnT]) -> Callable[CallableParams, ReturnT]:
         op_name = name or func.__qualname__
 
         @functools.wraps(func)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+        def wrapper(*args: CallableParams.args, **kwargs: CallableParams.kwargs) -> ReturnT:
             warn_if_async(op_name)
             return func(*args, **kwargs)
 
@@ -127,7 +127,7 @@ def blocking_operation(name: str | None = None) -> Callable[[Callable[P, T]], Ca
     return decorator
 
 
-def async_safe(func: Callable[P, T]) -> Callable[P, T]:
+def async_safe(func: Callable[CallableParams, ReturnT]) -> Callable[CallableParams, ReturnT]:
     """Decorator that automatically wraps blocking calls for async contexts.
 
     When the decorated function is called from an async context,
@@ -150,7 +150,7 @@ def async_safe(func: Callable[P, T]) -> Callable[P, T]:
         result = await run_sync(compute_hash, data)
     """
     @functools.wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+    def wrapper(*args: CallableParams.args, **kwargs: CallableParams.kwargs) -> ReturnT:
         if is_async_context():
             warnings.warn(
                 f"Sync function '{func.__qualname__}' called from async context. "

@@ -19,14 +19,17 @@ class IngestionJobRepository(ABC):
         document_id: str | None = None,
     ) -> None:
         """Update status metadata for the ingestion job."""
+        raise NotImplementedError
 
     @abstractmethod
     def set_payload(self, job_id: str, payload: dict[str, Any]) -> None:
         """Replace the payload associated with the ingestion job."""
+        raise NotImplementedError
 
     @abstractmethod
     def merge_payload(self, job_id: str, payload: dict[str, Any]) -> None:
         """Merge *payload* into the stored job payload."""
+        raise NotImplementedError
 
 
 __all__ = ["IngestionJobRepository"]

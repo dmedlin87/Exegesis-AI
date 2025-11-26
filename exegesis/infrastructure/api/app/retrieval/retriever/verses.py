@@ -9,6 +9,7 @@ from typing import Literal, cast as typing_cast
 from sqlalchemy import Date, DateTime, Integer, case, cast, exists, func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
+from exegesis.domain.errors import ValidationError
 from exegesis.infrastructure.api.app.persistence_models import Document, Passage, PassageVerse
 
 from ...library.ingest.osis import canonical_verse_range, expand_osis_reference
@@ -602,7 +603,7 @@ def get_verse_timeline(
     filters: VerseMentionsFilters | None = None,
 ) -> VerseTimelineResponse:
     if window not in _WINDOW_TYPES:
-        raise ValueError(f"Unsupported timeline window: {window}")
+        raise ValidationError(f"Unsupported timeline window: {window}", field="window")
 
     verse_ids = _resolve_query_ids(osis)
     if not verse_ids:

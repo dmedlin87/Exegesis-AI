@@ -6,7 +6,9 @@ import logging
 import os
 import time
 from pathlib import Path
-from typing import Generator
+from typing import Any, Callable, Generator, TypeVar
+
+ResultT = TypeVar("ResultT")
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
@@ -97,38 +99,18 @@ def _is_sqlite_closed_database_error(exc: ProgrammingError) -> bool:
             return True
 
     return matches_closed_indicators
-    """Check if ProgrammingError indicates a closed SQLite database.
-
-    Uses multiple patterns to detect SQLite database closed errors across
-    different SQLAlchemy versions and database drivers.
-    """
-    error_msg = str(exc).lower()
-
-    # Common SQLite "database is closed" error patterns
-    sqlite_closed_indicators = [
-        "closed database",
-        "database is closed",
-        "cannot operate on a closed database",
-        "database disk image is malformed",  # Sometimes appears with closed DBs
-        "sql logic error",  # Generic SQLite error that can indicate closure
-    ]
-
-    # Check if any indicator matches
-    for indicator in sqlite_closed_indicators:
-        if indicator in error_msg:
-            return True
-
-    # Additional check for SQLite-specific error patterns
-    if "sqlite" in error_msg and ("closed" in error_msg or "disconnect" in error_msg):
-        return True
-
-    return False
 
 
 class _TheoSession(Session):
     """Session subclass that aggressively releases SQLite handles on close."""
 
     def close(self) -> None:  # type: ignore[override]
+        """Close the session and release database resources.
+
+        Handles SQLite-specific cleanup including suppressing expected
+        errors when the underlying connection is already closed, and
+        calling the dispose helper to release file handles on Windows.
+        """
         bind: Engine | None = None
         try:
             bind = self.get_bind()
@@ -246,7 +228,7 @@ def get_session() -> Generator[Session, None, None]:
         session.close()
 
 
-async def run_db_sync(func, *args, **kwargs):
+async def run_db_sync(func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
     """Run a synchronous database operation in a thread pool.
 
     Use this to safely execute blocking database operations from async code

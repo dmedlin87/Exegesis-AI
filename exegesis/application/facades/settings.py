@@ -400,6 +400,20 @@ class Settings(BaseSettings):
         transform: Callable[[str], str] | None = None,
         error_message: str = "Invalid list configuration",
     ) -> list[str]:
+        """Parse a value into a list of strings from JSON array or comma-separated format.
+
+        Args:
+            value: Input value to parse (string, list, or None).
+            default: Default list to return when value is empty.
+            transform: Optional function to apply to each parsed item.
+            error_message: Error message for invalid inputs.
+
+        Returns:
+            List of parsed and optionally transformed strings.
+
+        Raises:
+            ValueError: When value cannot be parsed as a collection.
+        """
         import json
 
         def apply_transform(item: object) -> str | None:
@@ -470,6 +484,11 @@ class Settings(BaseSettings):
         )
 
     def has_auth_jwt_credentials(self) -> bool:
+        """Check whether JWT authentication credentials are configured.
+
+        Returns:
+            True if a JWT secret, public key, or key path is configured.
+        """
         return bool(
             self.auth_jwt_secret
             or (self.auth_jwt_public_key and self.auth_jwt_public_key.strip())
@@ -477,6 +496,16 @@ class Settings(BaseSettings):
         )
 
     def load_auth_jwt_public_key(self) -> str | None:
+        """Load the JWT public key from configuration or file path.
+
+        Attempts to load the public key from:
+        1. The configured ``auth_jwt_public_key`` string (if PEM-formatted)
+        2. A file path specified in ``auth_jwt_public_key``
+        3. The file at ``auth_jwt_public_key_path``
+
+        Returns:
+            PEM-encoded public key string, or None if unavailable.
+        """
         key_candidate = (self.auth_jwt_public_key or "").strip()
         if key_candidate:
             if "-----BEGIN" in key_candidate:

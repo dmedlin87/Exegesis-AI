@@ -13,6 +13,7 @@ class ChatSessionRepository(ABC):
     @abstractmethod
     def list_recent(self, limit: int) -> list[ChatSessionDTO]:
         """Return the most recently updated chat sessions up to *limit*."""
+        raise NotImplementedError
 
 
 __all__ = ["ChatSessionRepository"]

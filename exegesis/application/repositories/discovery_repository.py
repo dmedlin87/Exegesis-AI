@@ -22,27 +22,27 @@ class DiscoveryRepository(ABC):
     @abstractmethod
     def list(self, filters: DiscoveryListFilters) -> list[DiscoveryDTO]:
         """Retrieve discoveries matching the provided filters."""
-        ...
+        raise NotImplementedError
 
     @abstractmethod
     def get_by_id(self, discovery_id: int, user_id: str) -> DiscoveryDTO | None:
         """Retrieve a single discovery by ID and user."""
-        ...
+        raise NotImplementedError
 
     @abstractmethod
     def create(self, discovery: DiscoveryDTO) -> DiscoveryDTO:
         """Persist a new discovery and return the saved version."""
-        ...
+        raise NotImplementedError
 
     @abstractmethod
     def create_many(self, discoveries: Sequence[DiscoveryDTO]) -> list[DiscoveryDTO]:
         """Persist multiple discoveries in a single batch."""
-        ...
+        raise NotImplementedError
 
     @abstractmethod
     def update(self, discovery: DiscoveryDTO) -> DiscoveryDTO:
         """Update an existing discovery."""
-        ...
+        raise NotImplementedError
 
     @abstractmethod
     def delete_by_types(self, user_id: str, discovery_types: list[str]) -> int:
@@ -50,31 +50,31 @@ class DiscoveryRepository(ABC):
 
         Returns the number of discoveries deleted.
         """
-        ...
+        raise NotImplementedError
 
     @abstractmethod
     def mark_viewed(self, discovery_id: int, user_id: str) -> DiscoveryDTO:
         """Mark a discovery as viewed."""
-        ...
+        raise NotImplementedError
 
     @abstractmethod
     def set_reaction(
         self, discovery_id: int, user_id: str, reaction: str | None
     ) -> DiscoveryDTO:
         """Set user reaction on a discovery."""
-        ...
+        raise NotImplementedError
 
     @abstractmethod
     def create_snapshot(self, snapshot: CorpusSnapshotDTO) -> CorpusSnapshotDTO:
         """Persist a corpus snapshot."""
-        ...
+        raise NotImplementedError
 
     @abstractmethod
     def get_recent_snapshots(
         self, user_id: str, limit: int
     ) -> list[CorpusSnapshotDTO]:
         """Retrieve recent corpus snapshots for trend analysis."""
-        ...
+        raise NotImplementedError
 
 
 __all__ = ["DiscoveryRepository"]

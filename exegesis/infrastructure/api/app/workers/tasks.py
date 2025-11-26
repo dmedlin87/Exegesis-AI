@@ -120,6 +120,7 @@ from ..models.search import HybridSearchFilters, HybridSearchRequest
 from ..retrieval.retriever.hybrid import hybrid_search
 from exegesis.application.facades.telemetry import log_workflow_event, record_counter
 from exegesis.application.core.telemetry import CITATION_DRIFT_EVENTS_METRIC
+from exegesis.domain.errors import ValidationError
 
 APPLICATION_CONTAINER, _ADAPTER_REGISTRY = resolve_application()
 settings = _ADAPTER_REGISTRY.resolve("settings")
@@ -569,11 +570,11 @@ def _resolve_deliverable_asset(
     try:
         type_map = _DELIVERABLE_ASSET_MAP[export_type]
     except KeyError as exc:  # pragma: no cover - guarded by validation
-        raise ValueError(f"Unsupported deliverable type: {export_type}") from exc
+        raise ValidationError(f"Unsupported deliverable type: {export_type}") from exc
     try:
         return type_map[fmt]
     except KeyError as exc:
-        raise ValueError(
+        raise ValidationError(
             f"Unsupported format {fmt!r} for deliverable type {export_type!r}"
         ) from exc
 
@@ -1408,7 +1409,7 @@ def build_deliverable(
     with Session(engine) as session:
         if export_type == "sermon":
             if not topic:
-                raise ValueError("topic is required for sermon deliverables")
+                raise ValidationError("topic is required for sermon deliverables", field="topic")
             filter_model = HybridSearchFilters.model_validate(filters or {})
             response = generate_sermon_prep_outline(
                 session,
@@ -1424,14 +1425,14 @@ def build_deliverable(
             )
         elif export_type == "transcript":
             if not document_id:
-                raise ValueError("document_id is required for transcript deliverables")
+                raise ValidationError("document_id is required for transcript deliverables", field="document_id")
             package = build_transcript_deliverable(
                 session,
                 document_id,
                 formats=normalised_formats,
             )
         else:
-            raise ValueError(f"Unsupported deliverable type: {export_type}")
+            raise ValidationError(f"Unsupported deliverable type: {export_type}")
 
     manifest = package.manifest
     if export_id:

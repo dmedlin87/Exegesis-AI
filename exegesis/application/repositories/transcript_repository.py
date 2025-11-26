@@ -18,6 +18,7 @@ class TranscriptRepository(ABC):
         limit: int,
     ) -> list[TranscriptSegmentDTO]:
         """Return transcript segments filtered by optional OSIS or video identifier."""
+        raise NotImplementedError
 
 
 __all__ = ["TranscriptRepository"]

@@ -176,10 +176,10 @@ class ContradictionDiscoveryEngine:
         contradictions: list[ContradictionDiscovery] = []
         seen_pairs: set[frozenset[str]] = set()
 
-        for i in range(len(claims)):
-            for j in range(i + 1, len(claims)):
-                claim_a = claims[i]
-                claim_b = claims[j]
+        for claim_idx in range(len(claims)):
+            for other_idx in range(claim_idx + 1, len(claims)):
+                claim_a = claims[claim_idx]
+                claim_b = claims[other_idx]
 
                 # Skip if same document
                 if claim_a["document_id"] == claim_b["document_id"]:
@@ -409,16 +409,16 @@ class ContradictionDiscoveryEngine:
 
         import numpy as np
 
-        a = np.array(vec_a)
-        b = np.array(vec_b)
+        vec_arr_a = np.array(vec_a)
+        vec_arr_b = np.array(vec_b)
 
-        norm_a = np.linalg.norm(a)
-        norm_b = np.linalg.norm(b)
+        norm_a = np.linalg.norm(vec_arr_a)
+        norm_b = np.linalg.norm(vec_arr_b)
 
         if norm_a == 0 or norm_b == 0:
             return 1.0
 
-        return float(np.dot(a, b) / (norm_a * norm_b))
+        return float(np.dot(vec_arr_a, vec_arr_b) / (norm_a * norm_b))
 
     def _truncate_text(self, text: str, max_length: int = 500) -> str:
         """Truncate text respecting sentence boundaries."""

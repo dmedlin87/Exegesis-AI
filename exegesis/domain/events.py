@@ -47,11 +47,11 @@ class BaseEvent:
         from exegesis.application.ports.events import normalise_event_value
 
         payload = {}
-        for f in self.__dataclass_fields__:
-            if f in ("EVENT_TYPE", "occurred_at"):
+        for field_name in self.__dataclass_fields__:
+            if field_name in ("EVENT_TYPE", "occurred_at"):
                 continue
-            value = getattr(self, f)
-            payload[f] = normalise_event_value(value)
+            value = getattr(self, field_name)
+            payload[field_name] = normalise_event_value(value)
         return payload
 
     def to_domain_event(self) -> "DomainEvent":

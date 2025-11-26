@@ -15,12 +15,25 @@ except ModuleNotFoundError:  # pragma: no cover - provide basic fallback helpers
 
 from collections.abc import Mapping
 
+from exegesis.domain.errors import ValidationError
+
 from .datasets import scripture_dataset
 from .osis import expand_osis_reference, verse_ids_to_osis
 
 
 @dataclass(frozen=True, slots=True)
 class Verse:
+    """Represents a single scripture verse with text and location metadata.
+
+    Attributes:
+        osis: OSIS reference identifier (e.g., "Gen.1.1").
+        translation: Bible translation code (e.g., "SBLGNT", "KJV").
+        text: Full text content of the verse.
+        book: Optional book name.
+        chapter: Optional chapter number.
+        verse: Optional verse number within the chapter.
+    """
+
     osis: str
     translation: str
     text: str
@@ -44,7 +57,7 @@ def fetch_passage(osis: str, translation: str | None = None) -> list[Verse]:
         raise KeyError(f"Unknown translation '{translation_key}'") from exc
 
     if "." not in osis:
-        raise ValueError("OSIS references must include book and chapter segments")
+        raise ValidationError("OSIS references must include book and chapter segments")
 
     verse_keys = _expand_osis_to_keys(osis, verses_by_osis)
     if not verse_keys:

@@ -14,6 +14,7 @@ from exegesis.application.core.resilience import (
     ResiliencePolicy,
     ResilienceSettings,
 )
+from exegesis.domain.errors import ValidationError
 
 T = TypeVar("T")
 
@@ -46,7 +47,7 @@ class CircuitBreakerResiliencePolicy(ResiliencePolicy):
     def __init__(self, settings: ResilienceSettings | None = None) -> None:
         self.settings = settings or ResilienceSettings()
         if self.settings.max_attempts < 1:
-            raise ValueError("max_attempts must be >= 1")
+            raise ValidationError("max_attempts must be >= 1", field="max_attempts")
 
     # ResiliencePolicy interface -------------------------------------------------
 

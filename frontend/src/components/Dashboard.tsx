@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { DASHBOARD_COPY, ICONS } from '../constants/ui';
 import type { MetricsData } from '../types';
 import { parseMetrics } from '../utils/metrics';
 import { MetricCard } from './MetricCard';
@@ -7,7 +8,6 @@ export const Dashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<MetricsData>({});
   const [error, setError] = useState<string | null>(null);
 
-  // Use environment variable or default to localhost
   const metricsUrl = import.meta.env.VITE_METRICS_URL || 'http://localhost:9101/metrics';
 
   useEffect(() => {
@@ -33,23 +33,27 @@ export const Dashboard: React.FC = () => {
   return (
     <div>
       <header>
-        <h1>Theoria Service Health</h1>
-        <p>Real-time monitoring dashboard • Updates every 5 seconds</p>
+        <h1>{DASHBOARD_COPY.title}</h1>
+        <p>{DASHBOARD_COPY.subtitle}</p>
       </header>
       <main>
         {error && (
-          <div className="error-banner">
-            <span className="error-icon">⚠️</span>
-            <p>Metrics unavailable: {error}</p>
+          <div className="error-banner" role="status" aria-live="polite">
+            <span className="error-icon" aria-hidden="true">
+              {ICONS.alert}
+            </span>
+            <p>{`${DASHBOARD_COPY.metricsUnavailable}: ${error}`}</p>
           </div>
         )}
         {services.length === 0 && !error && (
-          <div className="error-banner">
-            <span className="error-icon">ℹ️</span>
-            <p>Waiting for service metrics...</p>
+          <div className="error-banner" role="status" aria-live="polite">
+            <span className="error-icon" aria-hidden="true">
+              {ICONS.alert}
+            </span>
+            <p>{DASHBOARD_COPY.waiting}</p>
           </div>
         )}
-        <section className="grid">
+        <section className="grid" aria-label="Service metrics">
           {services.map((service) => (
             <MetricCard key={service} serviceName={service} data={metrics[service]} />
           ))}

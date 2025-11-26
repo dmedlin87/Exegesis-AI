@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, Mapping, Protocol, TypeVar, runtime_checkable
 
-T = TypeVar("T")
+ResultT = TypeVar("ResultT")
 
 
 @dataclass(slots=True)
@@ -44,20 +44,20 @@ class ResiliencePolicy(Protocol):
 
     def run(
         self,
-        operation: Callable[[], T],
+        operation: Callable[[], ResultT],
         *,
         key: str,
         classification: str,
-    ) -> tuple[T, ResilienceMetadata]:
+    ) -> tuple[ResultT, ResilienceMetadata]:
         """Execute ``operation`` with retry and circuit-breaking semantics."""
 
     async def run_async(
         self,
-        operation: Callable[[], Awaitable[T]],
+        operation: Callable[[], Awaitable[ResultT]],
         *,
         key: str,
         classification: str,
-    ) -> tuple[T, ResilienceMetadata]:
+    ) -> tuple[ResultT, ResilienceMetadata]:
         """Async variant of :meth:`run`."""
 
 

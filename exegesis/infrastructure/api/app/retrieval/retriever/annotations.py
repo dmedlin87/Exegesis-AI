@@ -8,6 +8,7 @@ from typing import Iterable, Mapping
 
 from sqlalchemy.orm import Session
 
+from exegesis.domain.errors import ValidationError
 from exegesis.infrastructure.api.app.persistence_models import DocumentAnnotation
 
 from ...models.documents import (
@@ -35,7 +36,7 @@ def prepare_annotation_body(payload: DocumentAnnotationCreate) -> str:
     annotation_type = _normalise_type(payload.type)
     text = (payload.text or "").strip()
     if not text:
-        raise ValueError("Annotation text cannot be empty")
+        raise ValidationError("Annotation text cannot be empty", field="text")
 
     stance = (payload.stance or "").strip() or None
     group_id = (payload.group_id or "").strip() or None

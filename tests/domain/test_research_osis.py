@@ -2,6 +2,7 @@ import pytest
 
 from pythonbible import convert_reference_to_verse_ids, get_references
 
+from exegesis.domain.errors import ValidationError
 from exegesis.domain.research import osis as research_osis
 
 
@@ -24,9 +25,9 @@ def test_osis_to_readable_formats_ranges(osis: str, expected: str) -> None:
 
 
 def test_osis_to_readable_rejects_empty_reference() -> None:
-    """Invalid references should raise a ``ValueError``."""
+    """Invalid references should raise a ``ValidationError``."""
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         research_osis.osis_to_readable("-Invalid")
 
 

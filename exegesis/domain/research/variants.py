@@ -4,6 +4,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable, Mapping
 
+from exegesis.domain.errors import ValidationError
+
 from .datasets import variants_dataset
 
 
@@ -34,11 +36,11 @@ def _parse_reference(
     parts = reference.split(".")
     if len(parts) == 1:
         if default_book is None:
-            raise ValueError(f"Cannot infer book for OSIS reference '{reference}'")
+            raise ValidationError(f"Cannot infer book for OSIS reference '{reference}'")
         try:
             verse = int(parts[0])
         except ValueError as exc:  # pragma: no cover - defensive validation
-            raise ValueError(f"Invalid OSIS verse '{parts[0]}'") from exc
+            raise ValidationError(f"Invalid OSIS verse '{parts[0]}'") from exc
         return default_book, default_chapter, verse
 
     if len(parts) == 2:
@@ -46,7 +48,7 @@ def _parse_reference(
         try:
             second_int = int(second)
         except ValueError as exc:  # pragma: no cover - defensive validation
-            raise ValueError(f"Invalid OSIS component '{second}'") from exc
+            raise ValidationError(f"Invalid OSIS component '{second}'") from exc
 
         try:
             first_int = int(first)
@@ -56,7 +58,7 @@ def _parse_reference(
 
         if default_book is None:
             # Explicit "Chapter.Verse" without a book reference
-            raise ValueError(
+            raise ValidationError(
                 f"Cannot infer book for OSIS reference '{reference}'"
             )
         return default_book, first_int, second_int
@@ -67,10 +69,10 @@ def _parse_reference(
             chapter_int = int(chapter)
             verse_int = int(verse)
         except ValueError as exc:  # pragma: no cover - defensive validation
-            raise ValueError(f"Invalid OSIS reference '{reference}'") from exc
+            raise ValidationError(f"Invalid OSIS reference '{reference}'") from exc
         return book, chapter_int, verse_int
 
-    raise ValueError(f"Unsupported OSIS reference '{reference}'")
+    raise ValidationError(f"Unsupported OSIS reference '{reference}'")
 
 
 def _sort_key(

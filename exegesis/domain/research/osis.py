@@ -4,6 +4,8 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Iterable
 
+from exegesis.domain.errors import ValidationError
+
 try:  # pragma: no cover - optional dependency in lightweight tests
     import pythonbible as pb
 except ModuleNotFoundError:  # pragma: no cover - stub out optional helpers
@@ -158,7 +160,7 @@ def osis_to_readable(reference: str) -> str:
     start, *rest = reference.split("-")
     start_parts = [part for part in start.split(".") if part]
     if not start_parts:
-        raise ValueError("Invalid OSIS reference")
+        raise ValidationError("Invalid OSIS reference")
 
     book = start_parts[0]
     chapter = start_parts[1] if len(start_parts) > 1 else None
