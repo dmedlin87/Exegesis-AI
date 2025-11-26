@@ -2,7 +2,15 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 
 import ErrorCallout from "../../components/ErrorCallout";
 import { useToast } from "../../components/Toast";
@@ -15,11 +23,13 @@ import { emitTelemetry, submitFeedback } from "../../lib/telemetry";
 import type { FeedbackEventInput } from "../../lib/telemetry";
 import { usePersistentSort } from "../../lib/usePersistentSort";
 import { useUiModePreference } from "../../lib/useUiModePreference";
+import { useDebounce } from "../../lib/useDebounce";
 import { sortDocumentGroups, SortableDocumentGroup } from "../groupSorting";
 import { SortControls } from "./SortControls";
-import { SavedSearchControls } from "./SavedSearchControls";
 import { DiffWorkspace } from "./DiffWorkspace";
 import { SearchSkeleton } from "./SearchSkeleton";
+import { AdvancedSearchFilters } from "./AdvancedSearchFilters";
+import { SavedSearchManager } from "./SavedSearchManager";
 import styles from "./SearchPageClient.module.css";
 import additionalStyles from "./SearchPageClient-additions.module.css";
 import {
@@ -96,6 +106,15 @@ function createEmptyFilters(): SearchFilters {
     collectionFacets: [],
     datasetFacets: [],
     variantFacets: [],
+  };
+}
+
+function cloneFilters(filters: SearchFilters): SearchFilters {
+  return {
+    ...filters,
+    collectionFacets: [...filters.collectionFacets],
+    datasetFacets: [...filters.datasetFacets],
+    variantFacets: [...filters.variantFacets],
   };
 }
 
@@ -448,7 +467,7 @@ export default function SearchPageClient({
       toggleVariantFacet,
     },
   } = useSearchFiltersState(initialFilters);
-  const [isPresetChanging, setIsPresetChanging] = useState(false);
+  const [isPresetPending, startPresetTransition] = useTransition();
   const [sortKey, setSortKey] = usePersistentSort();
   const [groups, setGroups] = useState<DocumentGroup[]>(() =>
     sortDocumentGroups(buildDocumentGroupsFromResponse(initialResults), sortKey),
@@ -513,6 +532,8 @@ export default function SearchPageClient({
   const queryInputRef = useRef<HTMLInputElement | null>(null);
   const osisInputRef = useRef<HTMLInputElement | null>(null);
   const isBeginnerMode = uiMode === "simple";
+  const [requestedFilters, setRequestedFilters] = useState<SearchFilters | null>(null);
+  const debouncedRequestedFilters = useDebounce(requestedFilters, 300);
 
   const arraysEqual = useCallback((left: string[], right: string[]) => {
     if (left === right) return true;
@@ -653,7 +674,7 @@ export default function SearchPageClient({
     const filters = currentFilters;
 
     updateUrlForFilters(filters);
-    await runSearch(filters);
+    setRequestedFilters(cloneFilters(filters));
   };
 
   const handleShowErrorDetails = useCallback(
@@ -668,9 +689,15 @@ export default function SearchPageClient({
 
   const handleRetrySearch = useCallback(() => {
     if (lastSearchFilters && !isSearching) {
-      void runSearch(lastSearchFilters);
+      setRequestedFilters(cloneFilters(lastSearchFilters));
     }
-  }, [lastSearchFilters, runSearch, isSearching]);
+  }, [isSearching, lastSearchFilters]);
+
+  useEffect(() => {
+    if (debouncedRequestedFilters) {
+      void runSearch(debouncedRequestedFilters);
+    }
+  }, [debouncedRequestedFilters, runSearch]);
 
   const handlePassageClick = useCallback(
     (result: SearchResult) => {
@@ -705,14 +732,11 @@ export default function SearchPageClient({
     (value: string) => {
       if (value === CUSTOM_PRESET_VALUE) {
         setPresetSelection(CUSTOM_PRESET_VALUE);
-        setIsPresetChanging(false);
         return;
       }
       if (isSearching) {
         return; // Prevent preset change during active search
       }
-      setIsPresetChanging(true);
-      setPresetSelection(value);
       const presetConfig = MODE_PRESETS.find((candidate) => candidate.value === value);
       const nextFilters: SearchFilters = {
         ...currentFilters,
@@ -728,11 +752,14 @@ export default function SearchPageClient({
           : [...currentFilters.variantFacets],
         preset: value,
       };
-      applyFilters(nextFilters);
-      updateUrlForFilters(nextFilters);
-      void runSearch(nextFilters).finally(() => setIsPresetChanging(false));
+      startPresetTransition(() => {
+        setPresetSelection(value);
+        applyFilters(nextFilters);
+        updateUrlForFilters(nextFilters);
+      });
+      setRequestedFilters(cloneFilters(nextFilters));
     },
-    [applyFilters, currentFilters, runSearch, updateUrlForFilters, isSearching],
+    [applyFilters, currentFilters, isSearching, startPresetTransition, updateUrlForFilters, setPresetSelection],
   );
 
   const handleSavedSearchSubmit = useCallback(
@@ -782,10 +809,10 @@ export default function SearchPageClient({
         addToast({ type: "info", title: "Saved search applied", message: `Running “${saved.name}”.` });
         applyFilters(saved.filters);
         updateUrlForFilters(saved.filters);
-        await runSearch(saved.filters);
+        setRequestedFilters(cloneFilters(saved.filters));
       }
     },
-    [addToast, applyFilters, runSearch, updateUrlForFilters, isSearching],
+    [addToast, applyFilters, isSearching, updateUrlForFilters],
   );
 
   const handleDeleteSavedSearch = useCallback(
@@ -887,225 +914,6 @@ export default function SearchPageClient({
     const value = presetIsCustom ? CUSTOM_PRESET_VALUE : presetSelection;
     return MODE_PRESETS.find((candidate) => candidate.value === value);
   }, [presetIsCustom, presetSelection]);
-
-  const advancedFilterControls = (
-    <div className={styles["search-advanced-controls"]}>
-      <div>
-        <label className={styles["search-form__label"]}>
-          <span className={styles["search-form__label-text"]}>Mode preset</span>
-          <select
-            name="preset"
-            value={presetIsCustom ? CUSTOM_PRESET_VALUE : presetSelection}
-            onChange={(event) => handlePresetChange(event.target.value)}
-            className={styles["search-form__select"]}
-            disabled={isSearching || isPresetChanging}
-            aria-busy={isPresetChanging}
-          >
-            {MODE_PRESETS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        {activePreset?.description && (
-          <p className={`${styles["search-advanced-help"]} ${additionalStyles.presetDescription}`}>
-            {activePreset.description}
-          </p>
-        )}
-      </div>
-      <label className={styles["search-form__label"]}>
-        <span className={styles["search-form__label-text"]}>Collection</span>
-        <input
-          name="collection"
-          type="text"
-          value={collection}
-          onChange={(event) => {
-            setCollection(event.target.value);
-            markPresetAsCustom();
-          }}
-          placeholder="Gospels"
-          className={styles["search-form__input"]}
-        />
-      </label>
-      <label className={styles["search-form__label"]}>
-        <span className={styles["search-form__label-text"]}>Author</span>
-        <input
-          name="author"
-          type="text"
-          value={author}
-          onChange={(event) => {
-            setAuthor(event.target.value);
-            markPresetAsCustom();
-          }}
-          placeholder="Jane Doe"
-          className={styles["search-form__input"]}
-        />
-      </label>
-      <label className={styles["search-form__label"]}>
-        <span className={styles["search-form__label-text"]}>Source type</span>
-        <select
-          name="source_type"
-          value={sourceType}
-          onChange={(event) => {
-            setSourceType(event.target.value);
-            markPresetAsCustom();
-          }}
-          className={styles["search-form__select"]}
-        >
-          {SOURCE_OPTIONS.map((option) => (
-            <option key={option.value || "any"} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className={styles["search-form__label"]}>
-        <span className={styles["search-form__label-text"]}>Theological tradition</span>
-        <select
-          name="theological_tradition"
-          value={theologicalTradition}
-          onChange={(event) => {
-            setTheologicalTradition(event.target.value);
-            markPresetAsCustom();
-          }}
-          className={styles["search-form__select"]}
-        >
-          {TRADITION_OPTIONS.map((option) => (
-            <option key={option.value || "any"} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className={styles["search-form__label"]}>
-        <span className={styles["search-form__label-text"]}>Topic domain</span>
-        <select
-          name="topic_domain"
-          value={topicDomain}
-          onChange={(event) => {
-            setTopicDomain(event.target.value);
-            markPresetAsCustom();
-          }}
-          className={styles["search-form__select"]}
-        >
-          {DOMAIN_OPTIONS.map((option) => (
-            <option key={option.value || "any"} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <fieldset className={styles["search-fieldset"]}>
-        <legend className={styles["search-fieldset__legend"]}>Collection facets</legend>
-        <div className={styles["search-fieldset__grid"]}>
-          {COLLECTION_FACETS.map((facet) => (
-            <label key={facet} className={styles["search-fieldset__checkbox-label"]}>
-              <input
-                type="checkbox"
-                checked={collectionFacets.includes(facet)}
-                onChange={() => toggleCollectionFacet(facet)}
-              />
-              {facet}
-            </label>
-          ))}
-        </div>
-      </fieldset>
-      <fieldset className={styles["search-fieldset"]}>
-        <legend className={styles["search-fieldset__legend"]}>Dataset facets</legend>
-        <div className={styles["search-fieldset__grid"]}>
-          {DATASET_FILTERS.map((dataset) => {
-            const isActive = datasetFacets.includes(dataset.value);
-            return (
-              <label key={dataset.value} className={styles["search-dataset-item"]}>
-                <span className={styles["search-dataset-item__header"]}>
-                  <input
-                    type="checkbox"
-                    checked={isActive}
-                    onChange={() => toggleDatasetFacet(dataset.value)}
-                  />
-                  <strong>{dataset.label}</strong>
-                </span>
-                <span className={styles["search-dataset-item__desc"]}>
-                  {dataset.description}
-                </span>
-              </label>
-            );
-          })}
-        </div>
-      </fieldset>
-      <fieldset className={styles["search-fieldset"]}>
-        <legend className={styles["search-fieldset__legend"]}>Variant focus</legend>
-        <div className={styles["search-fieldset__grid"]}>
-          {VARIANT_FILTERS.map((variant) => (
-            <label key={variant.value} className={styles["search-fieldset__checkbox-label"]}>
-              <input
-                type="checkbox"
-                checked={variantFacets.includes(variant.value)}
-                onChange={() => toggleVariantFacet(variant.value)}
-              />
-              {variant.label}
-            </label>
-          ))}
-        </div>
-      </fieldset>
-      <div className={styles["search-date-fields"]}>
-        <label className={styles["search-form__label"]}>
-          <span className={styles["search-form__label-text"]}>Date from</span>
-          <input
-            type="date"
-            name="date_start"
-            value={dateStart}
-            onChange={(event) => {
-              setDateStart(event.target.value);
-              markPresetAsCustom();
-            }}
-            className={styles["search-form__input"]}
-          />
-        </label>
-        <label className={styles["search-form__label"]}>
-          <span className={styles["search-form__label-text"]}>Date to</span>
-          <input
-            type="date"
-            name="date_end"
-            value={dateEnd}
-            onChange={(event) => {
-              setDateEnd(event.target.value);
-              markPresetAsCustom();
-            }}
-            className={styles["search-form__input"]}
-          />
-        </label>
-      </div>
-      <div className={styles["search-fieldset__grid"]}>
-        <label className={styles["search-fieldset__checkbox-label"]}>
-          <input
-            type="checkbox"
-            name="variants"
-            checked={includeVariants}
-            onChange={(event) => {
-              setIncludeVariants(event.target.checked);
-              markPresetAsCustom();
-            }}
-          />
-          Include textual variants
-        </label>
-        <label className={styles["search-fieldset__checkbox-label"]}>
-          <input
-            type="checkbox"
-            name="disputed"
-            checked={includeDisputed}
-            onChange={(event) => {
-              setIncludeDisputed(event.target.checked);
-              markPresetAsCustom();
-            }}
-          />
-          Include disputed readings
-        </label>
-      </div>
-    </div>
-  );
-
   const handleGuidedPassageChip = (): void => {
     osisInputRef.current?.focus();
     setOsis((current) => (current ? current : "John.1.1-5"));
@@ -1237,11 +1045,12 @@ export default function SearchPageClient({
       setGroups([]);
       setError(null);
       setIsSearching(false);
+      setRequestedFilters(null);
       return;
     }
 
-    void runSearch(filters);
-  }, [arraysEqual, runSearch, searchParamsString]);
+    setRequestedFilters(cloneFilters(filters));
+  }, [arraysEqual, searchParamsString]);
 
   useEffect(() => {
     setGroups((currentGroups) => sortDocumentGroups(currentGroups, sortKey));
@@ -1252,18 +1061,6 @@ export default function SearchPageClient({
       current.filter((id) => groups.some((group) => group.documentId === id)),
     );
   }, [groups]);
-
-  const savedSearchContent = (
-    <SavedSearchControls
-      savedSearchName={savedSearchName}
-      onSavedSearchNameChange={setSavedSearchName}
-      onSubmit={handleSavedSearchSubmit}
-      savedSearches={savedSearches}
-      onApplySavedSearch={handleApplySavedSearch}
-      onDeleteSavedSearch={handleDeleteSavedSearch}
-      formatFilters={formatSavedSearchFilters}
-    />
-  );
 
   return (
     <section className={styles["search-page"]}>
@@ -1334,20 +1131,43 @@ export default function SearchPageClient({
           </p>
         )}
 
-        {isAdvancedUi ? (
-          <div className={styles["search-advanced-controls"]}>{advancedFilterControls}</div>
-        ) : (
-          <details className={styles["search-advanced-details"]}>
-            <summary className={styles["search-advanced-summary"]}>Advanced</summary>
-            <p className={styles["search-advanced-help"]}>
-              Expand to tune presets, guardrail filters, and dataset facets. Saved search tools live here too.
-            </p>
-            {advancedFilterControls}
-          </details>
-        )}
+        <AdvancedSearchFilters
+          activePreset={activePreset}
+          presetSelection={presetSelection}
+          presetIsCustom={presetIsCustom}
+          isAdvancedUi={isAdvancedUi}
+          isSearching={isSearching}
+          isPresetPending={isPresetPending}
+          collection={collection}
+          author={author}
+          sourceType={sourceType}
+          theologicalTradition={theologicalTradition}
+          topicDomain={topicDomain}
+          collectionFacets={collectionFacets}
+          datasetFacets={datasetFacets}
+          variantFacets={variantFacets}
+          dateStart={dateStart}
+          dateEnd={dateEnd}
+          includeVariants={includeVariants}
+          includeDisputed={includeDisputed}
+          onPresetChange={handlePresetChange}
+          onCollectionChange={setCollection}
+          onAuthorChange={setAuthor}
+          onSourceTypeChange={setSourceType}
+          onTheologicalTraditionChange={setTheologicalTradition}
+          onTopicDomainChange={setTopicDomain}
+          onDateStartChange={setDateStart}
+          onDateEndChange={setDateEnd}
+          onIncludeVariantsChange={setIncludeVariants}
+          onIncludeDisputedChange={setIncludeDisputed}
+          onToggleCollectionFacet={toggleCollectionFacet}
+          onToggleDatasetFacet={toggleDatasetFacet}
+          onToggleVariantFacet={toggleVariantFacet}
+          onMarkPresetAsCustom={markPresetAsCustom}
+        />
 
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           className={classNames(
             styles["search-form__button"],
             isSearching && "is-loading",
@@ -1360,20 +1180,16 @@ export default function SearchPageClient({
         </button>
       </form>
 
-      {isAdvancedUi ? (
-        <section aria-label="Saved searches" className={styles["search-saved-section"]}>
-          <h3>Saved searches</h3>
-          {savedSearchContent}
-        </section>
-      ) : (
-        <details className={`${styles["search-advanced-details"]} ${additionalStyles.savedSearchesDetails}`}>
-          <summary className={styles["search-advanced-summary"]}>Saved searches</summary>
-          <p className={styles["search-advanced-help"]}>
-            Expand to store or recall presets. Saved searches remember every active filter.
-          </p>
-          {savedSearchContent}
-        </details>
-      )}
+      <SavedSearchManager
+        isAdvancedUi={isAdvancedUi}
+        savedSearchName={savedSearchName}
+        onSavedSearchNameChange={setSavedSearchName}
+        onSubmit={handleSavedSearchSubmit}
+        savedSearches={savedSearches}
+        onApplySavedSearch={handleApplySavedSearch}
+        onDeleteSavedSearch={handleDeleteSavedSearch}
+        formatFilters={formatSavedSearchFilters}
+      />
 
       <div className={additionalStyles.sortControlsWrapper}>
         <SortControls value={sortKey} onChange={setSortKey} />
