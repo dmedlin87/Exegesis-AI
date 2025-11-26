@@ -28,6 +28,7 @@ class DummySettings:
     auth_allow_anonymous = False
     api_keys = ["dummy"]
     cors_allowed_origins = ["https://example.test"]
+    settings_secret_key = "test-secret-key"
 
     def has_auth_jwt_credentials(self) -> bool:
         return False
@@ -96,6 +97,7 @@ def test_create_app_configures_lifespan(monkeypatch):
         auth_allow_anonymous=False,
         api_keys=["dummy"],
         cors_allowed_origins=[],
+        settings_secret_key="test-secret-key",
         has_auth_jwt_credentials=lambda: False,
     ))
 

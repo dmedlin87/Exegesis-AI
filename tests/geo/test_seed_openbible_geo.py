@@ -20,10 +20,10 @@ from exegesis.adapters.persistence.models import (
     GeoModernLocation,
     GeoPlaceVerse,
 )
-from exegesis.application.services.geo import seed_openbible_geo as seed_openbible_geo_public
+from exegesis.services.geo import seed_openbible_geo as seed_openbible_geo_public
 
-seed_openbible_geo_module = import_module("exegesis.application.services.geo.seed_openbible_geo")
-from exegesis.application.services.geo.seed_openbible_geo import (
+seed_openbible_geo_module = import_module("exegesis.services.geo.seed_openbible_geo")
+from exegesis.services.geo.seed_openbible_geo import (
     _detect_commit_sha,
     _load_geometry_payload,
     _normalize_osis,

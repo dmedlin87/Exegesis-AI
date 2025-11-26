@@ -62,7 +62,7 @@ if os.name == "nt" and not getattr(Path, "__EXEGESIS_unlink_retry__", False):
 from exegesis.adapters.persistence import Base, dispose_sqlite_engine
 from exegesis.application.facades.settings import get_settings
 
-__all__ = ["Base", "configure_engine", "get_engine", "get_session"]
+__all__ = ["Base", "configure_engine", "get_engine", "get_session", "run_db_sync"]
 
 _engine: Engine | None = None
 _SessionLocal: sessionmaker[Session] | None = None
@@ -98,30 +98,30 @@ def _is_sqlite_closed_database_error(exc: ProgrammingError) -> bool:
 
     return matches_closed_indicators
     """Check if ProgrammingError indicates a closed SQLite database.
-    
+
     Uses multiple patterns to detect SQLite database closed errors across
     different SQLAlchemy versions and database drivers.
     """
     error_msg = str(exc).lower()
-    
+
     # Common SQLite "database is closed" error patterns
     sqlite_closed_indicators = [
         "closed database",
-        "database is closed", 
+        "database is closed",
         "cannot operate on a closed database",
         "database disk image is malformed",  # Sometimes appears with closed DBs
         "sql logic error",  # Generic SQLite error that can indicate closure
     ]
-    
+
     # Check if any indicator matches
     for indicator in sqlite_closed_indicators:
         if indicator in error_msg:
             return True
-            
+
     # Additional check for SQLite-specific error patterns
     if "sqlite" in error_msg and ("closed" in error_msg or "disconnect" in error_msg):
         return True
-        
+
     return False
 
 
@@ -134,7 +134,7 @@ class _TheoSession(Session):
             bind = self.get_bind()
         except Exception:
             bind = None
-            
+
         try:
             super().close()
         except ProgrammingError as exc:
@@ -142,20 +142,20 @@ class _TheoSession(Session):
             if not _is_sqlite_closed_database_error(exc):
                 # Log the unexpected error for debugging but still raise it
                 _LOGGER.warning(
-                    "Unexpected ProgrammingError during session close: %s", 
+                    "Unexpected ProgrammingError during session close: %s",
                     exc, exc_info=True
                 )
                 raise
-            
+
             # This is a known SQLite closed database error - safe to suppress
             _LOGGER.debug(
-                "Suppressing expected SQLite closed database error during session close: %s", 
+                "Suppressing expected SQLite closed database error during session close: %s",
                 exc
             )
             # SQLite disposal helpers may close the underlying connection
             # before SQLAlchemy attempts its implicit rollback. Suppress the
             # resulting noise so session cleanup remains idempotent.
-            
+
         if bind is not None:
             dispose_sqlite_engine(bind, dispose_engine=False)
 
@@ -244,3 +244,21 @@ def get_session() -> Generator[Session, None, None]:
         yield session
     finally:
         session.close()
+
+
+async def run_db_sync(func, *args, **kwargs):
+    """Run a synchronous database operation in a thread pool.
+
+    Use this to safely execute blocking database operations from async code
+    without blocking the event loop.
+
+    Example:
+        async def get_documents():
+            def _query(session):
+                return session.query(Document).all()
+
+            with next(get_session()) as session:
+                return await run_db_sync(_query, session)
+    """
+    from exegesis.application.core.async_utils import run_sync
+    return await run_sync(func, *args, **kwargs)

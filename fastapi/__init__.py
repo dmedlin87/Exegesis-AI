@@ -72,7 +72,7 @@ if _real_fastapi is not None:
         [key for key in dir(_real_fastapi) if not key.startswith("_")],
     )
 else:
-    from . import params, responses, status
+    from . import params, responses, security, status
 
     __all__ = [
         "FastAPI",
@@ -83,6 +83,7 @@ else:
         "APIRouter",
         "Request",
         "Response",
+        "security",
         "status",
     ]
 

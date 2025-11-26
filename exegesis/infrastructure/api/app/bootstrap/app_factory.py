@@ -56,7 +56,6 @@ from .routes import (
 from .runtime_checks import (
     configure_console_traces,
     enforce_authentication_requirements,
-    enforce_secret_requirements,
     should_enable_console_traces,
 )
 
@@ -290,11 +289,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         generate_ephemeral_dev_key=generate_ephemeral_dev_key,
         logger=logger,
     )
-    enforce_secret_requirements(
-        get_settings_secret,
-        allow_insecure_startup=allow_insecure_startup,
-        logger=logger,
-    )
+
+    if not resolved_settings.settings_secret_key and not allow_insecure_startup():
+        message = (
+            "Application cannot start without a configured settings_secret_key."
+        )
+        logger.error(message)
+        raise RuntimeError(message)
 
     telemetry_provider = ApiTelemetryProvider()
     set_telemetry_provider(telemetry_provider)

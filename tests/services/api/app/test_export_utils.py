@@ -15,7 +15,7 @@ from exegesis.adapters.persistence.models import Document, Passage
 
 _MODULE_PATH = (
     Path(__file__).resolve().parents[4]
-    / "theo"
+    / "exegesis"
     / "infrastructure"
     / "api"
     / "app"

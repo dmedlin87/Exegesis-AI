@@ -12,7 +12,8 @@ exclude = [
 ]
 
 [lint]
-select = ["E", "F", "W", "B", "S", "PD", "FA", "I"]
+# ASYNC rules help detect blocking calls in async contexts
+select = ["E", "F", "W", "B", "S", "PD", "FA", "I", "ASYNC"]
 ignore = [
     "E501",
     "E402",

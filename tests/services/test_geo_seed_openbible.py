@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-geo = importlib.import_module("exegesis.application.services.geo.seed_openbible_geo")
+geo = importlib.import_module("exegesis.services.geo.seed_openbible_geo")
 
 
 def test_normalize_osis_returns_canonical_references() -> None:

@@ -26,7 +26,8 @@ def _resolve_environment() -> str:
     """Return the current deployment environment label."""
 
     candidates = (
-        os.getenv("EXEGESIS_ENVIRONMENT"),
+        os.getenv("THEORIA_ENVIRONMENT"),
+        os.getenv("THEO_ENVIRONMENT"),
         os.getenv("EXEGESIS_ENVIRONMENT"),
         os.getenv("ENVIRONMENT"),
         os.getenv("EXEGESIS_PROFILE"),
@@ -41,15 +42,18 @@ def _resolve_environment() -> str:
 def allow_insecure_startup() -> bool:
     """Return True when insecure startup overrides are permitted."""
 
-    value = os.getenv("EXEGESIS_ALLOW_INSECURE_STARTUP", "")
+    # Check both the new and legacy environment variables
+    value = os.getenv("THEORIA_ALLOW_INSECURE_STARTUP") or os.getenv(
+        "EXEGESIS_ALLOW_INSECURE_STARTUP", ""
+    )
     if value.lower() not in _TRUTHY_VALUES:
         return False
 
     environment = _resolve_environment()
     if environment not in _ALLOWED_INSECURE_ENVIRONMENTS:
         message = (
-            "EXEGESIS_ALLOW_INSECURE_STARTUP is restricted to development and test "
-            "environments. Set EXEGESIS_ENVIRONMENT=development (or disable the "
+            "THEORIA_ALLOW_INSECURE_STARTUP is restricted to development and test "
+            "environments. Set THEORIA_ENVIRONMENT=development (or disable the "
             "override) before starting the service. Current environment: %s"
         )
         LOGGER.critical(message, environment or _DEFAULT_ENVIRONMENT)

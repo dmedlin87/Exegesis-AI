@@ -27,7 +27,7 @@ from exegesis.infrastructure.api.app.persistence_models import (
     GeoPlace,
     HarmonySeed,
 )
-from exegesis.application.services.geo import seed_openbible_geo
+from exegesis.services.geo import seed_openbible_geo
 
 from ..library.ingest.osis import expand_osis_reference
 

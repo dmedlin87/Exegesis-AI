@@ -13,7 +13,7 @@ RESEARCH_IMPORT_ERROR: Exception | None = None
 
 try:  # pragma: no cover - optional dependency wiring
     sqlalchemy_spec = importlib.util.find_spec("sqlalchemy")
-    EXEGESIS_spec = importlib.util.find_spec("theo")
+    EXEGESIS_spec = importlib.util.find_spec("exegesis")
     if sqlalchemy_spec is None or EXEGESIS_spec is None:
         raise ModuleNotFoundError("research fixtures dependencies not available")
 except (ModuleNotFoundError, ImportError) as exc:  # pragma: no cover - dependency missing
