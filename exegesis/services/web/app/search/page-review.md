@@ -1,0 +1,12 @@
+# Search page review (`app/search/page.tsx`)
+
+## 1) URL state sync
+- `buildQueryString` appends repeated keys when the value is an array and ignores `undefined` entries, which correctly preserves multi-valued filters without leaking `undefined` into the URL. However, scalar `null`/`undefined` entries are silently skipped, so a previously selected filter that becomes `null` will simply disappear from the query string, making “clear” vs. “unset” indistinguishable on reload. Guarding with explicit empty tokens (e.g., `?filters=`) or a filter version hash would make state restoration more deterministic.
+- `parseSearchParams` receives the stringified params, but the `searchParams` prop is typed as `Promise<Record<string, string | string[] | undefined>>`; if the upstream routing layer ever supplies non-stringables (e.g., numbers or nested objects) they will be coerced to strings by `URLSearchParams`, potentially collapsing type-specific filters. Consider validating `searchParams` before serialization or keeping the raw `URLSearchParams` passed from Next.js.
+
+## 2) Error resilience
+- Non-OK responses are parsed through `parseErrorResponse` and surfaced as structured `ErrorDetails`, which is good for guardrail visibility. Network failures/timeouts fall through to the `catch` block with a generic `"Search request failed"` when `error.message` is unavailable; there is no retry/backoff and no way to differentiate client disconnects from upstream 5xx. Wrapping `fetch` in an abort-with-timeout helper and emitting a typed error state (e.g., `kind: "timeout" | "upstream"`) would let the UI present actionable messaging.
+- The code always attempts to read `response.json()` for success paths without size guards; a truncated or malformed JSON payload after a 200 will throw into the `catch`, reporting only the generic message and losing the `x-reranker` header context. A defensive parse with a secondary `text()` fallback could preserve diagnostic detail.
+
+## 3) Performance / freshness
+- The `next` options set `revalidate: 30`, which causes incremental caching for identical query strings. For a search interface where most queries are user-specific and latency-sensitive, `revalidate: 30` risks delivering stale results across different users issuing the same query during the window. Marking this route as `force-dynamic` or `revalidate: 0` would better prioritize freshness; if cache reuse is desired for popular queries, consider keying on a hash of filters and attaching a per-filter TTL instead of a blanket 30s revalidation.
