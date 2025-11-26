@@ -77,7 +77,7 @@ export default function ChatWorkspace({
     [],
   );
 
-  const handleSampleQuestionClick = (prompt: string, index: number) => {
+  const handleSampleQuestionClick = useCallback((prompt: string, index: number) => {
     setInputValue(prompt);
     const textarea = textareaRef.current;
     if (textarea) {
@@ -95,7 +95,7 @@ export default function ChatWorkspace({
       ],
       { page: "chat" },
     );
-  };
+  }, []);
 
   // Build fallback suggestions for guardrail errors
   const buildFallbackSuggestions = useCallback(
