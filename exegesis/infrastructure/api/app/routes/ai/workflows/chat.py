@@ -10,6 +10,9 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Sequence, TypeAlias
 from uuid import uuid4
 
+import csv
+import os
+
 from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -911,6 +914,47 @@ def chat_turn(
     except Exception:  # noqa: BLE001 - plan retrieval is best-effort
         LOGGER.debug("Failed to fetch research plan for %s", session_id, exc_info=True)
         plan_snapshot = None
+
+    try:
+        memory_chars = sum(len(item) for item in (memory_context or []))
+        citation_snippets = [
+            getattr(citation, "snippet", "") or ""
+            for citation in (answer.citations or [])
+        ]
+        citation_chars = sum(len(text) for text in citation_snippets)
+        input_chars = len(question) + memory_chars + citation_chars
+
+        output_source = answer.summary or message.content
+        output_chars = len(output_source or "")
+
+        input_tokens = int(input_chars / 4) if input_chars > 0 else 0
+        output_tokens = int(output_chars / 4) if output_chars > 0 else 0
+        total_tokens = input_tokens + output_tokens
+
+        model_name = (
+            getattr(answer, "model_name", None)
+            or payload.model
+            or payload.mode_id
+            or payload.stance
+        )
+
+        timestamp = datetime.now(UTC).isoformat()
+        log_path = os.path.join("logs", "token_usage.csv")
+        os.makedirs(os.path.dirname(log_path), exist_ok=True)
+        with open(log_path, "a", newline="", encoding="utf-8") as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(
+                [
+                    timestamp,
+                    session_id,
+                    model_name,
+                    input_tokens,
+                    output_tokens,
+                    total_tokens,
+                ]
+            )
+    except Exception:
+        LOGGER.debug("Failed to write token usage metrics", exc_info=True)
 
     return ChatSessionResponse(
         session_id=session_id,
