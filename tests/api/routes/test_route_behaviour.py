@@ -169,7 +169,7 @@ def test_search_unexpected_error_returns_internal_error(
     assert TRACE_ID_HEADER_NAME in response.headers
 
 
-@pytest.mark.pgvector
+@pytest.mark.integration
 def test_chat_session_not_found_returns_domain_error(
     pgvector_migrated_database_url: str,
 ) -> None:

@@ -71,7 +71,7 @@ def _write_markdown(path: Path, title: str, body: str) -> None:
     path.write_text(frontmatter + body, encoding="utf-8")
 
 
-@pytest.mark.pgvector
+@pytest.mark.integration
 def test_pgvector_malformed_pdf_rejected(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -107,7 +107,7 @@ def test_pgvector_malformed_pdf_rejected(
     assert source_types and source_types[-1] == "pdf"
 
 
-@pytest.mark.pgvector
+@pytest.mark.integration
 def test_pgvector_large_file_records_chunk_metrics(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -160,7 +160,7 @@ def test_pgvector_large_file_records_chunk_metrics(
     assert emitted and emitted[0]["passage_count"] == passage_count
 
 
-@pytest.mark.pgvector
+@pytest.mark.integration
 def test_pgvector_concurrent_ingestion_isolated(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -253,7 +253,7 @@ class _RetryingPolicy(ErrorPolicy):
         return ErrorDecision()
 
 
-@pytest.mark.pgvector
+@pytest.mark.integration
 def test_pgvector_pipeline_recovers_from_transient_persist_failure(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
