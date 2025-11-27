@@ -44,22 +44,18 @@ def test_allow_insecure_startup_rejected_in_production(monkeypatch: pytest.Monke
         runtime.allow_insecure_startup()
 
 
-def test_resolve_environment_prefers_THEORIA_variable(monkeypatch: pytest.MonkeyPatch) -> None:
-    """THEORIA_ENVIRONMENT should take precedence over other environment hints."""
+def test_resolve_environment_prefers_EXEGESIS_variable(monkeypatch: pytest.MonkeyPatch) -> None:
+    """EXEGESIS_ENVIRONMENT should take precedence over other environment hints."""
 
     for name in [
-        "THEORIA_ENVIRONMENT",
-        "THEO_ENVIRONMENT",
         "EXEGESIS_ENVIRONMENT",
         "ENVIRONMENT",
         "EXEGESIS_PROFILE",
     ]:
         monkeypatch.delenv(name, raising=False)
 
-    monkeypatch.setenv("THEORIA_ENVIRONMENT", " Development ")
-    monkeypatch.setenv("THEO_ENVIRONMENT", "staging")
-    monkeypatch.setenv("EXEGESIS_ENVIRONMENT", "staging")
-    monkeypatch.setenv("ENVIRONMENT", "qa")
+    monkeypatch.setenv("EXEGESIS_ENVIRONMENT", " development ")
+    monkeypatch.setenv("ENVIRONMENT", "staging")
     monkeypatch.setenv("EXEGESIS_PROFILE", "local")
 
     assert runtime._resolve_environment() == "development"
@@ -69,8 +65,6 @@ def test_resolve_environment_uses_profile_fallback(monkeypatch: pytest.MonkeyPat
     """When other variables are unset, EXEGESIS_PROFILE should be used."""
 
     for name in [
-        "THEORIA_ENVIRONMENT",
-        "THEO_ENVIRONMENT",
         "EXEGESIS_ENVIRONMENT",
         "ENVIRONMENT",
         "EXEGESIS_PROFILE",
@@ -86,8 +80,6 @@ def test_resolve_environment_defaults_to_production(monkeypatch: pytest.MonkeyPa
     """If no environment variables are set, fall back to the production label."""
 
     for name in [
-        "THEORIA_ENVIRONMENT",
-        "THEO_ENVIRONMENT",
         "EXEGESIS_ENVIRONMENT",
         "ENVIRONMENT",
         "EXEGESIS_PROFILE",
@@ -101,8 +93,6 @@ def test_current_runtime_environment_exposes_resolved_label(monkeypatch: pytest.
     """Expose the same label used by allow_insecure_startup for diagnostics."""
 
     for name in [
-        "THEORIA_ENVIRONMENT",
-        "THEO_ENVIRONMENT",
         "EXEGESIS_ENVIRONMENT",
         "ENVIRONMENT",
         "EXEGESIS_PROFILE",

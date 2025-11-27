@@ -18,8 +18,6 @@ def test_allow_insecure_startup_requires_non_production_env(
 
     # Clear all env vars that _resolve_environment checks (in priority order)
     for var in (
-        "THEORIA_ENVIRONMENT",
-        "THEO_ENVIRONMENT",
         "EXEGESIS_ENVIRONMENT",
         "ENVIRONMENT",
         "EXEGESIS_PROFILE",

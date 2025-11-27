@@ -1,4 +1,4 @@
-"""Runtime feature flags for Theo Engine startup behaviours."""
+"""Runtime feature flags for Exegesis AI startup behaviours."""
 
 from __future__ import annotations
 

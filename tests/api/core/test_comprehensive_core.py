@@ -16,8 +16,10 @@ import pytest
 from hypothesis import given, settings as hypothesis_settings, strategies as st
 from sqlalchemy import text
 from sqlalchemy.exc import ProgrammingError
+from sqlalchemy.orm import Session as OrmSession
 
 from exegesis.application.facades import database as database_module
+from exegesis.application.facades import runtime as runtime_facade
 
 warnings.filterwarnings(
     "ignore",
@@ -83,7 +85,11 @@ def test_session_close_suppresses_sqlite_closed_errors(monkeypatch: pytest.Monke
     session.get_bind = MagicMock(return_value=database_module.get_engine())
     close_exc = sqlite3.ProgrammingError("database is closed")
     programming_error = ProgrammingError("SELECT 1", {}, close_exc)
-    session.close = MagicMock(side_effect=programming_error)
+
+    def _raise_close(self) -> None:  # type: ignore[override]
+        raise programming_error
+
+    monkeypatch.setattr(OrmSession, "close", _raise_close, raising=True)
     dispose_mock = MagicMock()
     monkeypatch.setattr(database_module, "dispose_sqlite_engine", dispose_mock)
     debug_logger = MagicMock()
@@ -96,9 +102,7 @@ def test_session_close_suppresses_sqlite_closed_errors(monkeypatch: pytest.Monke
 
 
 @pytest.mark.usefixtures("reset_global_state")
-def test_session_close_reraises_unexpected_programming_error(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_session_close_reraises_unexpected_programming_error(monkeypatch: pytest.MonkeyPatch) -> None:
     database_module.configure_engine("sqlite:///:memory:")
     session_generator = database_module.get_session()
     session = next(session_generator)
@@ -108,7 +112,11 @@ def test_session_close_reraises_unexpected_programming_error(
         {},
         sqlite3.ProgrammingError("connection pool exhausted"),
     )
-    session.close = MagicMock(side_effect=pool_error)
+
+    def _raise_close_error(self) -> None:  # type: ignore[override]
+        raise pool_error
+
+    monkeypatch.setattr(OrmSession, "close", _raise_close_error, raising=True)
     warning_logger = MagicMock()
     monkeypatch.setattr(database_module._LOGGER, "warning", warning_logger)
     monkeypatch.setattr(database_module, "dispose_sqlite_engine", MagicMock())
@@ -187,80 +195,83 @@ def _reranker_config(draw) -> tuple[str, str, str, str | None, str | None, bool]
 @HYPOTHESIS_SETTINGS
 @given(config=_reranker_config())
 def test_settings_reranker_validation_with_combinations(
-    monkeypatch: pytest.MonkeyPatch,
     config: tuple[str, str, str, str | None, str | None, bool],
 ) -> None:
-    (
-        reranker_enabled,
-        path_kind,
-        relative_segment,
-        registry_uri,
-        sha_value,
-        sha_valid,
-    ) = config
-    with tempfile.TemporaryDirectory() as tmpdir:
-        storage_root = Path(tmpdir)
-        monkeypatch.setenv("STORAGE_ROOT", str(storage_root))
-        monkeypatch.setenv("EXEGESIS_STORAGE_ROOT", str(storage_root))
-        monkeypatch.setenv("RERANKER_ENABLED", "1" if reranker_enabled else "0")
+    monkeypatch = pytest.MonkeyPatch()
+    try:
+        (
+            reranker_enabled,
+            path_kind,
+            relative_segment,
+            registry_uri,
+            sha_value,
+            sha_valid,
+        ) = config
+        with tempfile.TemporaryDirectory() as tmpdir:
+            storage_root = Path(tmpdir)
+            monkeypatch.setenv("STORAGE_ROOT", str(storage_root))
+            monkeypatch.setenv("EXEGESIS_STORAGE_ROOT", str(storage_root))
+            monkeypatch.setenv("RERANKER_ENABLED", "1" if reranker_enabled else "0")
 
-        if registry_uri is not None:
-            monkeypatch.setenv("RERANKER_MODEL_REGISTRY_URI", registry_uri)
-        else:
-            monkeypatch.delenv("RERANKER_MODEL_REGISTRY_URI", raising=False)
+            if registry_uri is not None:
+                monkeypatch.setenv("RERANKER_MODEL_REGISTRY_URI", registry_uri)
+            else:
+                monkeypatch.delenv("RERANKER_MODEL_REGISTRY_URI", raising=False)
 
-        if sha_value is not None:
-            monkeypatch.setenv("RERANKER_MODEL_SHA256", sha_value)
-        else:
-            monkeypatch.delenv("RERANKER_MODEL_SHA256", raising=False)
+            if sha_value is not None:
+                monkeypatch.setenv("RERANKER_MODEL_SHA256", sha_value)
+            else:
+                monkeypatch.delenv("RERANKER_MODEL_SHA256", raising=False)
 
-        if path_kind == "none":
-            monkeypatch.delenv("RERANKER_MODEL_PATH", raising=False)
-            path_value = None
-        elif path_kind == "relative":
-            path_value = relative_segment
-            monkeypatch.setenv("RERANKER_MODEL_PATH", path_value)
-        elif path_kind == "absolute_inside":
-            path_value = str((storage_root / "rerankers" / relative_segment).resolve())
-            monkeypatch.setenv("RERANKER_MODEL_PATH", path_value)
-        else:
-            path_value = str((storage_root.parent / "outside" / relative_segment).resolve())
-            monkeypatch.setenv("RERANKER_MODEL_PATH", path_value)
+            if path_kind == "none":
+                monkeypatch.delenv("RERANKER_MODEL_PATH", raising=False)
+                path_value = None
+            elif path_kind == "relative":
+                path_value = relative_segment
+                monkeypatch.setenv("RERANKER_MODEL_PATH", path_value)
+            elif path_kind == "absolute_inside":
+                path_value = str((storage_root / "rerankers" / relative_segment).resolve())
+                monkeypatch.setenv("RERANKER_MODEL_PATH", path_value)
+            else:
+                path_value = str((storage_root.parent / "outside" / relative_segment).resolve())
+                monkeypatch.setenv("RERANKER_MODEL_PATH", path_value)
 
-        should_fail = False
-        if reranker_enabled:
-            if registry_uri and path_value:
-                should_fail = True
-            elif registry_uri and sha_value:
-                should_fail = True
-            elif not path_value and sha_value:
-                should_fail = True
-            elif path_value and not sha_value:
-                should_fail = True
-            elif path_kind == "absolute_outside":
-                should_fail = True
-            elif sha_value and not sha_valid:
-                should_fail = True
+            should_fail = False
+            if reranker_enabled:
+                if registry_uri and path_value:
+                    should_fail = True
+                elif registry_uri and sha_value:
+                    should_fail = True
+                elif not path_value and sha_value:
+                    should_fail = True
+                elif path_value and not sha_value:
+                    should_fail = True
+                elif path_kind == "absolute_outside":
+                    should_fail = True
+                elif sha_value and not sha_valid:
+                    should_fail = True
 
-        monkeypatch.delenv("EXEGESIS_SETTINGS_SECRET_KEY", raising=False)
+            monkeypatch.delenv("EXEGESIS_SETTINGS_SECRET_KEY", raising=False)
 
-        exception_raised = False
-        try:
-            settings_instance = core_settings.Settings()
-        except ValueError:
-            exception_raised = True
-        else:
-            if sha_value and sha_valid:
-                assert settings_instance.reranker_model_sha256 == sha_value.lower()
-            if path_value and not should_fail:
-                assert "rerankers" in str(settings_instance.reranker_model_path)
+            exception_raised = False
+            try:
+                settings_instance = core_settings.Settings()
+            except ValueError:
+                exception_raised = True
+            else:
+                if sha_value and sha_valid:
+                    assert settings_instance.reranker_model_sha256 == sha_value.lower()
+                if path_value and not should_fail:
+                    assert "rerankers" in str(settings_instance.reranker_model_path)
 
-        assert exception_raised is should_fail
+            assert exception_raised is should_fail
+    finally:
+        monkeypatch.undo()
 
 
 def _clear_runtime_state() -> None:
-    core_runtime.allow_insecure_startup.cache_clear()
-    core_runtime.clear_generated_dev_key()
+    runtime_facade.allow_insecure_startup.cache_clear()
+    runtime_facade.clear_generated_dev_key()
 
 
 def test_is_development_environment_detects_aliases(monkeypatch: pytest.MonkeyPatch) -> None:
