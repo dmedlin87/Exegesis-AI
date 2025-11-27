@@ -16,6 +16,9 @@ from exegesis.adapters.persistence.sqlalchemy_support import (
 )
 
 from exegesis.adapters import AdapterRegistry
+from exegesis.adapters.persistence.collection_repository import (
+    SQLAlchemyCollectionRepository,
+)
 from exegesis.adapters.persistence.embedding_repository import (
     SQLAlchemyPassageEmbeddingRepository,
 )
@@ -277,6 +280,15 @@ def resolve_application() -> Tuple[ApplicationContainer, AdapterRegistry]:
         lambda: SqlAlchemyHypothesisRepositoryFactory(),
     )
 
+    # Collection repository factory - returns a factory callable
+    def _collection_repository_factory(session: Session) -> SQLAlchemyCollectionRepository:
+        return SQLAlchemyCollectionRepository(session)
+
+    registry.register(
+        "collection_repository_factory",
+        lambda: _collection_repository_factory,
+    )
+
     def _build_research_service_factory() -> Callable[[Session], ResearchService]:
         from exegesis.domain.research import fetch_dss_links
 
@@ -295,6 +307,20 @@ def resolve_application() -> Tuple[ApplicationContainer, AdapterRegistry]:
         return _factory
 
     registry.register("research_service_factory", _build_research_service_factory)
+
+    def _build_collection_service_factory():
+        """Build a factory for CollectionService instances."""
+        from exegesis.application.services.collections import CollectionService
+
+        collection_repo_factory = registry.resolve("collection_repository_factory")
+
+        def _factory(session: Session) -> CollectionService:
+            collection_repository = collection_repo_factory(session)
+            return CollectionService(collection_repository)
+
+        return _factory
+
+    registry.register("collection_service_factory", _build_collection_service_factory)
 
     def _build_embedding_rebuild_service() -> EmbeddingRebuildService:
         embeddings_module = import_module(

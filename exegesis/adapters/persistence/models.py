@@ -1520,6 +1520,93 @@ class CorpusSnapshot(Base):
     meta: Mapped[dict | list | None] = mapped_column(_JSONB, nullable=True)
 
 
+class CollectionItemType(str, Enum):
+    """Types of items that can be added to a research collection."""
+
+    DOCUMENT = "document"
+    CHAT_SESSION = "chat_session"
+    RESEARCH_NOTE = "research_note"
+    PASSAGE = "passage"
+
+
+class ResearchCollection(Base):
+    """User-created collection for organizing research materials."""
+
+    __tablename__ = "research_collections"
+    __table_args__ = (
+        Index("ix_research_collections_user_id", "user_id"),
+        {"extend_existing": True},
+    )
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    user_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    is_public: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+        nullable=False,
+    )
+
+    items: Mapped[list["CollectionItem"]] = relationship(
+        "CollectionItem",
+        back_populates="collection",
+        cascade="all, delete-orphan",
+        order_by="CollectionItem.position",
+    )
+
+
+class CollectionItem(Base):
+    """Item within a research collection, polymorphically linking to various entities."""
+
+    __tablename__ = "collection_items"
+    __table_args__ = (
+        Index("ix_collection_items_collection_id", "collection_id"),
+        Index("ix_collection_items_item_type_id", "item_type", "item_id"),
+        UniqueConstraint(
+            "collection_id",
+            "item_type",
+            "item_id",
+            name="uq_collection_items_unique_item",
+        ),
+        {"extend_existing": True},
+    )
+
+    id: Mapped[str] = mapped_column(
+        String, primary_key=True, default=lambda: str(uuid4())
+    )
+    collection_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("research_collections.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    item_type: Mapped[CollectionItemType] = mapped_column(
+        SQLEnum(CollectionItemType, name="collection_item_type"),
+        nullable=False,
+    )
+    item_id: Mapped[str] = mapped_column(String, nullable=False)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    position: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+        nullable=False,
+    )
+
+    collection: Mapped[ResearchCollection] = relationship(
+        "ResearchCollection", back_populates="items"
+    )
+
+
 class AuditLog(Base):
     """Append-only record of AI workflow activity."""
 

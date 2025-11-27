@@ -3,62 +3,58 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  FormEvent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useTransition,
+    FormEvent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+    useTransition,
 } from "react";
 
 import ErrorCallout from "../../components/ErrorCallout";
 import { useToast } from "../../components/Toast";
 import UiModeToggle from "../../components/UiModeToggle";
 import { buildPassageLink, formatAnchor } from "../../lib/api";
-import { type ErrorDetails, parseErrorResponse } from "../../lib/errorUtils";
 import { interpretApiError, type InterpretedApiError } from "../../lib/errorMessages";
+import { type ErrorDetails } from "../../lib/errorUtils";
 import type { components } from "../../lib/generated/api";
-import { emitTelemetry, submitFeedback } from "../../lib/telemetry";
 import type { FeedbackEventInput } from "../../lib/telemetry";
+import { emitTelemetry, submitFeedback } from "../../lib/telemetry";
+import { useDebounce } from "../../lib/useDebounce";
 import { usePersistentSort } from "../../lib/usePersistentSort";
 import { useUiModePreference } from "../../lib/useUiModePreference";
-import { useDebounce } from "../../lib/useDebounce";
-import { sortDocumentGroups, SortableDocumentGroup } from "../groupSorting";
-import { SortControls } from "./SortControls";
-import { DiffWorkspace } from "./DiffWorkspace";
-import { SearchSkeleton } from "./SearchSkeleton";
-import { AdvancedSearchFilters } from "./AdvancedSearchFilters";
-import { SavedSearchManager } from "./SavedSearchManager";
-import styles from "./SearchPageClient.module.css";
-import additionalStyles from "./SearchPageClient-additions.module.css";
+import { searchCorpus } from "../actions";
+import { SortableDocumentGroup, sortDocumentGroups } from "../groupSorting";
 import {
-  parseSearchParams,
-  serializeSearchParams,
-  type SearchFilters,
+    parseSearchParams,
+    serializeSearchParams,
+    type SearchFilters,
 } from "../searchParams";
+import { AdvancedSearchFilters } from "./AdvancedSearchFilters";
+import { DiffWorkspace } from "./DiffWorkspace";
 import {
-  COLLECTION_FACETS,
-  CUSTOM_PRESET_VALUE,
-  DATASET_FILTERS,
-  DATASET_LABELS,
-  DOMAIN_LABELS,
-  DOMAIN_OPTIONS,
-  getPresetLabel,
-  MODE_PRESETS,
-  SOURCE_LABELS,
-  SOURCE_OPTIONS,
-  TRADITION_LABELS,
-  TRADITION_OPTIONS,
-  VARIANT_FILTERS,
-  VARIANT_LABELS,
+    CUSTOM_PRESET_VALUE,
+    DATASET_LABELS,
+    DOMAIN_LABELS,
+    DOMAIN_OPTIONS,
+    getPresetLabel,
+    MODE_PRESETS,
+    SOURCE_LABELS,
+    TRADITION_LABELS,
+    VARIANT_LABELS
 } from "./filters/constants";
-import { useSearchFiltersState } from "./filters/useSearchFiltersState";
 import type {
-  FilterDisplay,
-  SavedSearch,
-  SavedSearchFilterChip,
+    FilterDisplay,
+    SavedSearch,
+    SavedSearchFilterChip,
 } from "./filters/types";
+import { useSearchFiltersState } from "./filters/useSearchFiltersState";
+import { SavedSearchManager } from "./SavedSearchManager";
+import additionalStyles from "./SearchPageClient-additions.module.css";
+import styles from "./SearchPageClient.module.css";
+import { SearchSkeleton } from "./SearchSkeleton";
+import { SortControls } from "./SortControls";
 
 const classNames = (
   ...classes: Array<string | false | null | undefined>
@@ -469,8 +465,14 @@ export default function SearchPageClient({
   } = useSearchFiltersState(initialFilters);
   const [isPresetPending, startPresetTransition] = useTransition();
   const [sortKey, setSortKey] = usePersistentSort();
-  const [groups, setGroups] = useState<DocumentGroup[]>(() =>
-    sortDocumentGroups(buildDocumentGroupsFromResponse(initialResults), sortKey),
+  // Store raw unsorted groups; sorting is derived via useMemo (React 19 pattern)
+  const [rawGroups, setRawGroups] = useState<DocumentGroup[]>(() =>
+    buildDocumentGroupsFromResponse(initialResults),
+  );
+  // Derived state: sorted groups computed declaratively instead of via useEffect
+  const groups = useMemo(
+    () => sortDocumentGroups(rawGroups, sortKey),
+    [rawGroups, sortKey],
   );
   const [isSearching, setIsSearching] = useState(false);
   const [searchAbortController, setSearchAbortController] = useState<AbortController | null>(null);
@@ -524,7 +526,12 @@ export default function SearchPageClient({
         })),
     [],
   );
-  const [diffSelection, setDiffSelection] = useState<string[]>([]);
+  const [diffSelectionRaw, setDiffSelectionRaw] = useState<string[]>([]);
+  // Derived state: filter invalid selections when groups change (React 19 pattern)
+  const diffSelection = useMemo(
+    () => diffSelectionRaw.filter((id) => groups.some((group) => group.documentId === id)),
+    [diffSelectionRaw, groups],
+  );
   const [lastSearchFilters, setLastSearchFilters] = useState<SearchFilters | null>(
     initialHasSearched ? { ...initialFilters } : null,
   );
@@ -575,38 +582,32 @@ export default function SearchPageClient({
       let success = false;
 
       try {
-        const searchQuery = serializeSearchParams(filters);
-        const response = await fetch(`/api/search${searchQuery ? `?${searchQuery}` : ""}`, {
-          cache: "no-store",
-          signal: abortController.signal,
-        });
-        const rerankerHeader = response.headers.get("x-reranker");
-        setRerankerName(
-          rerankerHeader && rerankerHeader.trim() ? rerankerHeader.trim() : null,
-        );
+        // React 19 pattern: Use Server Action instead of client-side fetch
+        // Benefits: type safety, reduced bundle size, no API route proxy needed
+        const result = await searchCorpus(filters);
+
+        // Check if request was cancelled while awaiting
+        if (abortController.signal.aborted) {
+          return;
+        }
+
         retrievalEnd = perf ? perf.now() : null;
-        if (!response.ok) {
-          const errorDetails = await parseErrorResponse(
-            response,
-            `Search failed with status ${response.status}`,
-          );
-          setGroups([]);
+
+        if (!result.success) {
+          setRawGroups([]);
           setError(
-            interpretApiError(errorDetails.message, {
+            interpretApiError(result.error.message, {
               feature: "search",
-              status: response.status,
-              traceId: errorDetails.traceId ?? null,
-              fallbackMessage: errorDetails.message,
+              status: result.error.status ?? null,
+              traceId: result.error.traceId ?? null,
+              fallbackMessage: result.error.message,
             }),
           );
           renderEnd = perf ? perf.now() : null;
         } else {
-          const payload = (await response.json()) as SearchResponse;
-          const nextGroups = sortDocumentGroups(
-            buildDocumentGroupsFromResponse(payload),
-            sortKey,
-          );
-          setGroups(nextGroups);
+          setRerankerName(result.rerankerName);
+          const nextGroups = buildDocumentGroupsFromResponse(result.data);
+          setRawGroups(nextGroups);
           renderEnd = perf ? perf.now() : null;
           success = true;
         }
@@ -635,7 +636,7 @@ export default function SearchPageClient({
             traceId,
           }),
         );
-        setGroups([]);
+        setRawGroups([]);
       } finally {
         setIsSearching(false);
         setSearchAbortController(null);
@@ -862,7 +863,7 @@ export default function SearchPageClient({
   );
 
   const handleToggleDiffGroup = useCallback((groupId: string) => {
-    setDiffSelection((current) => {
+    setDiffSelectionRaw((current) => {
       const exists = current.includes(groupId);
       if (exists) {
         return current.filter((id) => id !== groupId);
@@ -875,7 +876,7 @@ export default function SearchPageClient({
     });
   }, []);
 
-  const clearDiffSelection = useCallback(() => setDiffSelection([]), []);
+  const clearDiffSelection = useCallback(() => setDiffSelectionRaw([]), []);
 
   const diffSummary = useMemo<DiffSummary | null>(() => {
     if (diffSelection.length < 2) {
@@ -1042,7 +1043,7 @@ export default function SearchPageClient({
       filters.includeDisputed;
     if (!hasFilters) {
       setHasSearched(false);
-      setGroups([]);
+      setRawGroups([]);
       setError(null);
       setIsSearching(false);
       setRequestedFilters(null);
@@ -1052,15 +1053,8 @@ export default function SearchPageClient({
     setRequestedFilters(cloneFilters(filters));
   }, [arraysEqual, searchParamsString]);
 
-  useEffect(() => {
-    setGroups((currentGroups) => sortDocumentGroups(currentGroups, sortKey));
-  }, [sortKey]);
-
-  useEffect(() => {
-    setDiffSelection((current) =>
-      current.filter((id) => groups.some((group) => group.documentId === id)),
-    );
-  }, [groups]);
+  // NOTE: Sorting and diffSelection filtering removed - now computed via useMemo
+  // (derived state should be calculated during render, not via useEffect)
 
   return (
     <section className={styles["search-page"]}>

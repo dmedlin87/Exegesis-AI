@@ -1,56 +1,56 @@
 "use client";
 
+import {
+    ArrowRight,
+    BookOpen,
+    CheckCircle,
+    FileText,
+    Globe,
+    Search,
+    ThumbsDown,
+    ThumbsUp,
+    Upload as UploadIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  ArrowRight,
-  BookOpen,
-  CheckCircle,
-  FileText,
-  Globe,
-  Search,
-  ThumbsDown,
-  ThumbsUp,
-  Upload as UploadIcon,
-} from "lucide-react";
 import { FormEvent, KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLatest } from "../lib/useLatest";
 
 import ErrorCallout, { type ErrorCalloutProps } from "../components/ErrorCallout";
 import { Icon } from "../components/Icon";
-import type { ChatWorkflowClient } from "../lib/chat-client";
-import {
-  createTheoApiClient,
-  TheoApiError,
-  type ResearchPlan,
-  type ResearchPlanStepSkipPayload,
-  type ResearchPlanStepUpdatePayload,
-} from "../lib/api-client";
-import { interpretApiError } from "../lib/errorMessages";
-import type {
-  ChatSessionState,
-  ChatWorkflowStreamEvent,
-  ChatWorkflowMessage,
-  ChatSessionPreferencesPayload,
-} from "../lib/api-client";
-import {
-  type GuardrailSuggestion,
-  useGuardrailActions,
-} from "../lib/guardrails";
-import { useMode } from "../mode-context";
-import { formatEmphasisSummary } from "../mode-config";
-import { emitTelemetry, submitFeedback } from "../lib/telemetry";
-import {
-  type Reaction,
-  type ConversationEntry,
-  type AssistantConversationEntry,
-} from "./useChatWorkspaceState";
-import type { ChatSessionMemoryEntry } from "../lib/api-client";
-import { SessionControls } from "./components/SessionControls";
 import PlanPanel from "../components/PlanPanel";
+import type {
+    ChatSessionMemoryEntry,
+    ChatSessionPreferencesPayload,
+    ChatSessionState,
+    ChatWorkflowMessage,
+    ChatWorkflowStreamEvent,
+} from "../lib/api-client";
+import {
+    createTheoApiClient,
+    TheoApiError,
+    type ResearchPlanStepSkipPayload,
+    type ResearchPlanStepUpdatePayload
+} from "../lib/api-client";
+import type { ChatWorkflowClient } from "../lib/chat-client";
+import { interpretApiError } from "../lib/errorMessages";
+import {
+    useGuardrailActions,
+    type GuardrailSuggestion,
+} from "../lib/guardrails";
+import { emitTelemetry, submitFeedback } from "../lib/telemetry";
+import { formatEmphasisSummary } from "../mode-config";
+import { useMode } from "../mode-context";
+import { SessionControls } from "./components/SessionControls";
 import type { TranscriptEntry as BaseTranscriptEntry } from "./components/transcript/ChatTranscript";
+import { useChatSessionState } from "./hooks/useChatSessionState";
+import {
+    type AssistantConversationEntry,
+    type ConversationEntry,
+    type Reaction,
+} from "./useChatWorkspaceState";
 
 type TranscriptEntry = BaseTranscriptEntry & { timestamp?: Date };
-import { useChatSessionState } from "./hooks/useChatSessionState";
 
 import styles from "./ChatWorkspace.module.css";
 
@@ -125,35 +125,23 @@ export default function ChatWorkspace({
     },
     selectors: { hasTranscript },
   } = useChatSessionState();
-  const conversationRef = useRef<ConversationEntry[]>(conversation);
-  useEffect(() => {
-    conversationRef.current = conversation;
-  }, [conversation]);
-
-  const planRef = useRef<ResearchPlan | null>(plan);
-  useEffect(() => {
-    planRef.current = plan;
-  }, [plan]);
+  // Use useLatest to avoid stale closure issues in callbacks (React 19 pattern)
+  // This replaces the anti-pattern of syncing state to refs via useEffect
+  const conversationRef = useLatest(conversation);
+  const planRef = useLatest(plan);
 
   const lastPlanSessionRef = useRef<string | null>(null);
 
   const [planIsUpdating, setPlanIsUpdating] = useState(false);
   const [planError, setPlanError] = useState<string | null>(null);
 
+  // React 19 pattern: Use key-based reset instead of syncing props to state via useEffect
+  // When initialPrompt changes, render with <ChatWorkspace key={initialPrompt} initialPrompt={initialPrompt} />
   const [inputValue, setInputValue] = useState(initialPrompt ?? "");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    if (typeof initialPrompt === "string") {
-      setInputValue(initialPrompt);
-    }
-  }, [initialPrompt]);
   const abortControllerRef = useRef<AbortController | null>(null);
   const autoSubmitRef = useRef(false);
-
-  useEffect(() => {
-    autoSubmitRef.current = false;
-  }, [initialPrompt]);
 
   const sampleQuestions = useMemo(
     () => [

@@ -1,61 +1,60 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { FormEvent, useEffect, useMemo, useRef } from "react";
 
+import { ADVANCED_TOOLS } from "../chat/tools";
 import ErrorCallout from "../components/ErrorCallout";
-import styles from "./copilot-page.module.css";
 import ModeChangeBanner from "../components/ModeChangeBanner";
-import UiModeToggle from "../components/UiModeToggle";
 import { useToast } from "../components/Toast";
+import UiModeToggle from "../components/UiModeToggle";
 import { FocusTrapRegion } from "../components/a11y/FocusTrapRegion";
-import { ADVANCED_TOOLS, type AdvancedToolId } from "../chat/tools";
-import ResearchPanels from "../research/ResearchPanels";
-import { fetchResearchFeatures } from "../research/features";
-import type { ResearchFeatureFlags } from "../research/types";
-import { formatEmphasisSummary } from "../mode-config";
-import { useMode } from "../mode-context";
 import { getCitationManagerEndpoint } from "../lib/api";
 import { createTheoApiClient } from "../lib/api-client";
-import { TheoApiError } from "../lib/http";
-import { useUiModePreference } from "../lib/useUiModePreference";
-import { emitTelemetry } from "../lib/telemetry";
 import { useGuardrailActions } from "../lib/guardrails";
+import { TheoApiError } from "../lib/http";
+import { emitTelemetry } from "../lib/telemetry";
+import { useUiModePreference } from "../lib/useUiModePreference";
+import { formatEmphasisSummary } from "../mode-config";
+import { useMode } from "../mode-context";
+import ResearchPanels from "../research/ResearchPanels";
+import { fetchResearchFeatures } from "../research/features";
+import styles from "./copilot-page.module.css";
 
+import { CopilotSkeleton } from "./components/CopilotSkeleton";
 import QuickStartPresets from "./components/QuickStartPresets";
 import WorkflowFormFields from "./components/WorkflowFormFields";
 import WorkflowResultPanel from "./components/WorkflowResultPanel";
 import WorkflowSelector from "./components/WorkflowSelector";
-import workflowStyles from "./components/workflow-selector.module.css";
-import { CopilotSkeleton } from "./components/CopilotSkeleton";
+import { EXPORT_PRESETS } from "./components/export-presets";
 import type {
-  CopilotResult,
-  FeatureFlags,
-  GuardrailSuggestion,
-  QuickStartPreset,
-  RAGCitation,
-  WorkflowId,
+    CopilotResult,
+    FeatureFlags,
+    GuardrailSuggestion,
+    QuickStartPreset,
+    RAGCitation,
+    WorkflowId,
 } from "./components/types";
 import {
-  useCitationExporter,
-  useCollaborationWorkflow,
-  useComparativeWorkflow,
-  useCurationWorkflow,
-  useDevotionalWorkflow,
-  useExportWorkflow,
-  useMultimediaWorkflow,
-  useSermonWorkflow,
-  useVerseWorkflow,
-  type CollaborationFormState,
-  type ComparativeFormState,
-  type CurationFormState,
-  type DevotionalFormState,
-  type ExportFormState,
-  type MultimediaFormState,
-  type SermonFormState,
-  type VerseFormState,
+    useCitationExporter,
+    useCollaborationWorkflow,
+    useComparativeWorkflow,
+    useCurationWorkflow,
+    useDevotionalWorkflow,
+    useExportWorkflow,
+    useMultimediaWorkflow,
+    useSermonWorkflow,
+    useVerseWorkflow,
+    type CollaborationFormState,
+    type ComparativeFormState,
+    type CurationFormState,
+    type DevotionalFormState,
+    type ExportFormState,
+    type MultimediaFormState,
+    type SermonFormState,
+    type VerseFormState,
 } from "./components/workflow-hooks";
-import { EXPORT_PRESETS } from "./components/export-presets";
+import workflowStyles from "./components/workflow-selector.module.css";
 import { useCopilotWorkflowState } from "./hooks/useCopilotWorkflowState";
 
 const WORKFLOWS: { id: WorkflowId; label: string; description: string }[] = [
@@ -101,11 +100,6 @@ const QUICK_START_PRESETS: QuickStartPreset[] = [
     },
   },
 ];
-
-type ActiveToolState = {
-  id: AdvancedToolId;
-  osis?: string | null;
-};
 
 function extractCitationsFromResult(result: CopilotResult | null): RAGCitation[] {
   if (!result) {
@@ -198,17 +192,8 @@ export default function CopilotPage(): JSX.Element {
   const drawerContainerRef = useRef<HTMLElement | null>(null);
   const drawerCloseButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  useEffect(() => {
-    if (error) {
-      addToast({ type: "error", title: "Copilot error", message: error.message });
-    }
-  }, [error, addToast]);
-
-  useEffect(() => {
-    if (result) {
-      addToast({ type: "success", title: "Workflow complete", message: "Results are ready below." });
-    }
-  }, [result, addToast]);
+  // NOTE: Toast notifications moved to runWorkflow() for React 19 best practices
+  // (call side effects directly in event handlers, not via useEffect on state changes)
 
   const verseWorkflow = useVerseWorkflow(apiClient);
   const sermonWorkflow = useSermonWorkflow(apiClient);
@@ -225,6 +210,9 @@ export default function CopilotPage(): JSX.Element {
   );
   const researchLoading = researchFeatures === null && !researchFeaturesError;
   const researchEnabled = Boolean(researchFeatures?.research);
+  // React 19 pattern: Compute effective workflow inline instead of syncing via useEffect
+  // In simple mode, only "verse" workflow is allowed
+  const effectiveWorkflow = isAdvancedUi ? workflow : "verse";
   const currentFormOsis = verseWorkflow.form.useAdvanced
     ? (verseWorkflow.form.osis ?? "").trim()
     : "";
@@ -254,11 +242,8 @@ export default function CopilotPage(): JSX.Element {
     };
   }, [apiClient]);
 
-    useEffect(() => {
-      if (!isAdvancedUi && workflow !== "verse") {
-        setWorkflow("verse");
-      }
-    }, [isAdvancedUi, workflow]);
+  // NOTE: Workflow constraint effect removed (React 19 pattern)
+  // effectiveWorkflow is now computed inline above
 
     useEffect(() => {
       let active = true;
@@ -289,15 +274,8 @@ export default function CopilotPage(): JSX.Element {
       };
     }, []);
 
-  useEffect(() => {
-    if (activeTool?.id !== "verse-research") {
-      return;
-    }
-    const hintedOsis =
-      (activeTool.osis && activeTool.osis.trim()) ||
-      (verseWorkflow.form.useAdvanced ? verseWorkflow.form.osis.trim() : "");
-    setDrawerOsis(hintedOsis);
-  }, [activeTool, verseWorkflow.form.osis, verseWorkflow.form.useAdvanced]);
+  // NOTE: drawerOsis initialization moved to openResearchPanels (React 19 pattern)
+  // Set state directly in event handlers instead of syncing via useEffect
 
   const runWorkflow = async (
     overrides?: WorkflowOverrides & { workflow?: WorkflowId },
@@ -315,43 +293,47 @@ export default function CopilotPage(): JSX.Element {
     let telemetrySuccess = false;
 
     try {
-      const selectedWorkflow = overrides?.workflow ?? workflow;
+      const selectedWorkflow = overrides?.workflow ?? effectiveWorkflow;
       telemetryWorkflow = selectedWorkflow;
+      let workflowResult: CopilotResult;
       if (selectedWorkflow === "verse") {
         const payload = await verseWorkflow.run(mode.id, overrides?.verse);
         retrievalEnd = perf ? perf.now() : null;
-        setResult({ kind: "verse", payload });
+        workflowResult = { kind: "verse", payload };
       } else if (selectedWorkflow === "sermon") {
         const payload = await sermonWorkflow.run(mode.id, overrides?.sermon);
         retrievalEnd = perf ? perf.now() : null;
-        setResult({ kind: "sermon", payload });
+        workflowResult = { kind: "sermon", payload };
       } else if (selectedWorkflow === "comparative") {
         const payload = await comparativeWorkflow.run(mode.id, overrides?.comparative);
         retrievalEnd = perf ? perf.now() : null;
-        setResult({ kind: "comparative", payload });
+        workflowResult = { kind: "comparative", payload };
       } else if (selectedWorkflow === "multimedia") {
         const payload = await multimediaWorkflow.run(mode.id, overrides?.multimedia);
         retrievalEnd = perf ? perf.now() : null;
-        setResult({ kind: "multimedia", payload });
+        workflowResult = { kind: "multimedia", payload };
       } else if (selectedWorkflow === "devotional") {
         const payload = await devotionalWorkflow.run(mode.id, overrides?.devotional);
         retrievalEnd = perf ? perf.now() : null;
-        setResult({ kind: "devotional", payload });
+        workflowResult = { kind: "devotional", payload };
       } else if (selectedWorkflow === "collaboration") {
         const payload = await collaborationWorkflow.run(mode.id, overrides?.collaboration);
         retrievalEnd = perf ? perf.now() : null;
-        setResult({ kind: "collaboration", payload });
+        workflowResult = { kind: "collaboration", payload };
       } else if (selectedWorkflow === "curation") {
         const payload = await curationWorkflow.run(mode.id, overrides?.curation);
         retrievalEnd = perf ? perf.now() : null;
-        setResult({ kind: "curation", payload });
+        workflowResult = { kind: "curation", payload };
       } else if (selectedWorkflow === "export") {
         const payload = await exportWorkflow.run(mode.id, overrides?.exportPreset);
         retrievalEnd = perf ? perf.now() : null;
-        setResult({ kind: "export", payload });
+        workflowResult = { kind: "export", payload };
       } else {
         throw new Error("Unsupported workflow selection.");
       }
+      setResult(workflowResult);
+      // Toast directly in handler instead of via useEffect (React 19 pattern)
+      addToast({ type: "success", title: "Workflow complete", message: "Results are ready below." });
       telemetrySuccess = true;
       renderEnd = perf ? perf.now() : null;
     } catch (submitError) {
@@ -376,16 +358,21 @@ export default function CopilotPage(): JSX.Element {
             }
           }
         }
-        setError({
+        const errorObj = {
           message,
           ...(suggestions && suggestions.length ? { suggestions } : {}),
-        });
+        };
+        setError(errorObj);
+        // Toast directly in handler instead of via useEffect (React 19 pattern)
+        addToast({ type: "error", title: "Copilot error", message: errorObj.message });
       } else {
         const fallbackMessage =
           submitError instanceof Error && submitError.message
             ? submitError.message
             : "Unable to run the workflow";
         setError({ message: fallbackMessage });
+        // Toast directly in handler instead of via useEffect (React 19 pattern)
+        addToast({ type: "error", title: "Copilot error", message: fallbackMessage });
       }
     } finally {
       setIsRunning(false);
@@ -498,7 +485,7 @@ export default function CopilotPage(): JSX.Element {
     <>
       <WorkflowSelector
         options={WORKFLOWS}
-        selected={workflow}
+        selected={effectiveWorkflow}
         onSelect={(value) => setWorkflow(value as WorkflowId)}
       />
 
@@ -507,7 +494,13 @@ export default function CopilotPage(): JSX.Element {
   );
 
   const openResearchPanels = (osisHint?: string | null) => {
+    // React 19 pattern: Set initial value directly in event handler
+    // instead of syncing via useEffect when activeTool changes
+    const computedHint =
+      osisHint?.trim() ||
+      (verseWorkflow.form.useAdvanced ? verseWorkflow.form.osis.trim() : "");
     setActiveTool({ id: "verse-research", osis: osisHint ?? null });
+    setDrawerOsis(computedHint);
   };
 
   const closeActiveTool = () => {
@@ -641,7 +634,7 @@ export default function CopilotPage(): JSX.Element {
 
       <form onSubmit={handleSubmit} className={styles.workflowForm}>
         <WorkflowFormFields
-          workflow={workflow}
+          workflow={effectiveWorkflow}
           exportPresets={EXPORT_PRESETS}
           verse={{ form: verseWorkflow.form, onChange: verseWorkflow.setForm }}
           sermon={{ form: sermonWorkflow.form, onChange: sermonWorkflow.setForm }}
@@ -821,7 +814,7 @@ export default function CopilotPage(): JSX.Element {
           exporting={isSendingCitations}
           status={citationExportStatus}
           summary={formatEmphasisSummary(mode)}
-          workflowId={workflow}
+          workflowId={effectiveWorkflow}
         />
       )}
     </section>

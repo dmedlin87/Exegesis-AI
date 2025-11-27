@@ -1,19 +1,19 @@
 "use client";
 
 import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+    type ReactNode,
 } from "react";
 
+import { getApiBaseUrl } from "../../lib/api";
 import {
-  type ResearchMode,
-  formatEmphasisSummary,
+    formatEmphasisSummary,
+    type ResearchMode,
 } from "../../mode-config";
 import { useMode } from "../../mode-context";
-import { getApiBaseUrl } from "../../lib/api";
 import type { ResearchFeatureFlags } from "../types";
 import styles from "./TextualVariantsPanel.module.css";
 
@@ -641,9 +641,9 @@ export default function TextualVariantsPanel({
                       key={point.id}
                       title={`${point.label}${point.dateLabel ? ` · ${point.dateLabel}` : ""}`}
                       className={`${styles.chronologyPoint} ${point.disputed ? styles["chronologyPoint--disputed"] : styles["chronologyPoint--mainstream"]}`}
-                      style={{
-                        left: `calc(${ratio * 100}% - 6px)`,
-                      }}
+                      style={
+                        { "--point-left": `calc(${ratio * 100}% - 6px)` } as React.CSSProperties
+                      }
                     />
                   );
                 })}

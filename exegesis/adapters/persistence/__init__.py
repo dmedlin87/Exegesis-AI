@@ -5,6 +5,7 @@ from .base_repository import BaseRepository
 
 try:  # pragma: no cover - optional SQLAlchemy dependency in lightweight tests
     from .models import Base
+    from .collection_repository import SQLAlchemyCollectionRepository
 except ModuleNotFoundError:  # pragma: no cover - fallback when SQLAlchemy missing
     class _MissingBase:  # type: ignore[no-redef]
         def __getattr__(self, name: str) -> None:
@@ -13,6 +14,7 @@ except ModuleNotFoundError:  # pragma: no cover - fallback when SQLAlchemy missi
             )
 
     Base = _MissingBase()
+    SQLAlchemyCollectionRepository = None  # type: ignore[misc,assignment]
 
 try:  # pragma: no cover - same rationale as above
     from .sqlite import dispose_sqlite_engine
@@ -20,4 +22,9 @@ except ModuleNotFoundError:  # pragma: no cover - fallback when SQLAlchemy missi
     def dispose_sqlite_engine(*_args, **_kwargs) -> None:  # type: ignore[no-redef]
         return None
 
-__all__ = ["Base", "dispose_sqlite_engine", "BaseRepository"]
+__all__ = [
+    "Base",
+    "BaseRepository",
+    "SQLAlchemyCollectionRepository",
+    "dispose_sqlite_engine",
+]

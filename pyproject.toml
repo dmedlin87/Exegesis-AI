@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "exegesis-ai"
 version = "0.0.0"
-description = "Theo application"
+description = "Exegesis AI application"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []

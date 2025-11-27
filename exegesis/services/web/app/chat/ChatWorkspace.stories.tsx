@@ -2,10 +2,10 @@
 
 import type { ReactNode } from "react";
 
-import ChatWorkspace from "./ChatWorkspace";
 import type { ChatWorkflowClient, ChatWorkflowResult, ChatWorkflowStreamEvent } from "../lib/chat-client";
 import { DEFAULT_MODE_ID } from "../mode-config";
 import { ModeProvider } from "../mode-context";
+import ChatWorkspace from "./ChatWorkspace";
 
 type StoryMeta = { title: string; component: typeof ChatWorkspace };
 
@@ -75,7 +75,8 @@ export function Loading(): JSX.Element {
   };
   return (
     <StoryShell>
-      <ChatWorkspace client={client} initialPrompt="How does John 1 mirror Genesis 1?" autoSubmit />
+      {/* React 19 pattern: key-based reset for initialPrompt changes */}
+      <ChatWorkspace key="How does John 1 mirror Genesis 1?" client={client} initialPrompt="How does John 1 mirror Genesis 1?" autoSubmit />
     </StoryShell>
   );
 }
@@ -90,7 +91,7 @@ export function Success(): JSX.Element {
   );
   return (
     <StoryShell>
-      <ChatWorkspace client={client} initialPrompt="Summarise John 1:1" autoSubmit />
+      <ChatWorkspace key="Summarise John 1:1" client={client} initialPrompt="Summarise John 1:1" autoSubmit />
     </StoryShell>
   );
 }
@@ -144,7 +145,7 @@ export function Guardrail(): JSX.Element {
   );
   return (
     <StoryShell>
-      <ChatWorkspace client={client} initialPrompt="List controversial conspiracies" autoSubmit />
+      <ChatWorkspace key="List controversial conspiracies" client={client} initialPrompt="List controversial conspiracies" autoSubmit />
     </StoryShell>
   );
 }

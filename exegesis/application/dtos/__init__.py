@@ -6,6 +6,13 @@ ORM models directly.
 """
 
 from .chat import ChatSessionDTO
+from .collection import (
+    AddCollectionItemDTO,
+    CollectionItemDTO,
+    CollectionItemType,
+    CreateCollectionDTO,
+    ResearchCollectionDTO,
+)
 from .discovery import (
     CorpusSnapshotDTO,
     DiscoveryDTO,
@@ -19,13 +26,18 @@ from .document import (
 from .transcript import TranscriptSegmentDTO, TranscriptVideoDTO
 
 __all__ = [
-    "CorpusSnapshotDTO",
+    "AddCollectionItemDTO",
     "ChatSessionDTO",
+    "CollectionItemDTO",
+    "CollectionItemType",
+    "CorpusSnapshotDTO",
+    "CreateCollectionDTO",
     "DiscoveryDTO",
     "DiscoveryListFilters",
     "DocumentDTO",
     "DocumentSummaryDTO",
     "PassageDTO",
+    "ResearchCollectionDTO",
     "TranscriptSegmentDTO",
     "TranscriptVideoDTO",
 ]

@@ -6,12 +6,14 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover - imported for type checking only
     from .chat_repository import ChatSessionRepository
+    from .collection_repository import CollectionRepository
     from .discovery_repository import DiscoveryRepository
     from .document_repository import DocumentRepository
     from .ingestion_job_repository import IngestionJobRepository
 
 __all__ = [
     "ChatSessionRepository",
+    "CollectionRepository",
     "DiscoveryRepository",
     "DocumentRepository",
     "IngestionJobRepository",
@@ -26,6 +28,7 @@ def __getattr__(name: str):  # pragma: no cover - exercised implicitly in tests
 
     module_name = {
         "ChatSessionRepository": ".chat_repository",
+        "CollectionRepository": ".collection_repository",
         "DiscoveryRepository": ".discovery_repository",
         "DocumentRepository": ".document_repository",
         "IngestionJobRepository": ".ingestion_job_repository",
