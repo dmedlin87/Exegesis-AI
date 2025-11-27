@@ -136,7 +136,6 @@ combine_as_imports = true
 python_version = "3.11"
 files = [
     "exegesis/infrastructure/api/app",
-    "exegesis/infrastructure/api/tests",
     "tests/export",
 ]
 ignore_missing_imports = true

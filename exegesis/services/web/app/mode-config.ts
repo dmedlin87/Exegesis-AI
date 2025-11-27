@@ -71,8 +71,8 @@ export const RESEARCH_MODES: Record<ResearchModeId, ResearchMode> = {
 
 export const DEFAULT_MODE_ID: ResearchModeId = "synthesizer";
 
-export const MODE_COOKIE_KEY = "theo-mode";
-export const MODE_STORAGE_KEY = "theo.mode.preference";
+export const MODE_COOKIE_KEY = "exegesis-mode";
+export const MODE_STORAGE_KEY = "exegesis.mode.preference";
 
 export function isResearchModeId(value: unknown): value is ResearchModeId {
   return typeof value === "string" && Object.hasOwn(RESEARCH_MODES, value);

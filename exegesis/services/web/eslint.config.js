@@ -2,14 +2,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import js from '@eslint/js';
-import globals from 'globals';
-import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
+import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import promisePlugin from 'eslint-plugin-promise';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
-import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
-import theoriaPlugin from './eslint-rules/index.js';
+import globals from 'globals';
 import qualityBaseline from './config/ui-quality-baseline.json' with { type: 'json' };
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -50,7 +49,7 @@ export default [
       react: reactPlugin,
       'react-hooks': reactHooksPlugin,
       'jsx-a11y': jsxA11yPlugin,
-      theoria: theoriaPlugin,
+      exegesis: exegesisPlugin,
     },
     settings: {
       react: {
@@ -77,7 +76,7 @@ export default [
       'jsx-a11y/no-noninteractive-tabindex': 'off',
       'no-redeclare': 'off',
       'no-useless-escape': 'off',
-      'theoria/no-inline-styles': [
+      'exegesis/no-inline-styles': [
         'error',
         {
           rootDir: __dirname,
@@ -85,7 +84,7 @@ export default [
           default: 0,
         },
       ],
-      'theoria/component-max-lines': [
+      'exegesis/component-max-lines': [
         'error',
         {
           rootDir: __dirname,

@@ -14,7 +14,7 @@ import { ModeProvider, ModeSwitcher } from "./mode-context";
 import "./theme.css";
 
 export const metadata = {
-  title: "Theoria",
+  title: "Exegesis AI",
   description: "Research engine for theology",
   manifest: "/manifest.json",
   themeColor: [
@@ -24,7 +24,7 @@ export const metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Theoria"
+    title: "Exegesis AI"
   },
   viewport: {
     width: "device-width",
@@ -106,7 +106,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     });
   }
 
-  const footerMeta = `© ${new Date().getFullYear()} Theoria • UI v2 preview`;
+  const footerMeta = `© ${new Date().getFullYear()} Exegesis AI • UI v2 preview`;
 
   return (
     <html lang="en">
@@ -134,7 +134,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   <header className="site-header">
                     <div className="container site-header__content">
                       <Link href="/" className="brand">
-                        Theoria
+                        Exegesis AI
                       </Link>
                       <nav className="site-nav" aria-label="Primary">
                         {[...NAV_LINKS, ...adminLinks].map((item) => (

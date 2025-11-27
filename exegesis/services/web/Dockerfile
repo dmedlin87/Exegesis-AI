@@ -1,12 +1,12 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
-COPY theo/services/web/package.json theo/services/web/package-lock.json ./
+COPY exegesis/services/web/package.json exegesis/services/web/package-lock.json ./
 RUN npm ci
 
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY theo/services/web/ ./
+COPY exegesis/services/web/ ./
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 

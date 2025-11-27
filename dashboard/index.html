@@ -1,440 +1,649 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Theoria Service Dashboard</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-      
-      body {
-        margin: 0;
-        font-family: 'Inter', sans-serif;
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-        color: #f1f5f9;
-        min-height: 100vh;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-      
-      header {
-        padding: 2rem 1.5rem;
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-      }
-      
-      header h1 {
-        margin: 0 0 0.5rem;
-        font-size: 2rem;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        background: linear-gradient(135deg, #f1f5f9 0%, #818cf8 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      
-      header p {
-        margin: 0;
-        font-size: 0.9375rem;
-        color: #94a3b8;
-        font-weight: 500;
-      }
-      
-      main {
-        padding: 2rem 1.5rem;
-        max-width: 1400px;
-        margin: 0 auto;
-      }
-      
-      .error-banner {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%);
-        border: 1.5px solid rgba(239, 68, 68, 0.4);
-        border-radius: 12px;
-        padding: 1.25rem 1.5rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        animation: slideIn 0.3s ease;
-      }
-      
-      .error-icon {
-        font-size: 1.5rem;
-        flex-shrink: 0;
-      }
-      
-      .error-banner p {
-        margin: 0;
-        font-weight: 500;
-        color: #fca5a5;
-      }
-      
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 1.5rem;
-      }
-      
-      .card {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.6) 100%);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(148, 163, 184, 0.1);
-        border-radius: 16px;
-        padding: 1.75rem;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-      }
-      
-      .card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #818cf8 0%, #6366f1 100%);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-      
-      .card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.3);
-        border-color: rgba(129, 140, 248, 0.3);
-      }
-      
-      .card:hover::before {
-        opacity: 1;
-      }
-      
-      .card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1.25rem;
-        gap: 1rem;
-      }
-      
-      .card h2 {
-        margin: 0;
-        font-size: 1.125rem;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        color: #e2e8f0;
-      }
-      
-      .status {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        border-radius: 999px;
-        font-weight: 600;
-        font-size: 0.8125rem;
-        background: rgba(15, 23, 42, 0.5);
-        border: 1.5px solid;
-        transition: all 0.2s ease;
-      }
-      
-      .status.healthy {
-        border-color: rgba(34, 197, 94, 0.5);
-        color: #4ade80;
-        background: rgba(34, 197, 94, 0.12);
-      }
-      
-      .status.degraded {
-        border-color: rgba(239, 68, 68, 0.5);
-        color: #f87171;
-        background: rgba(239, 68, 68, 0.12);
-      }
-      
-      .status-indicator {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        position: relative;
-        animation: pulse 2s ease-in-out infinite;
-      }
-      
-      .status-indicator.healthy {
-        background: #22c55e;
-        box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
-      }
-      
-      .status-indicator.degraded {
-        background: #ef4444;
-        box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
-      }
-      
-      @keyframes pulse {
-        0%, 100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.7;
-        }
-      }
-      
-      @keyframes slideIn {
-        from {
-          opacity: 0;
-          transform: translateY(-12px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      
-      .metrics-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-      }
-      
-      .metric {
-        background: rgba(15, 23, 42, 0.4);
-        border: 1px solid rgba(148, 163, 184, 0.08);
-        border-radius: 10px;
-        padding: 1rem;
-        transition: all 0.2s ease;
-      }
-      
-      .metric:hover {
-        background: rgba(15, 23, 42, 0.6);
-        border-color: rgba(129, 140, 248, 0.2);
-      }
-      
-      .metric-label {
-        display: block;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #94a3b8;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-      }
-      
-      .metric-value {
-        display: block;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #f1f5f9;
-        font-variant-numeric: tabular-nums;
-        line-height: 1.2;
-      }
-      
-      .metric-value.warning {
-        color: #fbbf24;
-      }
-      
-      .metric-value.danger {
-        color: #f87171;
-      }
-      
-      .metric-icon {
-        font-size: 0.875rem;
-        color: #64748b;
-        margin-left: 0.25rem;
-      }
-      
-      @media (max-width: 768px) {
-        header h1 {
-          font-size: 1.5rem;
-        }
-        
-        .grid {
-          grid-template-columns: 1fr;
-        }
-        
-        .metrics-grid {
-          grid-template-columns: 1fr;
-        }
-        
-        main {
-          padding: 1.5rem 1rem;
-        }
-      }
-      
-      @media (prefers-reduced-motion: reduce) {
-        * {
-          animation: none !important;
-          transition: none !important;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script type="module">
-      const { useEffect, useState } = React;
-
-      function parseMetrics(text) {
-        const lines = text.split('\n').filter(Boolean);
-        const metrics = {};
-        for (const line of lines) {
-          if (line.startsWith('#')) continue;
-          const match = line.match(/^(\w+){([^}]*)}\s+([0-9eE+\-.]+)/);
-          let metricName, labels, value;
-          if (match) {
-            [, metricName, labelString, value] = match;
-            labels = Object.fromEntries(
-              labelString.split(',').map((kv) => kv.split('=').map((v) => v.replace(/"/g, '')))
-            );
-          } else {
-            const fallback = line.match(/^(\w+)\s+([0-9eE+\-.]+)/);
-            if (!fallback) continue;
-            [, metricName, value] = fallback;
-            labels = { service: 'manager' };
-          }
-          const key = labels.service || 'default';
-          metrics[key] = metrics[key] || {};
-          metrics[key][metricName] = Number(value);
-        }
-        return metrics;
-      }
-
-      function Dashboard() {
-        const [metrics, setMetrics] = useState({});
-        const [error, setError] = useState(null);
-        const metricsUrl = window.METRICS_URL || 'http://localhost:9101/metrics';
-
-        useEffect(() => {
-          const fetchMetrics = async () => {
-            try {
-              const response = await fetch(metricsUrl);
-              if (!response.ok) throw new Error(`Request failed: ${response.status}`);
-              const text = await response.text();
-              setMetrics(parseMetrics(text));
-              setError(null);
-            } catch (err) {
-              setError(err.message);
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Exegesis AI Service Dashboard</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            * {
+                box-sizing: border-box;
             }
-          };
 
-          fetchMetrics();
-          const interval = setInterval(fetchMetrics, 5000);
-          return () => clearInterval(interval);
-        }, [metricsUrl]);
-
-        const services = Object.keys(metrics);
-
-        return React.createElement('div', null,
-          React.createElement('header', null,
-            React.createElement('h1', null, 'Theoria Service Health'),
-            React.createElement('p', null, 'Real-time monitoring dashboard • Updates every 5 seconds')
-          ),
-          React.createElement('main', null,
-            error && React.createElement('div', { className: 'error-banner' },
-              React.createElement('span', { className: 'error-icon' }, '⚠️'),
-              React.createElement('p', null, `Metrics unavailable: ${error}`)
-            ),
-            services.length === 0 && !error && React.createElement('div', { className: 'error-banner' },
-              React.createElement('span', { className: 'error-icon' }, 'ℹ️'),
-              React.createElement('p', null, 'Waiting for service metrics...')
-            ),
-            React.createElement('section', { className: 'grid' },
-              services.map((service) => {
-                const data = metrics[service];
-                const isHealthy = data.theoria_service_status === 1;
-                const status = isHealthy ? 'Healthy' : 'Degraded';
-                const statusClass = isHealthy ? 'healthy' : 'degraded';
-                const restarts = data.theoria_service_restarts ?? 0;
-                const avgResponse = data.theoria_service_average_response_ms ?? 0;
-                const memoryMB = data.theoria_service_working_set_bytes 
-                  ? (data.theoria_service_working_set_bytes / (1024 * 1024)) 
-                  : 0;
-
-                return React.createElement('div', { key: service, className: 'card' },
-                  React.createElement('div', { className: 'card-header' },
-                    React.createElement('h2', null, service.toUpperCase()),
-                    React.createElement('div', { className: `status ${statusClass}` },
-                      React.createElement('span', { className: `status-indicator ${statusClass}` }),
-                      status
-                    )
-                  ),
-                  React.createElement('div', { className: 'metrics-grid' },
-                    React.createElement('div', { className: 'metric' },
-                      React.createElement('span', { className: 'metric-label' }, 'Uptime'),
-                      React.createElement('span', { className: 'metric-value' },
-                        formatUptime(data.theoria_service_uptime_seconds ?? 0)
-                      )
-                    ),
-                    React.createElement('div', { className: 'metric' },
-                      React.createElement('span', { className: 'metric-label' }, 'Restarts'),
-                      React.createElement('span', { 
-                        className: `metric-value ${restarts > 0 ? 'warning' : ''}` 
-                      }, restarts)
-                    ),
-                    React.createElement('div', { className: 'metric' },
-                      React.createElement('span', { className: 'metric-label' }, 'Avg Response'),
-                      React.createElement('span', { 
-                        className: `metric-value ${avgResponse > 500 ? 'warning' : avgResponse > 1000 ? 'danger' : ''}` 
-                      }, 
-                        `${avgResponse.toFixed(1)}`,
-                        React.createElement('span', { className: 'metric-icon' }, 'ms')
-                      )
-                    ),
-                    React.createElement('div', { className: 'metric' },
-                      React.createElement('span', { className: 'metric-label' }, 'Last Response'),
-                      React.createElement('span', { className: 'metric-value' },
-                        `${(data.theoria_service_last_response_ms ?? 0).toFixed(1)}`,
-                        React.createElement('span', { className: 'metric-icon' }, 'ms')
-                      )
-                    ),
-                    React.createElement('div', { className: 'metric' },
-                      React.createElement('span', { className: 'metric-label' }, 'CPU Time'),
-                      React.createElement('span', { className: 'metric-value' },
-                        `${(data.theoria_service_cpu_seconds_total ?? 0).toFixed(1)}`,
-                        React.createElement('span', { className: 'metric-icon' }, 's')
-                      )
-                    ),
-                    React.createElement('div', { className: 'metric' },
-                      React.createElement('span', { className: 'metric-label' }, 'Memory'),
-                      React.createElement('span', { 
-                        className: `metric-value ${memoryMB > 500 ? 'warning' : memoryMB > 1000 ? 'danger' : ''}` 
-                      },
-                        memoryMB > 0 ? `${memoryMB.toFixed(0)}` : 'N/A',
-                        memoryMB > 0 && React.createElement('span', { className: 'metric-icon' }, 'MB')
-                      )
-                    )
-                  )
+            body {
+                margin: 0;
+                font-family: "Inter", sans-serif;
+                background: linear-gradient(
+                    135deg,
+                    #0f172a 0%,
+                    #1e293b 50%,
+                    #334155 100%
                 );
-              })
-            )
-          )
-        );
-      }
+                color: #f1f5f9;
+                min-height: 100vh;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
 
-      function formatUptime(seconds) {
-        if (seconds < 60) return `${seconds.toFixed(0)}s`;
-        if (seconds < 3600) return `${(seconds / 60).toFixed(1)}m`;
-        if (seconds < 86400) return `${(seconds / 3600).toFixed(1)}h`;
-        return `${(seconds / 86400).toFixed(1)}d`;
-      }
+            header {
+                padding: 2rem 1.5rem;
+                background: linear-gradient(
+                    135deg,
+                    rgba(30, 41, 59, 0.95) 0%,
+                    rgba(15, 23, 42, 0.95) 100%
+                );
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+                box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
 
-      ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Dashboard));
-    </script>
-  </body>
+            header h1 {
+                margin: 0 0 0.5rem;
+                font-size: 2rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+                background: linear-gradient(135deg, #f1f5f9 0%, #818cf8 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            header p {
+                margin: 0;
+                font-size: 0.9375rem;
+                color: #94a3b8;
+                font-weight: 500;
+            }
+
+            main {
+                padding: 2rem 1.5rem;
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+
+            .error-banner {
+                background: linear-gradient(
+                    135deg,
+                    rgba(239, 68, 68, 0.15) 0%,
+                    rgba(220, 38, 38, 0.15) 100%
+                );
+                border: 1.5px solid rgba(239, 68, 68, 0.4);
+                border-radius: 12px;
+                padding: 1.25rem 1.5rem;
+                margin-bottom: 1.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                animation: slideIn 0.3s ease;
+            }
+
+            .error-icon {
+                font-size: 1.5rem;
+                flex-shrink: 0;
+            }
+
+            .error-banner p {
+                margin: 0;
+                font-weight: 500;
+                color: #fca5a5;
+            }
+
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .card {
+                background: linear-gradient(
+                    135deg,
+                    rgba(30, 41, 59, 0.6) 0%,
+                    rgba(15, 23, 42, 0.6) 100%
+                );
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+                border: 1px solid rgba(148, 163, 184, 0.1);
+                border-radius: 16px;
+                padding: 1.75rem;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .card::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, #818cf8 0%, #6366f1 100%);
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 20px 48px rgba(0, 0, 0, 0.3);
+                border-color: rgba(129, 140, 248, 0.3);
+            }
+
+            .card:hover::before {
+                opacity: 1;
+            }
+
+            .card-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 1.25rem;
+                gap: 1rem;
+            }
+
+            .card h2 {
+                margin: 0;
+                font-size: 1.125rem;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                color: #e2e8f0;
+            }
+
+            .status {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 1rem;
+                border-radius: 999px;
+                font-weight: 600;
+                font-size: 0.8125rem;
+                background: rgba(15, 23, 42, 0.5);
+                border: 1.5px solid;
+                transition: all 0.2s ease;
+            }
+
+            .status.healthy {
+                border-color: rgba(34, 197, 94, 0.5);
+                color: #4ade80;
+                background: rgba(34, 197, 94, 0.12);
+            }
+
+            .status.degraded {
+                border-color: rgba(239, 68, 68, 0.5);
+                color: #f87171;
+                background: rgba(239, 68, 68, 0.12);
+            }
+
+            .status-indicator {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                position: relative;
+                animation: pulse 2s ease-in-out infinite;
+            }
+
+            .status-indicator.healthy {
+                background: #22c55e;
+                box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+            }
+
+            .status-indicator.degraded {
+                background: #ef4444;
+                box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+            }
+
+            @keyframes pulse {
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.7;
+                }
+            }
+
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-12px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .metrics-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .metric {
+                background: rgba(15, 23, 42, 0.4);
+                border: 1px solid rgba(148, 163, 184, 0.08);
+                border-radius: 10px;
+                padding: 1rem;
+                transition: all 0.2s ease;
+            }
+
+            .metric:hover {
+                background: rgba(15, 23, 42, 0.6);
+                border-color: rgba(129, 140, 248, 0.2);
+            }
+
+            .metric-label {
+                display: block;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: #94a3b8;
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+            }
+
+            .metric-value {
+                display: block;
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #f1f5f9;
+                font-variant-numeric: tabular-nums;
+                line-height: 1.2;
+            }
+
+            .metric-value.warning {
+                color: #fbbf24;
+            }
+
+            .metric-value.danger {
+                color: #f87171;
+            }
+
+            .metric-icon {
+                font-size: 0.875rem;
+                color: #64748b;
+                margin-left: 0.25rem;
+            }
+
+            @media (max-width: 768px) {
+                header h1 {
+                    font-size: 1.5rem;
+                }
+
+                .grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .metrics-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                main {
+                    padding: 1.5rem 1rem;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                * {
+                    animation: none !important;
+                    transition: none !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script
+            crossorigin
+            src="https://unpkg.com/react@18/umd/react.production.min.js"
+        ></script>
+        <script
+            crossorigin
+            src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+        ></script>
+        <script type="module">
+            const { useEffect, useState } = React;
+
+            function parseMetrics(text) {
+                const lines = text.split("\n").filter(Boolean);
+                const metrics = {};
+                for (const line of lines) {
+                    if (line.startsWith("#")) continue;
+                    const match = line.match(
+                        /^(\w+){([^}]*)}\s+([0-9eE+\-.]+)/
+                    );
+                    let metricName, labels, value;
+                    if (match) {
+                        [, metricName, labelString, value] = match;
+                        labels = Object.fromEntries(
+                            labelString
+                                .split(",")
+                                .map((kv) =>
+                                    kv
+                                        .split("=")
+                                        .map((v) => v.replace(/"/g, ""))
+                                )
+                        );
+                    } else {
+                        const fallback = line.match(/^(\w+)\s+([0-9eE+\-.]+)/);
+                        if (!fallback) continue;
+                        [, metricName, value] = fallback;
+                        labels = { service: "manager" };
+                    }
+                    const key = labels.service || "default";
+                    metrics[key] = metrics[key] || {};
+                    metrics[key][metricName] = Number(value);
+                }
+                return metrics;
+            }
+
+            function Dashboard() {
+                const [metrics, setMetrics] = useState({});
+                const [error, setError] = useState(null);
+                const metricsUrl =
+                    window.METRICS_URL || "http://localhost:9101/metrics";
+
+                useEffect(() => {
+                    const fetchMetrics = async () => {
+                        try {
+                            const response = await fetch(metricsUrl);
+                            if (!response.ok)
+                                throw new Error(
+                                    `Request failed: ${response.status}`
+                                );
+                            const text = await response.text();
+                            setMetrics(parseMetrics(text));
+                            setError(null);
+                        } catch (err) {
+                            setError(err.message);
+                        }
+                    };
+
+                    fetchMetrics();
+                    const interval = setInterval(fetchMetrics, 5000);
+                    return () => clearInterval(interval);
+                }, [metricsUrl]);
+
+                const services = Object.keys(metrics);
+
+                return React.createElement(
+                    "div",
+                    null,
+                    React.createElement(
+                        "header",
+                        null,
+                        React.createElement(
+                            "h1",
+                            null,
+                            "Exegesis AI Service Health"
+                        ),
+                        React.createElement(
+                            "p",
+                            null,
+                            "Real-time monitoring dashboard • Updates every 5 seconds"
+                        )
+                    ),
+                    React.createElement(
+                        "main",
+                        null,
+                        error &&
+                            React.createElement(
+                                "div",
+                                { className: "error-banner" },
+                                React.createElement(
+                                    "span",
+                                    { className: "error-icon" },
+                                    "⚠️"
+                                ),
+                                React.createElement(
+                                    "p",
+                                    null,
+                                    `Metrics unavailable: ${error}`
+                                )
+                            ),
+                        services.length === 0 &&
+                            !error &&
+                            React.createElement(
+                                "div",
+                                { className: "error-banner" },
+                                React.createElement(
+                                    "span",
+                                    { className: "error-icon" },
+                                    "ℹ️"
+                                ),
+                                React.createElement(
+                                    "p",
+                                    null,
+                                    "Waiting for service metrics..."
+                                )
+                            ),
+                        React.createElement(
+                            "section",
+                            { className: "grid" },
+                            services.map((service) => {
+                                const data = metrics[service];
+                                const isHealthy =
+                                    data.exegesis_service_status === 1;
+                                const status = isHealthy
+                                    ? "Healthy"
+                                    : "Degraded";
+                                const statusClass = isHealthy
+                                    ? "healthy"
+                                    : "degraded";
+                                const restarts =
+                                    data.exegesis_service_restarts ?? 0;
+                                const avgResponse =
+                                    data.exegesis_service_average_response_ms ??
+                                    0;
+                                const memoryMB =
+                                    data.exegesis_service_working_set_bytes
+                                        ? data.exegesis_service_working_set_bytes /
+                                          (1024 * 1024)
+                                        : 0;
+
+                                return React.createElement(
+                                    "div",
+                                    { key: service, className: "card" },
+                                    React.createElement(
+                                        "div",
+                                        { className: "card-header" },
+                                        React.createElement(
+                                            "h2",
+                                            null,
+                                            service.toUpperCase()
+                                        ),
+                                        React.createElement(
+                                            "div",
+                                            {
+                                                className: `status ${statusClass}`,
+                                            },
+                                            React.createElement("span", {
+                                                className: `status-indicator ${statusClass}`,
+                                            }),
+                                            status
+                                        )
+                                    ),
+                                    React.createElement(
+                                        "div",
+                                        { className: "metrics-grid" },
+                                        React.createElement(
+                                            "div",
+                                            { className: "metric" },
+                                            React.createElement(
+                                                "span",
+                                                { className: "metric-label" },
+                                                "Uptime"
+                                            ),
+                                            React.createElement(
+                                                "span",
+                                                { className: "metric-value" },
+                                                formatUptime(
+                                                    data.exegesis_service_uptime_seconds ??
+                                                        0
+                                                )
+                                            )
+                                        ),
+                                        React.createElement(
+                                            "div",
+                                            { className: "metric" },
+                                            React.createElement(
+                                                "span",
+                                                { className: "metric-label" },
+                                                "Restarts"
+                                            ),
+                                            React.createElement(
+                                                "span",
+                                                {
+                                                    className: `metric-value ${
+                                                        restarts > 0
+                                                            ? "warning"
+                                                            : ""
+                                                    }`,
+                                                },
+                                                restarts
+                                            )
+                                        ),
+                                        React.createElement(
+                                            "div",
+                                            { className: "metric" },
+                                            React.createElement(
+                                                "span",
+                                                { className: "metric-label" },
+                                                "Avg Response"
+                                            ),
+                                            React.createElement(
+                                                "span",
+                                                {
+                                                    className: `metric-value ${
+                                                        avgResponse > 500
+                                                            ? "warning"
+                                                            : avgResponse > 1000
+                                                            ? "danger"
+                                                            : ""
+                                                    }`,
+                                                },
+                                                `${avgResponse.toFixed(1)}`,
+                                                React.createElement(
+                                                    "span",
+                                                    {
+                                                        className:
+                                                            "metric-icon",
+                                                    },
+                                                    "ms"
+                                                )
+                                            )
+                                        ),
+                                        React.createElement(
+                                            "div",
+                                            { className: "metric" },
+                                            React.createElement(
+                                                "span",
+                                                { className: "metric-label" },
+                                                "Last Response"
+                                            ),
+                                            React.createElement(
+                                                "span",
+                                                { className: "metric-value" },
+                                                `${(
+                                                    data.exegesis_service_last_response_ms ??
+                                                    0
+                                                ).toFixed(1)}`,
+                                                React.createElement(
+                                                    "span",
+                                                    {
+                                                        className:
+                                                            "metric-icon",
+                                                    },
+                                                    "ms"
+                                                )
+                                            )
+                                        ),
+                                        React.createElement(
+                                            "div",
+                                            { className: "metric" },
+                                            React.createElement(
+                                                "span",
+                                                { className: "metric-label" },
+                                                "CPU Time"
+                                            ),
+                                            React.createElement(
+                                                "span",
+                                                { className: "metric-value" },
+                                                `${(
+                                                    data.exegesis_service_cpu_seconds_total ??
+                                                    0
+                                                ).toFixed(1)}`,
+                                                React.createElement(
+                                                    "span",
+                                                    {
+                                                        className:
+                                                            "metric-icon",
+                                                    },
+                                                    "s"
+                                                )
+                                            )
+                                        ),
+                                        React.createElement(
+                                            "div",
+                                            { className: "metric" },
+                                            React.createElement(
+                                                "span",
+                                                { className: "metric-label" },
+                                                "Memory"
+                                            ),
+                                            React.createElement(
+                                                "span",
+                                                {
+                                                    className: `metric-value ${
+                                                        memoryMB > 500
+                                                            ? "warning"
+                                                            : memoryMB > 1000
+                                                            ? "danger"
+                                                            : ""
+                                                    }`,
+                                                },
+                                                memoryMB > 0
+                                                    ? `${memoryMB.toFixed(0)}`
+                                                    : "N/A",
+                                                memoryMB > 0 &&
+                                                    React.createElement(
+                                                        "span",
+                                                        {
+                                                            className:
+                                                                "metric-icon",
+                                                        },
+                                                        "MB"
+                                                    )
+                                            )
+                                        )
+                                    )
+                                );
+                            })
+                        )
+                    )
+                );
+            }
+
+            function formatUptime(seconds) {
+                if (seconds < 60) return `${seconds.toFixed(0)}s`;
+                if (seconds < 3600) return `${(seconds / 60).toFixed(1)}m`;
+                if (seconds < 86400) return `${(seconds / 3600).toFixed(1)}h`;
+                return `${(seconds / 86400).toFixed(1)}d`;
+            }
+
+            ReactDOM.createRoot(document.getElementById("root")).render(
+                React.createElement(Dashboard)
+            );
+        </script>
+    </body>
 </html>

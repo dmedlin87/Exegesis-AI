@@ -4,18 +4,18 @@ import { useEffect, useMemo, useState } from "react";
 import styles from "./DigestDashboard.module.css";
 
 import FormError from "../../components/FormError";
-import { createTheoApiClient } from "../../lib/api-client";
+import { createExegesisApiClient } from "../../lib/api-client";
 import DigestOverview from "./components/DigestOverview";
 import WatchlistCreationForm from "./components/WatchlistCreationForm";
 import WatchlistEventsPanel from "./components/WatchlistEventsPanel";
 import WatchlistRunSummary from "./components/WatchlistRunSummary";
 import WatchlistTable from "./components/WatchlistTable";
 import {
-  useCommaListHelpers,
-  useTopicDigest,
-  useWatchlistCrud,
-  useWatchlistEvents,
-  useWatchlistPagination,
+    useCommaListHelpers,
+    useTopicDigest,
+    useWatchlistCrud,
+    useWatchlistEvents,
+    useWatchlistPagination,
 } from "./hooks";
 import type { WatchlistResponse, WatchlistRunResponse } from "./types";
 
@@ -30,7 +30,7 @@ function formatDate(value: string | null): string {
 }
 
 export default function DigestDashboard(): JSX.Element {
-  const apiClient = useMemo(() => createTheoApiClient(), []);
+  const apiClient = useMemo(() => createExegesisApiClient(), []);
   const topicDigest = useTopicDigest(apiClient);
   const watchlistCrud = useWatchlistCrud(apiClient);
   const pagination = useWatchlistPagination(watchlistCrud.watchlists, PAGE_SIZE);

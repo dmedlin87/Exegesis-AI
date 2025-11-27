@@ -1,13 +1,13 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 
-import type { TheoApiClient } from "../../lib/api-client";
-import { createTheoApiClient } from "../../lib/api-client";
+import type { ExegesisApiClient } from "../../lib/api-client";
+import { createExegesisApiClient } from "../../lib/api-client";
 import type {
-  CreateWatchlistPayload,
-  TopicDigest,
-  WatchlistResponse,
-  WatchlistRunResponse,
-  WatchlistUpdatePayload,
+    CreateWatchlistPayload,
+    TopicDigest,
+    WatchlistResponse,
+    WatchlistRunResponse,
+    WatchlistUpdatePayload,
 } from "./types";
 
 function buildCommaList(values: string[] | null | undefined): string {
@@ -35,8 +35,8 @@ type TopicDigestState = {
   setError: (value: string | null) => void;
 };
 
-export function useTopicDigest(client?: TheoApiClient): TopicDigestState {
-  const api = useMemo(() => client ?? createTheoApiClient(), [client]);
+export function useTopicDigest(client?: ExegesisApiClient): TopicDigestState {
+  const api = useMemo(() => client ?? createExegesisApiClient(), [client]);
   const [digest, setDigest] = useState<TopicDigest | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -90,8 +90,8 @@ type WatchlistCrudState = {
   setError: (value: string | null) => void;
 };
 
-export function useWatchlistCrud(client?: TheoApiClient): WatchlistCrudState {
-  const api = useMemo(() => client ?? createTheoApiClient(), [client]);
+export function useWatchlistCrud(client?: ExegesisApiClient): WatchlistCrudState {
+  const api = useMemo(() => client ?? createExegesisApiClient(), [client]);
   const [watchlists, setWatchlists] = useState<WatchlistResponse[]>([]);
   const [loadedFor, setLoadedFor] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -267,8 +267,8 @@ export function useWatchlistPagination(watchlists: WatchlistResponse[], pageSize
     cancelEventsRequest: () => void;
   };
 
-  export function useWatchlistEvents(client?: TheoApiClient): WatchlistEventState {
-    const api = useMemo(() => client ?? createTheoApiClient(), [client]);
+  export function useWatchlistEvents(client?: ExegesisApiClient): WatchlistEventState {
+    const api = useMemo(() => client ?? createExegesisApiClient(), [client]);
     const [events, setEvents] = useState<WatchlistRunResponse[]>([]);
     const [eventsLoading, setEventsLoading] = useState(false);
     const [eventsError, setEventsError] = useState<string | null>(null);

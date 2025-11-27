@@ -9,13 +9,13 @@ interface MetricCardProps {
 }
 
 export const MetricCard: React.FC<MetricCardProps> = ({ serviceName, data }) => {
-  const isHealthy = data.theoria_service_status === 1;
+  const isHealthy = data.exegesis_service_status === 1;
   const status = isHealthy ? STATUS_COPY.healthy : STATUS_COPY.degraded;
   const statusClass = isHealthy ? 'healthy' : 'degraded';
-  const restarts = data.theoria_service_restarts ?? 0;
-  const avgResponse = data.theoria_service_average_response_ms ?? 0;
-  const memoryMB = data.theoria_service_working_set_bytes
-    ? data.theoria_service_working_set_bytes / (1024 * 1024)
+  const restarts = data.exegesis_service_restarts ?? 0;
+  const avgResponse = data.exegesis_service_average_response_ms ?? 0;
+  const memoryMB = data.exegesis_service_working_set_bytes
+    ? data.exegesis_service_working_set_bytes / (1024 * 1024)
     : 0;
 
   return (
@@ -31,7 +31,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({ serviceName, data }) => 
         <div className="metric">
           <span className="metric-label">{METRIC_LABELS.uptime}</span>
           <span className="metric-value">
-            {formatUptime(data.theoria_service_uptime_seconds ?? 0)}
+            {formatUptime(data.exegesis_service_uptime_seconds ?? 0)}
           </span>
         </div>
         <div className="metric">
@@ -54,14 +54,14 @@ export const MetricCard: React.FC<MetricCardProps> = ({ serviceName, data }) => 
         <div className="metric">
           <span className="metric-label">{METRIC_LABELS.lastResponse}</span>
           <span className="metric-value">
-            {(data.theoria_service_last_response_ms ?? 0).toFixed(1)}
+            {(data.exegesis_service_last_response_ms ?? 0).toFixed(1)}
             <span className="metric-icon">{METRIC_UNITS.milliseconds}</span>
           </span>
         </div>
         <div className="metric">
           <span className="metric-label">{METRIC_LABELS.cpuTime}</span>
           <span className="metric-value">
-            {(data.theoria_service_cpu_seconds_total ?? 0).toFixed(1)}
+            {(data.exegesis_service_cpu_seconds_total ?? 0).toFixed(1)}
             <span className="metric-icon">{METRIC_UNITS.seconds}</span>
           </span>
         </div>

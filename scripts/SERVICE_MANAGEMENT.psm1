@@ -2,11 +2,11 @@
 
 <#!
 .SYNOPSIS
-    Helper module for orchestrating Theoria services with enhanced health monitoring.
+    Helper module for orchestrating Exegesis AI services with enhanced health monitoring.
 
 .DESCRIPTION
     Provides configuration loading, dependency validation, metrics export, alert delivery,
-    and deployment slot helpers that are leveraged by start-theoria.ps1 and companion tooling.
+    and deployment slot helpers that are leveraged by start-exegesis.ps1 and companion tooling.
 
 .NOTES
     This module is intentionally self-contained so it can be imported from both
@@ -244,29 +244,29 @@ function Stop-MetricsEndpoint {
 function Get-PrometheusMetrics {
     $lines = New-Object List[string]
     $uptime = (Get-Date) - $script:MetricsState.StartTime
-    $lines.Add("theoria_manager_uptime_seconds $([math]::Round($uptime.TotalSeconds, 2))")
+    $lines.Add("exegesis_manager_uptime_seconds $([math]::Round($uptime.TotalSeconds, 2))")
 
     foreach ($svcKey in $script:MetricsState.Services.Keys) {
         $entry = $script:MetricsState.Services[$svcKey]
         $labels = 'service="{0}"' -f $entry.service
-        $lines.Add("theoria_service_status{$labels} $($entry.status)")
-        $lines.Add("theoria_service_restarts{$labels} $($entry.restart_count)")
-        $lines.Add("theoria_service_healthchecks_total{$labels} $($entry.total_checks)")
-        $lines.Add("theoria_service_healthcheck_failures_total{$labels} $($entry.failures)")
-        $lines.Add("theoria_service_last_response_ms{$labels} $($entry.last_response_ms)")
-        $lines.Add("theoria_service_average_response_ms{$labels} $([math]::Round($entry.avg_response_ms,2))")
-        $lines.Add("theoria_service_uptime_seconds{$labels} $([math]::Round($entry.uptime_seconds,2))")
+        $lines.Add("exegesis_service_status{$labels} $($entry.status)")
+        $lines.Add("exegesis_service_restarts{$labels} $($entry.restart_count)")
+        $lines.Add("exegesis_service_healthchecks_total{$labels} $($entry.total_checks)")
+        $lines.Add("exegesis_service_healthcheck_failures_total{$labels} $($entry.failures)")
+        $lines.Add("exegesis_service_last_response_ms{$labels} $($entry.last_response_ms)")
+        $lines.Add("exegesis_service_average_response_ms{$labels} $([math]::Round($entry.avg_response_ms,2))")
+        $lines.Add("exegesis_service_uptime_seconds{$labels} $([math]::Round($entry.uptime_seconds,2))")
         if ($entry.ContainsKey('cpu_seconds_total')) {
-            $lines.Add("theoria_service_cpu_seconds_total{$labels} $([math]::Round($entry.cpu_seconds_total,2))")
+            $lines.Add("exegesis_service_cpu_seconds_total{$labels} $([math]::Round($entry.cpu_seconds_total,2))")
         }
         if ($entry.ContainsKey('working_set_bytes')) {
-            $lines.Add("theoria_service_working_set_bytes{$labels} $([math]::Round($entry.working_set_bytes,2))")
+            $lines.Add("exegesis_service_working_set_bytes{$labels} $([math]::Round($entry.working_set_bytes,2))")
         }
     }
 
     foreach ($alert in $script:MetricsState.Alerts) {
         $labels = 'service="{0}",severity="{1}"' -f $alert.service, $alert.severity
-        $lines.Add("theoria_service_alerts_total{$labels} $($alert.total)")
+        $lines.Add("exegesis_service_alerts_total{$labels} $($alert.total)")
     }
 
     if ($script:MetricsState.MetricsFile) {
@@ -349,7 +349,7 @@ function Send-ServiceAlert {
             $mailParams = @{
                 To       = $smtp.recipients -join ','
                 From     = $smtp.from
-                Subject  = "[Theoria] $ServiceName - $Severity"
+                Subject  = "[Exegesis AI] $ServiceName - $Severity"
                 Body     = $Message
                 SmtpServer = $smtp.smtpServer
             }

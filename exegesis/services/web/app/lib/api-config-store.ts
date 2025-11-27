@@ -3,7 +3,7 @@ export type ApiCredentials = {
   apiKey: string | null;
 };
 
-const STORAGE_KEY = "theo.api.credentials";
+const STORAGE_KEY = "exegesis.api.credentials";
 const ENCRYPTED_PREFIX = "enc-v1:";
 const MIN_PASSPHRASE_LENGTH = 12;
 
@@ -21,7 +21,7 @@ function getRuntimeCrypto(): RuntimeCryptoContext | null {
     return null;
   }
 
-  const runtimePassphrase = (window as any)?.THEO_API_ENCRYPTION_PASSPHRASE;
+  const runtimePassphrase = (window as any)?.EXEGESIS_API_ENCRYPTION_PASSPHRASE;
   if (
     typeof runtimePassphrase !== "string" ||
     runtimePassphrase.length < MIN_PASSPHRASE_LENGTH
@@ -58,7 +58,7 @@ async function getAesKey(context: RuntimeCryptoContext): Promise<CryptoKey | nul
     const derivedKey = await context.crypto.subtle.deriveKey(
       {
         name: "PBKDF2",
-        salt: encoder.encode("theo-api-credentials"),
+        salt: encoder.encode("exegesis-api-credentials"),
         iterations: 100000,
         hash: "SHA-256",
       },
@@ -266,10 +266,10 @@ function pickEnvValue(names: string[]): string | null {
 const PUBLIC_AUTHORIZATION_ENV_VARS = ["NEXT_PUBLIC_API_AUTHORIZATION"];
 const SERVER_AUTHORIZATION_ENV_VARS = [
   "API_AUTHORIZATION",
-  "THEO_API_AUTHORIZATION",
+  "EXEGESIS_API_AUTHORIZATION",
 ];
 const PUBLIC_API_KEY_ENV_VARS = ["NEXT_PUBLIC_API_KEY"];
-const SERVER_API_KEY_ENV_VARS = ["API_KEY", "THEO_SEARCH_API_KEY"];
+const SERVER_API_KEY_ENV_VARS = ["API_KEY", "EXEGESIS_SEARCH_API_KEY"];
 
 export function getEnvCredentials(): ApiCredentials {
   const isBrowser = typeof window !== "undefined";

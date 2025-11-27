@@ -1,17 +1,17 @@
 import { getApiBaseUrl } from "./api";
 import { resolveAuthHeaders } from "./api-config-store";
 
-type HttpErrorListener = (error: TheoApiError | NetworkError) => void;
+type HttpErrorListener = (error: ExegesisApiError | NetworkError) => void;
 
 const httpErrorListeners = new Set<HttpErrorListener>();
-const notifiedSymbol = Symbol("theo.httpErrorNotified");
+const notifiedSymbol = Symbol("exegesis.httpErrorNotified");
 
 function notifyHttpError(error: unknown): void {
-  if (!(error instanceof TheoApiError || error instanceof NetworkError)) {
+  if (!(error instanceof ExegesisApiError || error instanceof NetworkError)) {
     return;
   }
 
-  const typed = error as TheoApiError & { [notifiedSymbol]?: boolean };
+  const typed = error as ExegesisApiError & { [notifiedSymbol]?: boolean };
   if (typed[notifiedSymbol]) {
     return;
   }
@@ -35,7 +35,7 @@ export function subscribeToHttpErrors(listener: HttpErrorListener): () => void {
   };
 }
 
-export class TheoApiError extends Error {
+export class ExegesisApiError extends Error {
   readonly status: number;
   readonly payload: unknown;
   readonly url: string;
@@ -43,7 +43,7 @@ export class TheoApiError extends Error {
 
   constructor(message: string, status: number, url: string, payload?: unknown) {
     super(message);
-    this.name = "TheoApiError";
+    this.name = "ExegesisApiError";
     this.status = status;
     this.url = url;
     this.payload = payload;
@@ -83,7 +83,7 @@ export function buildErrorMessage(status: number, body: string | null): string {
   return `Request failed with status ${status}`;
 }
 
-export type RequestOptions = RequestInit & { 
+export type RequestOptions = RequestInit & {
   parseJson?: boolean;
   /**
    * Number of retry attempts for failed requests (default: 0)
@@ -136,8 +136,8 @@ async function handleResponse<T>(response: Response, parseJson: boolean): Promis
         }
       }
     }
-    
-    const error = new TheoApiError(message, response.status, response.url, payload ?? bodyText);
+
+    const error = new ExegesisApiError(message, response.status, response.url, payload ?? bodyText);
 
     // Log API errors in development for debugging
     if (process.env.NODE_ENV === "development") {
@@ -178,13 +178,13 @@ export function createHttpClient(baseUrl?: string): HttpClient {
     init?: RequestOptions & { parseJson?: true },
   ): Promise<T>;
   async function request<T>(path: string, init?: RequestOptions): Promise<T | void> {
-    const { 
-      parseJson = true, 
-      headers, 
-      retries = 0, 
+    const {
+      parseJson = true,
+      headers,
+      retries = 0,
       retryDelay = 1000,
       signal,
-      ...rest 
+      ...rest
     } = init ?? {};
     const defaultHeaders: HeadersInit =
       rest.body === undefined ? {} : { "Content-Type": "application/json" };
@@ -211,7 +211,7 @@ export function createHttpClient(baseUrl?: string): HttpClient {
           ...(signal ? { signal } : {}),
           ...rest,
         });
-        
+
         if (parseJson) {
           return handleResponse<T>(response, true);
         }
@@ -228,7 +228,7 @@ export function createHttpClient(baseUrl?: string): HttpClient {
         // Only retry on network errors or retryable API errors
         const shouldRetry =
           error instanceof NetworkError ||
-          (error instanceof TheoApiError && error.isRetryable);
+          (error instanceof ExegesisApiError && error.isRetryable);
 
         if (!shouldRetry) {
           notifyHttpError(error);
@@ -237,7 +237,7 @@ export function createHttpClient(baseUrl?: string): HttpClient {
 
         // Exponential backoff with jitter
         const backoffDelay = retryDelay * Math.pow(2, attempt) + Math.random() * 500;
-        
+
         if (process.env.NODE_ENV === "development") {
           console.warn(
             `[HTTP Retry] Attempt ${attempt + 1}/${maxAttempts} failed, retrying in ${Math.round(backoffDelay)}ms`,

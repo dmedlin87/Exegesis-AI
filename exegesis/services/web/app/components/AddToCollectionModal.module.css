@@ -1,0 +1,222 @@
+.collectionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  max-height: 300px;
+  overflow-y: auto;
+  margin: var(--spacing-4) 0;
+}
+
+.collectionOption {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.collectionOption:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary);
+}
+
+.collectionOption.selected {
+  background: var(--color-primary-alpha);
+  border-color: var(--color-primary);
+}
+
+.collectionOption:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.collectionRadio {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.collectionInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.collectionName {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.collectionMeta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.badge {
+  font-size: var(--font-size-xs);
+  padding: 2px 6px;
+  background: var(--color-surface-hover);
+  border-radius: var(--radius-full);
+}
+
+.badge.public {
+  background: var(--color-success);
+  color: white;
+}
+
+.notesSection {
+  margin-top: var(--spacing-4);
+}
+
+.notesLabel {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+.notesInput {
+  width: 100%;
+  padding: var(--spacing-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  resize: vertical;
+  min-height: 60px;
+}
+
+.notesInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-8);
+  gap: var(--spacing-3);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.empty {
+  text-align: center;
+  padding: var(--spacing-8);
+}
+
+.empty p {
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-4) 0;
+}
+
+.createLink {
+  display: inline-block;
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--color-primary);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.createLink:hover {
+  background: var(--color-primary-dark);
+}
+
+.error {
+  background: var(--color-error-alpha);
+  color: var(--color-error);
+  padding: var(--spacing-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-4);
+}
+
+.success {
+  background: var(--color-success-alpha);
+  color: var(--color-success);
+  padding: var(--spacing-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-4);
+}
+
+.cancelButton {
+  padding: var(--spacing-2) var(--spacing-4);
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  background: var(--color-surface-hover);
+}
+
+.addButton {
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addButton:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+}
+
+.addButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

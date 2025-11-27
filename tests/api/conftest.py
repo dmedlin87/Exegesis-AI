@@ -312,7 +312,8 @@ import pytest
 pytestmark = pytest.mark.schema
 from fastapi import Request as FastAPIRequest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
+from sqlalchemy.exc import OperationalError
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -572,7 +573,21 @@ def _api_engine_template(tmp_path_factory: pytest.TempPathFactory) -> Path:
     template_path = template_dir / "api.sqlite"
     engine = create_engine(f"sqlite:///{template_path}", future=True)
     try:
-        Base.metadata.create_all(bind=engine)
+        try:
+            Base.metadata.create_all(bind=engine)
+        except OperationalError as exc:
+            lowered = str(exc).lower()
+            if "already exists" not in lowered:
+                raise
+
+        # Ensure all tables exist even if create_all aborted earlier.
+        inspector = inspect(engine)
+        existing_tables = inspector.get_table_names()
+        missing_tables = [
+            table for table in Base.metadata.sorted_tables if table.name not in existing_tables
+        ]
+        for table in missing_tables:
+            table.create(bind=engine, checkfirst=True)
         run_sql_migrations(engine)
     finally:
         engine.dispose()

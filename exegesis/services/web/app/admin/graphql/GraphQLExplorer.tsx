@@ -1,9 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import type { Fetcher, FetcherOpts, FetcherParams } from "@graphiql/toolkit";
 import { GraphiQL } from "graphiql";
-import type { Fetcher, FetcherParams, FetcherOpts } from "@graphiql/toolkit";
 import "graphiql/graphiql.css";
+import { useMemo } from "react";
 
 import { getApiBaseUrl } from "../../lib/api";
 import { useApiHeaders, useGraphQLExplorerEnabled } from "../../lib/api-config";
@@ -80,7 +80,7 @@ export default function GraphQLExplorer(): JSX.Element {
       <header className={`stack ${styles.header}`}>
         <h1 className={styles.title}>GraphQL explorer</h1>
         <p className={styles.subtitle}>
-          Send authenticated queries directly to the Theoria GraphQL API. Authorization headers from your
+          Send authenticated queries directly to the Exegesis AI GraphQL API. Authorization headers from your
           current session are applied automatically.
         </p>
       </header>

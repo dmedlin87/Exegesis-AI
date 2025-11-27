@@ -56,14 +56,13 @@ describe("ToastProvider", () => {
     expect(screen.getByText("Notification")).toBeInTheDocument();
 
     const liveRegions = await screen.findAllByRole("status", { hidden: true });
-    const toastStatus = liveRegions.find((element) => element.textContent?.includes("Toast message"));
+    const toastStatus = liveRegions.find((element) => element.textContent?.includes("Toast message")) as
+      | HTMLElement
+      | undefined;
 
     expect(toastStatus).toBeDefined();
+    expect(toastStatus).toHaveAttribute("role", "status");
     expect(toastStatus).toHaveAttribute("aria-live", "polite");
-    const liveRegion = toastDescription.parentElement?.querySelector('[role="status"]') as HTMLElement | null;
-    expect(liveRegion).not.toBeNull();
-    expect(liveRegion).toHaveAttribute("role", "status");
-    expect(liveRegion).toHaveAttribute("aria-live", "polite");
   });
 
   it("allows toasts to be dismissed manually", async () => {

@@ -4,13 +4,13 @@
 
 | Version | Supported |
 | --- | --- |
-| `main` branch | ✅ Active | 
+| `main` branch | ✅ Active |
 | Released tags ≥ `v0.5.0` | ✅ Receive security fixes |
 | Older releases | ❌ Unsupported |
 
 ## Reporting a Vulnerability
 
-- Email: `security@theoengine.com`
+- Email: `security@exegesis.ai`
 - GPG: `0xA1E3E2FF` (see `docs/keys/security.asc`)
 - Response commitment: initial acknowledgement within **2 business days**, status update every **5 business days** until resolution.
 
@@ -32,7 +32,7 @@ Include the following:
 
 | OWASP ASVS Control | Implementation | Evidence |
 | --- | --- | --- |
-| V2 Authentication | API key/JWT enforcement in `theo/infrastructure/api/app/security.py`; anonymous access disabled by default | `tests/api/test_security.py`, CodeQL auth checks |
+| V2 Authentication | API key/JWT enforcement in `exegesis/infrastructure/api/app/security.py`; anonymous access disabled by default | `tests/api/test_security.py`, CodeQL auth checks |
 | V3 Session Management | Stateless API tokens; no session identifiers stored server-side | API integration tests |
 | V4 Access Control | Principal propagation & policy checks in routes/services | Pytest authorization suite |
 | V5 Validation/Sanitization | Pydantic models, schema validation on inbound payloads | FastAPI validation, `pytest` request fixtures |
@@ -82,7 +82,7 @@ Reproduce the CI scan locally when investigating a finding:
      -w /zap/wrk \
      owasp/zap2docker-stable \
      zap-baseline.py \
-     -t "${TARGET_URL:-https://staging.api.theoengine.com}" \
+     -t "${TARGET_URL:-https://staging.api.exegesis.ai}" \
      -J zap-baseline-report.json \
      -r zap-baseline-report.html \
      -w zap-baseline-warn.md

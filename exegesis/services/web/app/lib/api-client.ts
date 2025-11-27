@@ -26,7 +26,7 @@ export type {
     ChatWorkflowSuccess
 } from "./chat-client";
 export type { HybridSearchFilters } from "./guardrails";
-export { NetworkError, TheoApiError } from "./http";
+export { ExegesisApiError, NetworkError } from "./http";
 
 type ExportDeliverableResponse = components["schemas"]["ExportDeliverableResponse"];
 export type ProviderSettingsRequest = components["schemas"]["ProviderSettingsRequest"];
@@ -139,7 +139,7 @@ export type AddCollectionItemPayload = {
   position?: number | null;
 };
 
-type TheoApiClientShape = {
+type ExegesisApiClientShape = {
   fetchFeatures(): Promise<Record<string, boolean>>;
   runChatWorkflow(payload: ChatWorkflowRequest, options?: ChatWorkflowOptions): Promise<ChatWorkflowResult>;
   fetchChatSession(sessionId: string): Promise<ChatSessionState | null>;
@@ -210,7 +210,7 @@ export type ResearchPlanStepSkipPayload = {
   reason?: string | null;
 };
 
-export function createTheoApiClient(baseUrl?: string): TheoApiClientShape {
+export function createExegesisApiClient(baseUrl?: string): ExegesisApiClientShape {
   const http = createHttpClient(baseUrl);
   const chat = createChatClient(http);
   const request = http.request;
@@ -495,7 +495,7 @@ export function createTheoApiClient(baseUrl?: string): TheoApiClientShape {
         },
       );
     },
-  } satisfies TheoApiClientShape;
+  } satisfies ExegesisApiClientShape;
 }
 
-export type TheoApiClient = TheoApiClientShape;
+export type ExegesisApiClient = ExegesisApiClientShape;

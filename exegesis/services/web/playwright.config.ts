@@ -32,7 +32,7 @@ export default defineConfig({
   webServer: [
     {
       command:
-        "uvicorn theo.infrastructure.api.app.bootstrap.app_factory:create_app --factory --host 127.0.0.1 --port 8000",
+        "uvicorn exegesis.infrastructure.api.app.bootstrap.app_factory:create_app --factory --host 127.0.0.1 --port 8000",
       cwd: "../../..",
       env: { PYTHONPATH: ".", DATABASE_URL: "sqlite:///./playwright.db" },
       port: 8000,

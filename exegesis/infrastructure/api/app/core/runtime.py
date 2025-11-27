@@ -1,4 +1,4 @@
-"""Legacy runtime shim that forwards to :mod:`theo.application.facades.runtime`.
+"""Legacy runtime shim that forwards to :mod:`exegesis.application.facades.runtime`.
 
 Historically :func:`allow_insecure_startup` lived in this module.  The
 public facade now owns the implementation but we keep a thin wrapper that
