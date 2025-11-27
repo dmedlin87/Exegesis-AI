@@ -1,33 +1,32 @@
-import type { components } from "./generated/api";
-import type { HybridSearchFilters } from "./guardrails";
 import {
-  ChatSessionState,
-  ResearchPlan,
-  ResearchPlanStepStatus,
-  normaliseExportResponse,
-  normaliseResearchPlan,
+    ChatSessionState,
+    ResearchPlan,
+    ResearchPlanStepStatus,
+    normaliseExportResponse,
+    normaliseResearchPlan,
 } from "./api-normalizers";
 import { ChatWorkflowOptions, ChatWorkflowRequest, ChatWorkflowResult, createChatClient } from "./chat-client";
+import type { components } from "./generated/api";
+import type { HybridSearchFilters } from "./guardrails";
 import { createHttpClient } from "./http";
 
-export type { HybridSearchFilters } from "./guardrails";
 export type {
-  ChatSessionMemoryEntry,
-  ChatSessionPreferencesPayload,
-  ChatSessionState,
+    ChatSessionMemoryEntry,
+    ChatSessionPreferencesPayload,
+    ChatSessionState, ResearchPlan, ResearchPlanStepStatus
 } from "./api-normalizers";
-export type { ResearchPlan, ResearchPlanStepStatus } from "./api-normalizers";
 export type {
-  ChatWorkflowClient,
-  ChatWorkflowGuardrail,
-  ChatWorkflowMessage,
-  ChatWorkflowOptions,
-  ChatWorkflowRequest,
-  ChatWorkflowResult,
-  ChatWorkflowStreamEvent,
-  ChatWorkflowSuccess,
+    ChatWorkflowClient,
+    ChatWorkflowGuardrail,
+    ChatWorkflowMessage,
+    ChatWorkflowOptions,
+    ChatWorkflowRequest,
+    ChatWorkflowResult,
+    ChatWorkflowStreamEvent,
+    ChatWorkflowSuccess
 } from "./chat-client";
-export { TheoApiError, NetworkError } from "./http";
+export type { HybridSearchFilters } from "./guardrails";
+export { NetworkError, TheoApiError } from "./http";
 
 type ExportDeliverableResponse = components["schemas"]["ExportDeliverableResponse"];
 export type ProviderSettingsRequest = components["schemas"]["ProviderSettingsRequest"];
@@ -79,6 +78,67 @@ type CreateWatchlistPayload = import("../admin/digests/types").CreateWatchlistPa
 type WatchlistUpdatePayload = import("../admin/digests/types").WatchlistUpdatePayload;
 type WatchlistRunResponse = import("../admin/digests/types").WatchlistRunResponse;
 
+// Collections types
+export type CollectionItemType = "document" | "chat_session" | "research_note" | "passage";
+
+export type CollectionItem = {
+  id: string;
+  collection_id: string;
+  item_type: CollectionItemType;
+  item_id: string;
+  notes: string | null;
+  position: number;
+  created_at: string;
+};
+
+export type CollectionSummary = {
+  id: string;
+  user_id: string;
+  name: string;
+  description: string | null;
+  is_public: boolean;
+  item_count: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CollectionDetail = {
+  id: string;
+  user_id: string;
+  name: string;
+  description: string | null;
+  is_public: boolean;
+  created_at: string;
+  updated_at: string;
+  items: CollectionItem[];
+};
+
+export type CollectionListResponse = {
+  items: CollectionSummary[];
+  total: number;
+  limit: number;
+  offset: number;
+};
+
+export type CreateCollectionPayload = {
+  name: string;
+  description?: string | null;
+  is_public?: boolean;
+};
+
+export type UpdateCollectionPayload = {
+  name?: string | null;
+  description?: string | null;
+  is_public?: boolean | null;
+};
+
+export type AddCollectionItemPayload = {
+  item_type: CollectionItemType;
+  item_id: string;
+  notes?: string | null;
+  position?: number | null;
+};
+
 type TheoApiClientShape = {
   fetchFeatures(): Promise<Record<string, boolean>>;
   runChatWorkflow(payload: ChatWorkflowRequest, options?: ChatWorkflowOptions): Promise<ChatWorkflowResult>;
@@ -126,6 +186,14 @@ type TheoApiClientShape = {
     payload: ProviderSettingsRequest,
   ): Promise<ProviderSettingsResponse>;
   deleteProviderSettings(provider: string): Promise<void>;
+  // Collections API
+  listCollections(options?: { includePublic?: boolean; limit?: number; offset?: number }): Promise<CollectionListResponse>;
+  getCollection(collectionId: string): Promise<CollectionDetail>;
+  createCollection(payload: CreateCollectionPayload): Promise<CollectionDetail>;
+  updateCollection(collectionId: string, payload: UpdateCollectionPayload): Promise<CollectionDetail>;
+  deleteCollection(collectionId: string): Promise<void>;
+  addCollectionItem(collectionId: string, payload: AddCollectionItemPayload): Promise<CollectionItem>;
+  removeCollectionItem(collectionId: string, itemId: string): Promise<void>;
 };
 
 export type ResearchPlanStepUpdatePayload = {
@@ -372,6 +440,60 @@ export function createTheoApiClient(baseUrl?: string): TheoApiClientShape {
         method: "DELETE",
         parseJson: false,
       });
+    },
+    // Collections API methods
+    listCollections(options = {}) {
+      const params = new URLSearchParams();
+      if (options.includePublic !== undefined) {
+        params.set("include_public", String(options.includePublic));
+      }
+      if (options.limit !== undefined) {
+        params.set("limit", String(options.limit));
+      }
+      if (options.offset !== undefined) {
+        params.set("offset", String(options.offset));
+      }
+      const query = params.toString();
+      return request<CollectionListResponse>(`/collections/${query ? `?${query}` : ""}`);
+    },
+    getCollection(collectionId) {
+      return request<CollectionDetail>(`/collections/${encodeURIComponent(collectionId)}`);
+    },
+    createCollection(payload) {
+      return request<CollectionDetail>("/collections/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    },
+    updateCollection(collectionId, payload) {
+      return request<CollectionDetail>(`/collections/${encodeURIComponent(collectionId)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    },
+    deleteCollection(collectionId) {
+      return request(`/collections/${encodeURIComponent(collectionId)}`, {
+        method: "DELETE",
+        parseJson: false,
+      });
+    },
+    addCollectionItem(collectionId, payload) {
+      return request<CollectionItem>(`/collections/${encodeURIComponent(collectionId)}/items`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    },
+    removeCollectionItem(collectionId, itemId) {
+      return request(
+        `/collections/${encodeURIComponent(collectionId)}/items/${encodeURIComponent(itemId)}`,
+        {
+          method: "DELETE",
+          parseJson: false,
+        },
+      );
     },
   } satisfies TheoApiClientShape;
 }

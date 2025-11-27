@@ -27,7 +27,7 @@ anyio==4.11.0
 appdirs==1.4.4
     # via ragas
 apscheduler==3.11.0
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 arrow==1.4.0
     # via isoduration
 attrs==25.4.0
@@ -39,7 +39,7 @@ attrs==25.4.0
 beautifulsoup4==4.14.2
     # via ir-datasets
 bertopic==0.17.3
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 billiard==4.2.2
     # via celery
 boolean-py==5.0
@@ -47,11 +47,11 @@ boolean-py==5.0
 build==1.3.0
     # via pip-tools
 cachetools==6.2.1
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 cbor==1.0.0
     # via trec-car-tools
 celery==5.5.3
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 certifi==2025.10.5
     # via
     #   httpcore
@@ -65,7 +65,7 @@ charset-normalizer==3.4.4
     # via requests
 click==8.3.0
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   celery
     #   click-didyoumean
     #   click-plugins
@@ -79,25 +79,32 @@ click-plugins==1.1.1.2
     # via celery
 click-repl==0.3.0
     # via celery
+colorama==0.4.6
+    # via
+    #   build
+    #   click
+    #   pytest
+    #   tqdm
+    #   uvicorn
 coverage==7.11.0
     # via pytest-cov
 cryptography==46.0.3
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 cyclonedx-bom==7.2.0
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 cyclonedx-python-lib==11.5.0
     # via cyclonedx-bom
 dataclasses-json==0.6.7
     # via langchain-community
 datasets==4.3.0
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   evaluate
     #   flagembedding
     #   ragas
 defusedxml==0.7.1
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   py-serializable
 dill==0.4.0
     # via
@@ -109,12 +116,12 @@ distro==1.9.0
 docker==7.1.0
     # via testcontainers
 evaluate==0.4.6
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 execnet==2.1.1
     # via pytest-xdist
 fastapi==0.121.3
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   strawberry-graphql
 filelock==3.20.0
     # via
@@ -122,9 +129,8 @@ filelock==3.20.0
     #   huggingface-hub
     #   torch
     #   transformers
-    #   triton
 flagembedding==1.3.5
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 fqdn==1.5.1
     # via jsonschema
 frozenlist==1.8.0
@@ -151,15 +157,13 @@ h11==0.16.0
     #   uvicorn
 hdbscan==0.8.40
     # via bertopic
-hf-xet==1.2.0
-    # via huggingface-hub
 httpcore==1.0.9
     # via httpx
 httptools==0.7.1
     # via uvicorn
 httpx==0.28.1
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   datasets
     #   langgraph-sdk
     #   langsmith
@@ -176,7 +180,7 @@ huggingface-hub==0.36.0
     #   tokenizers
     #   transformers
 hypothesis==6.144.0
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 idna==3.11
     # via
     #   anyio
@@ -187,7 +191,7 @@ idna==3.11
 ijson==3.4.0.post0
     # via ir-datasets
 import-linter==2.0
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 importlib-metadata==8.7.0
     # via opentelemetry-api
 iniconfig==2.3.0
@@ -204,7 +208,7 @@ jiter==0.11.1
     # via openai
 joblib==1.5.2
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   hdbscan
     #   pynndescent
     #   scikit-learn
@@ -258,6 +262,8 @@ langsmith==0.4.38
     #   langchain-core
 lark==1.3.1
     # via rfc3987-syntax
+lia-web==0.2.3
+    # via strawberry-graphql
 license-expression==30.4.4
     # via cyclonedx-python-lib
 llvmlite==0.45.1
@@ -289,7 +295,7 @@ multiprocess==0.70.16
     #   datasets
     #   evaluate
 mypy==1.18.2
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 mypy-extensions==1.1.0
     # via
     #   mypy
@@ -300,7 +306,7 @@ nest-asyncio==1.6.0
     # via ragas
 networkx==3.5
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   torch
 numba==0.62.1
     # via
@@ -309,7 +315,7 @@ numba==0.62.1
     #   umap-learn
 numpy==2.3.5
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   accelerate
     #   bertopic
     #   datasets
@@ -332,14 +338,14 @@ openai==1.109.1
     #   langchain-openai
     #   ragas
 openai-whisper==20250625
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 opentelemetry-api==1.38.0
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
 opentelemetry-sdk==1.38.0
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 opentelemetry-semantic-conventions==0.59b0
     # via opentelemetry-sdk
 orjson==3.11.4
@@ -354,7 +360,7 @@ packageurl-python==0.17.5
     #   cyclonedx-python-lib
 packaging==24.2
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   accelerate
     #   build
     #   cyclonedx-bom
@@ -369,6 +375,7 @@ packaging==24.2
     #   pip-requirements-parser
     #   plotly
     #   pytest
+    #   strawberry-graphql
     #   transformers
 pandas==2.3.3
     # via
@@ -386,13 +393,13 @@ pip==25.3
 pip-requirements-parser==32.0.1
     # via cyclonedx-bom
 pip-tools==7.5.1
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 plotly==6.3.1
     # via bertopic
 pluggy==1.6.0
     # via pytest
 prometheus-client==0.23.1
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 prompt-toolkit==3.0.52
     # via click-repl
 propcache==0.4.1
@@ -403,7 +410,7 @@ protobuf==6.33.0
     # via flagembedding
 psutil==5.9.8
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   accelerate
     #   peft
 py-serializable==2.1.0
@@ -416,7 +423,7 @@ pycparser==2.23
     # via cffi
 pydantic==2.12.3
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   fastapi
     #   langchain
     #   langchain-classic
@@ -429,18 +436,18 @@ pydantic-core==2.41.4
     # via pydantic
 pydantic-settings==2.11.0
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   langchain-community
 pygments==2.19.2
     # via pytest
 pyjwt==2.10.1
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 pynndescent==0.5.13
     # via umap-learn
 pyparsing==3.2.5
     # via pip-requirements-parser
 pypdf==6.4.0
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 pyproject-hooks==1.2.0
     # via
     #   build
@@ -449,7 +456,7 @@ pysbd==0.3.4
     # via ragas
 pytest==8.4.2
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   pytest-cov
     #   pytest-profiling
     #   pytest-randomly
@@ -457,17 +464,17 @@ pytest==8.4.2
     #   pytest-timeout
     #   pytest-xdist
 pytest-cov==5.0.0
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 pytest-profiling==1.8.1
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 pytest-randomly==3.15.0
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 pytest-split==0.10.0
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 pytest-timeout==2.3.1
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 pytest-xdist==3.6.1
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via
     #   arrow
@@ -481,15 +488,17 @@ python-dotenv==1.1.1
     #   uvicorn
 python-multipart==0.0.20
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   strawberry-graphql
 pythonbible==0.13.1
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 pytz==2025.2
     # via pandas
+pywin32==311
+    # via docker
 pyyaml==6.0.3
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   accelerate
     #   datasets
     #   huggingface-hub
@@ -501,7 +510,7 @@ pyyaml==6.0.3
     #   transformers
     #   uvicorn
 ragas==0.1.19
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 referencing==0.37.0
     # via
     #   cyclonedx-python-lib
@@ -538,7 +547,7 @@ rpds-py==0.28.0
     #   jsonschema
     #   referencing
 ruff==0.14.0
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 safetensors==0.6.2
     # via
     #   accelerate
@@ -546,7 +555,7 @@ safetensors==0.6.2
     #   transformers
 scikit-learn==1.7.2
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   bertopic
     #   hdbscan
     #   pynndescent
@@ -554,7 +563,7 @@ scikit-learn==1.7.2
     #   umap-learn
 scipy==1.16.3
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   hdbscan
     #   pynndescent
     #   scikit-learn
@@ -566,10 +575,12 @@ sentence-transformers==5.1.2
     #   flagembedding
 sentencepiece==0.2.1
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   flagembedding
 setuptools==80.9.0
-    # via pip-tools
+    # via
+    #   pip-tools
+    #   torch
 six==1.17.0
     # via
     #   pytest-profiling
@@ -587,13 +598,13 @@ soupsieve==2.8
     # via beautifulsoup4
 sqlalchemy==2.0.44
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   langchain-classic
     #   langchain-community
 starlette==0.49.1
     # via fastapi
 strawberry-graphql==0.287.0
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 sympy==1.14.0
     # via torch
 tenacity==8.5.0
@@ -601,10 +612,10 @@ tenacity==8.5.0
     #   langchain-community
     #   langchain-core
 testcontainers==4.13.2
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 threadpoolctl==3.6.0
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   scikit-learn
 tiktoken==0.12.0
     # via
@@ -615,7 +626,7 @@ tokenizers==0.22.1
     # via transformers
 torch==2.9.0+cpu
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   accelerate
     #   flagembedding
     #   openai-whisper
@@ -636,19 +647,17 @@ tqdm==4.67.1
     #   umap-learn
 transformers==4.57.1
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   flagembedding
     #   peft
     #   sentence-transformers
 trec-car-tools==2.6
     # via ir-datasets
-triton==2.3.1
-    # via openai-whisper
 types-pyyaml==6.0.12.20250915
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 typing-extensions==4.15.0
     # via
-    #   theoria (pyproject.toml)
+    #   exegesis-ai (pyproject.toml)
     #   aiosignal
     #   anyio
     #   beautifulsoup4
@@ -658,6 +667,7 @@ typing-extensions==4.15.0
     #   huggingface-hub
     #   import-linter
     #   langchain-core
+    #   lia-web
     #   mypy
     #   openai
     #   opentelemetry-api
@@ -685,6 +695,7 @@ tzdata==2025.2
     #   arrow
     #   kombu
     #   pandas
+    #   tzlocal
 tzlocal==5.3.1
     # via apscheduler
 umap-learn==0.5.9.post2
@@ -699,9 +710,7 @@ urllib3==2.5.0
     #   requests
     #   testcontainers
 uvicorn==0.38.0
-    # via theoria (pyproject.toml)
-uvloop==0.22.1
-    # via uvicorn
+    # via exegesis-ai (pyproject.toml)
 vine==5.1.0
     # via
     #   amqp
@@ -720,7 +729,7 @@ webcolors==24.11.1
 websockets==15.0.1
     # via uvicorn
 webvtt-py==0.5.1
-    # via theoria (pyproject.toml)
+    # via exegesis-ai (pyproject.toml)
 wheel==0.45.1
     # via pip-tools
 wrapt==2.0.0

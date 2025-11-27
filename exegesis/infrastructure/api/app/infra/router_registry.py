@@ -15,6 +15,7 @@ except Exception:  # pragma: no cover - import failure logged via registration s
 from ..routes import (
     ai,
     analytics,
+    collections,
     creators,
     dashboard,
     discoveries,
@@ -98,6 +99,11 @@ _DEFAULT_REGISTRATIONS.extend(
             router=analytics.router,
             prefix="/analytics",
             tags=("analytics",),
+        ),
+        RouterRegistration(
+            router=collections.router,
+            prefix="/collections",
+            tags=("collections",),
         ),
         RouterRegistration(
             router=dashboard.router,

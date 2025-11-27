@@ -1,17 +1,17 @@
 import type { ReactNode } from "react";
 
-import { DEFAULT_MODE_ID } from "./mode-config";
-import { ModeProvider, ModeSwitcher } from "./mode-context";
-import "../styles/tokens.css";
-import "./theme.css";
-import "../styles/utilities.css";
-import "./globals.css";
 import Link from "next/link";
+import "../styles/tokens.css";
+import "../styles/utilities.css";
 import { AppShell, type AppShellNavSection } from "./components/AppShell";
+import { OnboardingOverlay } from "./components/onboarding/OnboardingOverlay";
 import { ToastProvider } from "./components/Toast";
 import { WelcomeModal } from "./components/WelcomeModal";
+import "./globals.css";
 import { ApiConfigProvider } from "./lib/api-config";
-import { OnboardingOverlay } from "./components/onboarding/OnboardingOverlay";
+import { DEFAULT_MODE_ID } from "./mode-config";
+import { ModeProvider, ModeSwitcher } from "./mode-context";
+import "./theme.css";
 
 export const metadata = {
   title: "Theoria",
@@ -80,6 +80,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       label: "Library",
       items: [
         { href: "/discoveries", label: "Discoveries", match: "/discoveries" },
+        { href: "/collections", label: "Collections", match: "/collections" },
         { href: "/search", label: "Search" },
         { href: "/verse/John.1.1", label: "Verse explorer", match: "/verse" },
       ],

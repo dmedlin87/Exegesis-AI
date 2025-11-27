@@ -12,6 +12,7 @@ from fastapi.responses import PlainTextResponse
 from ..routes import (  # noqa: F401  (ensure handlers register)
     ai,
     analytics,
+    collections,
     creators,
     documents,
     export,
