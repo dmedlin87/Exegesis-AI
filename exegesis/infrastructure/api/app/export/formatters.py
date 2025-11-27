@@ -13,7 +13,6 @@ from typing import Any, Literal, Mapping, Sequence
 from uuid import uuid4
 
 from exegesis.application.facades.version import get_git_sha
-from exegesis.domain.errors import ValidationError
 
 from ..models.base import Passage
 from ..models.documents import DocumentDetailResponse
@@ -771,7 +770,7 @@ def render_bundle(
             if pdf_bytes is None:
                 pdf_bytes = _render_minimal_pdf(manifest, pdf_lines)
         return pdf_bytes, "application/pdf"
-    raise ValidationError(f"Unsupported format: {output_format}")
+    raise ValueError(f"Unsupported format: {output_format}")
 
 
 __all__ = [

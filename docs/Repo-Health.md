@@ -15,7 +15,7 @@
 | --- | --- | --- | --- |
 | P0 | Missing automated SAST/SBOM/reporting pipelines | Unknown exposure to critical vulnerabilities | Activate CodeQL, Scorecard, and CycloneDX workflows; surface SARIF in security tab. |
 | P0 | Lack of threat model & disclosure policy | Delayed incident response, poor triage | Publish `SECURITY.md` and `THREATMODEL.md`; route reports via security@ alias. |
-| P1 | Direct access from framework layers into persistence/utilities | Tight coupling blocks modular refactors | Execute modularization roadmap in `docs/Modularity-Plan.md` and enforce via architecture tests. |
+| P1 | Direct access from framework layers into persistence/utilities | Tight coupling blocks modular refactors | Execute modularization roadmap in `docs/archive/2025-10-26_core/Modularity-Plan.md` and enforce via architecture tests. |
 | P1 | Dependency drift across Python & Node ecosystems | Increased CVE surface, breakage risk | Dependabot schedule with grouped updates; add policy for emergency patch windows. |
 | P2 | Secrets passed via environment without rotation guidance | Risk of long-lived credentials | Document rotation cadence & use of vault/SM; add tests covering encryption paths. |
 

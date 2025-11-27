@@ -1541,7 +1541,7 @@ class ResearchCollection(Base):
     id: Mapped[str] = mapped_column(
         String, primary_key=True, default=lambda: str(uuid4())
     )
-    user_id: Mapped[str] = mapped_column(String, nullable=False, index=True)
+    user_id: Mapped[str] = mapped_column(String, nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     is_public: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)

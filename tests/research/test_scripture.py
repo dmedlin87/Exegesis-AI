@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pytest
 
+from exegesis.domain.errors import ValidationError
 from exegesis.domain.research import fetch_passage
 from exegesis.domain.research import scripture as scripture_module
 
@@ -79,7 +80,7 @@ def test_fetch_passage_normalizes_translation(monkeypatch: pytest.MonkeyPatch) -
 
 
 def test_fetch_passage_rejects_incomplete_reference() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         fetch_passage("John3")
 
 

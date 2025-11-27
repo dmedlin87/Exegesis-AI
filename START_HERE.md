@@ -292,10 +292,10 @@ If the smart launcher doesn't work, you can start services manually:
 ### Terminal 1 - API
 
 ```powershell
-cd C:\Users\dmedl\Projects\TheoEngine
+cd "C:\Users\dmedl\Projects\Exegesis AI"
 $Env:EXEGESIS_AUTH_ALLOW_ANONYMOUS="1"
 $Env:EXEGESIS_ALLOW_INSECURE_STARTUP="1"
-python -m uvicorn theo.infrastructure.api.app.main:app --reload --host 127.0.0.1 --port 8000
+python -m uvicorn exegesis.infrastructure.api.app.bootstrap.app_factory:create_app --factory --reload --host 127.0.0.1 --port 8000
 ```
 
 > The launchers set these overrides automatically for the `dev` profile. Export
@@ -306,7 +306,7 @@ python -m uvicorn theo.infrastructure.api.app.main:app --reload --host 127.0.0.1
 ### Terminal 2 - Web
 
 ```powershell
-cd C:\Users\dmedl\Projects\TheoEngine\theo\services\web
+cd "C:\Users\dmedl\Projects\Exegesis AI\frontend"
 $Env:NEXT_PUBLIC_API_BASE_URL="http://127.0.0.1:8000"
 npm run dev
 ```

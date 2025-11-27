@@ -25,6 +25,9 @@ KNOWN_BUGS = REPO_ROOT / "docs" / "status" / "KnownBugs.md"
 VALID_STATUSES = {"Planned", "Active", "Stable", "Deprecated"}
 VALID_BUG_STATUSES = {"Open", "In Progress", "Resolved"}
 
+THEO_ALIAS = "theo"
+EXEGESIS_ALIAS = "exegesis"
+
 
 @dataclass
 class FeatureEntry:
@@ -100,6 +103,23 @@ def load_bug_entries() -> list[BugEntry]:
     return bugs
 
 
+def _alias_path_for(doc_path: Path) -> Path | None:
+    """Return the aliased filesystem path for renamed packages (e.g. theo -> exegesis)."""
+    parts = doc_path.parts
+    if parts and parts[0] == THEO_ALIAS:
+        alias_tail = Path(*parts[1:]) if len(parts) > 1 else Path(".")
+        return REPO_ROOT / EXEGESIS_ALIAS / alias_tail
+    return None
+
+
+def _document_exists(doc_path: Path) -> bool:
+    candidate = REPO_ROOT / doc_path
+    if candidate.exists():
+        return True
+    alias = _alias_path_for(doc_path)
+    return bool(alias and alias.exists())
+
+
 def validate_features(entries: list[FeatureEntry]) -> list[str]:
     errors = []
     for entry in entries:
@@ -107,8 +127,7 @@ def validate_features(entries: list[FeatureEntry]) -> list[str]:
             errors.append(
                 f"[FEATURE_INDEX] Invalid status '{entry.status}' for feature '{entry.feature}'."
             )
-        doc_path = REPO_ROOT / entry.path
-        if not doc_path.exists():
+        if not _document_exists(entry.path):
             errors.append(
                 f"[FEATURE_INDEX] Canonical doc '{entry.path}' for feature '{entry.feature}' is missing."
             )
@@ -122,8 +141,8 @@ def validate_bugs(entries: list[BugEntry]) -> list[str]:
             errors.append(f"[KnownBugs] Invalid status '{bug.status}' for bug '{bug.bug_id}'.")
         impacted = [part.strip() for part in bug.impacted_raw.split(",") if part.strip()]
         for doc in impacted:
-            doc_path = REPO_ROOT / doc.strip("`")
-            if not doc_path.exists():
+            parsed = Path(doc.strip("`"))
+            if not _document_exists(parsed):
                 errors.append(
                     f"[KnownBugs] Impacted doc '{doc}' listed for bug '{bug.bug_id}' does not exist."
                 )

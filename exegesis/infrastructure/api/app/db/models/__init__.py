@@ -12,3 +12,7 @@ warn(
 
 from exegesis.infrastructure.api.app.persistence_models import *  # noqa: F401,F403
 from exegesis.infrastructure.api.app.persistence_models import __all__ as __all__  # type: ignore
+
+from .dossier import EvidenceDossier  # noqa: F401
+
+__all__ += ["EvidenceDossier"]

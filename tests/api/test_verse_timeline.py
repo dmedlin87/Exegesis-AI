@@ -19,6 +19,7 @@ from exegesis.application.facades.database import (  # noqa: E402  # import afte
     get_engine,
 )
 from exegesis.adapters.persistence.models import Document, Passage, PassageVerse  # noqa: E402
+from exegesis.domain.errors import ValidationError  # noqa: E402
 from exegesis.infrastructure.api.app.library.ingest.osis import expand_osis_reference  # noqa: E402
 from exegesis.infrastructure.api.app.models.verses import VerseMentionsFilters  # noqa: E402
 from exegesis.infrastructure.api.app.retrieval.retriever.verses import (  # noqa: E402
@@ -29,8 +30,11 @@ from exegesis.infrastructure.api.app.retrieval.retriever.verses import (  # noqa
 def _prepare_engine(tmp_path: Path):
     configure_engine(f"sqlite:///{tmp_path / 'timeline.db'}")
     engine = get_engine()
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
+    # Create only the minimal schema needed for these tests to avoid
+    # interacting with unrelated tables and indexes.
+    for table in (Document.__table__, Passage.__table__, PassageVerse.__table__):
+        table.drop(engine, checkfirst=True)
+        table.create(engine, checkfirst=True)
     return engine
 
 
@@ -185,7 +189,7 @@ def test_get_verse_timeline_rejects_invalid_window(tmp_path) -> None:
         with Session(engine) as session:
             _seed_documents(session)
 
-            with pytest.raises(ValueError):
+            with pytest.raises(ValidationError):
                 get_verse_timeline(session=session, osis="John.3.16", window="invalid")  # type: ignore[arg-type]
     finally:
         engine.dispose()

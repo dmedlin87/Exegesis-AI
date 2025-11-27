@@ -1,6 +1,7 @@
 "use client";
 
 import { HelpTooltip, TooltipList, TooltipParagraph } from "../../components/help/HelpTooltip";
+import { SOURCE_OPTIONS, TRADITION_OPTIONS, DOMAIN_OPTIONS } from "../constants";
 
 interface SearchFiltersProps {
   query: string;
@@ -19,34 +20,6 @@ interface SearchFiltersProps {
   onTopicDomainChange: (value: string) => void;
   onReset?: () => void;
 }
-
-const SOURCE_OPTIONS = [
-  { label: "Any source", value: "" },
-  { label: "PDF", value: "pdf" },
-  { label: "Markdown", value: "markdown" },
-  { label: "YouTube", value: "youtube" },
-  { label: "Transcript", value: "transcript" },
-];
-
-const TRADITION_OPTIONS = [
-  { label: "Any tradition", value: "" },
-  { label: "Anglican Communion", value: "anglican" },
-  { label: "Baptist", value: "baptist" },
-  { label: "Roman Catholic", value: "catholic" },
-  { label: "Eastern Orthodox", value: "orthodox" },
-  { label: "Reformed", value: "reformed" },
-  { label: "Wesleyan/Methodist", value: "wesleyan" },
-];
-
-const DOMAIN_OPTIONS = [
-  { label: "Any topic", value: "" },
-  { label: "Christology", value: "christology" },
-  { label: "Soteriology", value: "soteriology" },
-  { label: "Ecclesiology", value: "ecclesiology" },
-  { label: "Sacramental Theology", value: "sacramental" },
-  { label: "Biblical Theology", value: "biblical-theology" },
-  { label: "Christian Ethics", value: "ethics" },
-];
 
 export default function SearchFilters({
   query,
@@ -104,6 +77,7 @@ export default function SearchFilters({
           <input
             id="search-query"
             type="text"
+            aria-label="Search Query"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
             placeholder="Enter keywords..."
@@ -134,6 +108,7 @@ export default function SearchFilters({
           <input
             id="search-osis"
             type="text"
+            aria-label="OSIS Reference"
             value={osis}
             onChange={(e) => onOsisChange(e.target.value)}
             placeholder="e.g., John.1.1"
@@ -148,6 +123,7 @@ export default function SearchFilters({
           <input
             id="search-collection"
             type="text"
+            aria-label="Collection"
             value={collection}
             onChange={(e) => onCollectionChange(e.target.value)}
             placeholder="Collection name"
@@ -162,6 +138,7 @@ export default function SearchFilters({
           <input
             id="search-author"
             type="text"
+            aria-label="Author"
             value={author}
             onChange={(e) => onAuthorChange(e.target.value)}
             placeholder="Author name"
@@ -175,6 +152,7 @@ export default function SearchFilters({
           </label>
           <select
             id="search-source-type"
+            aria-label="Source Type"
             value={sourceType}
             onChange={(e) => onSourceTypeChange(e.target.value)}
             className="form-select"
@@ -193,6 +171,7 @@ export default function SearchFilters({
           </label>
           <select
             id="search-tradition"
+            aria-label="Theological Tradition"
             value={theologicalTradition}
             onChange={(e) => onTheologicalTraditionChange(e.target.value)}
             className="form-select"
@@ -211,6 +190,7 @@ export default function SearchFilters({
           </label>
           <select
             id="search-domain"
+            aria-label="Topic Domain"
             value={topicDomain}
             onChange={(e) => onTopicDomainChange(e.target.value)}
             className="form-select"

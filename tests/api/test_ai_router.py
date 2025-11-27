@@ -1502,3 +1502,124 @@ def test_router_shared_latency_across_processes(tmp_path, sleep_stub):
         first_result["slow_latency"], rel=1e-2
     )
 
+
+def test_wait_for_inflight_immediately_replays_preserved_on_recreated_waiting(
+    tmp_path, sleep_stub
+):
+    """Regression test: verifies preserved output is surfaced immediately when
+    a waiting row is recreated after a router restart.
+
+    This tests the fix for the production concurrency gap where waiters would
+    block indefinitely when a restarted router recreated the inflight row as
+    'waiting' even though a successful output was already preserved.
+    """
+    ledger_path = tmp_path / "replay-preserved.db"
+    ledger = SharedLedger(str(ledger_path))
+    ledger.reset()
+    cache_key = "replay-cache-key"
+
+    # 1. Create initial inflight entry and mark success
+    with ledger.transaction() as txn:
+        txn.create_inflight(cache_key, model_name="model", workflow="workflow")
+    with ledger.transaction() as txn:
+        txn.mark_inflight_success(
+            cache_key,
+            model_name="model",
+            workflow="workflow",
+            output="preserved-output",
+            latency_ms=10.0,
+            cost=0.5,
+        )
+
+    # 2. Simulate router restart by recreating inflight as 'waiting'
+    with ledger.transaction() as txn:
+        txn.create_inflight(cache_key, model_name="model", workflow="workflow")
+
+    # Verify the row is in waiting state
+    row = ledger._read_inflight(cache_key)
+    assert row is not None
+    assert row.status == "waiting"
+
+    # 3. New waiter should immediately get the preserved output
+    start = time.perf_counter()
+    record = ledger.wait_for_inflight(
+        cache_key,
+        poll_interval=0.01,
+        timeout=1.0,
+        sleep_fn=sleep_stub,
+    )
+    elapsed = time.perf_counter() - start
+
+    # Should return the preserved output immediately (within first poll cycle)
+    assert record.output == "preserved-output"
+    assert elapsed < 0.5, f"Took too long ({elapsed:.2f}s) - waiter should return immediately"
+
+
+def test_wait_for_inflight_concurrent_waiters_all_receive_preserved_after_restart(
+    tmp_path, sleep_stub
+):
+    """Regression test: verifies multiple concurrent waiters all receive the
+    preserved output when a waiting row is recreated after a router restart.
+
+    This ensures the fix handles fan-out scenarios where multiple threads
+    are waiting for the same generation.
+    """
+    ledger_path = tmp_path / "concurrent-replay.db"
+    ledger = SharedLedger(str(ledger_path))
+    ledger.reset()
+    cache_key = "concurrent-cache-key"
+    waiter_count = 3
+
+    # 1. Create initial inflight entry
+    with ledger.transaction() as txn:
+        txn.create_inflight(cache_key, model_name="model", workflow="workflow")
+
+    # 2. Start multiple waiters before success is marked
+    barrier = threading.Barrier(waiter_count + 1)
+    outputs: list[str] = []
+    errors: list[Exception] = []
+    lock = threading.Lock()
+
+    def _waiter() -> None:
+        barrier.wait(timeout=2.0)  # Synchronize start
+        try:
+            record = ledger.wait_for_inflight(
+                cache_key, poll_interval=0.01, timeout=3.0, sleep_fn=sleep_stub
+            )
+            with lock:
+                outputs.append(record.output)
+        except Exception as exc:  # pragma: no cover - unexpected
+            with lock:
+                errors.append(exc)
+
+    threads = [threading.Thread(target=_waiter) for _ in range(waiter_count)]
+    for t in threads:
+        t.start()
+
+    # 3. Wait for all waiters to start, then mark success
+    barrier.wait(timeout=2.0)
+    time.sleep(0.05)  # Small delay to ensure waiters are polling
+
+    with ledger.transaction() as txn:
+        txn.mark_inflight_success(
+            cache_key,
+            model_name="model",
+            workflow="workflow",
+            output="shared-concurrent-output",
+            latency_ms=15.0,
+            cost=0.25,
+        )
+
+    # 4. Simulate router restart
+    with ledger.transaction() as txn:
+        txn.create_inflight(cache_key, model_name="model", workflow="workflow")
+
+    # 5. All waiters should eventually receive the preserved output
+    for t in threads:
+        t.join(timeout=5)
+        if t.is_alive():
+            pytest.fail("Waiter thread timed out")
+
+    assert not errors, f"Errors occurred in waiter threads: {errors}"
+    assert len(outputs) == waiter_count
+    assert all(o == "shared-concurrent-output" for o in outputs)

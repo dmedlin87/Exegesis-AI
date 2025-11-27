@@ -307,3 +307,81 @@ def test_fetch_dss_links_uses_injected_function(notes_repository: _RecordingNote
 
     assert result == ["link"]
     assert captured == ["John.3.16"]
+
+
+def test_dataset_backed_helpers_delegate_to_domain_functions(
+    monkeypatch: pytest.MonkeyPatch, notes_repository: _RecordingNotesRepository
+) -> None:
+    service = ResearchService(notes_repository)
+
+    calls: list[tuple[str, tuple[object, ...], dict[str, object]]] = []
+
+    def _record(name: str, return_value: object):
+        def wrapper(*args: object, **kwargs: object) -> object:
+            calls.append((name, args, dict(kwargs)))
+            return return_value
+
+        return wrapper
+
+    fake_verses = ["verses"]
+    fake_crossrefs = ["cross"]
+    fake_variants = ["variants"]
+    fake_morph = ["morph"]
+    fake_hist = ["hist"]
+    fake_fallacies = ["fallacies"]
+
+    monkeypatch.setattr(
+        service_module,
+        "fetch_passage",
+        _record("fetch_passage", fake_verses),
+    )
+    monkeypatch.setattr(
+        service_module,
+        "fetch_cross_references",
+        _record("fetch_cross_references", fake_crossrefs),
+    )
+    monkeypatch.setattr(
+        service_module,
+        "variants_apparatus",
+        _record("variants_apparatus", fake_variants),
+    )
+    monkeypatch.setattr(
+        service_module,
+        "fetch_morphology",
+        _record("fetch_morphology", fake_morph),
+    )
+    monkeypatch.setattr(
+        service_module,
+        "historicity_search",
+        _record("historicity_search", fake_hist),
+    )
+    monkeypatch.setattr(
+        service_module,
+        "fallacy_detect",
+        _record("fallacy_detect", fake_fallacies),
+    )
+
+    assert service.fetch_passage("John.1.1", "ESV") == fake_verses
+    assert service.fetch_cross_references("John.1.1", limit=10) == fake_crossrefs
+    assert service.variants_apparatus("John.1.1", categories=["note"], limit=5) == fake_variants
+    assert service.fetch_morphology("John.1.1") == fake_morph
+    assert (
+        service.historicity_search("bethlehem", year_from=1900, year_to=2020, limit=3)
+        == fake_hist
+    )
+    assert service.fallacy_detect("text", min_confidence=0.4) == fake_fallacies
+
+    assert ("fetch_passage", ("John.1.1", "ESV"), {}) in calls
+    assert ("fetch_cross_references", ("John.1.1",), {"limit": 10}) in calls
+    assert (
+        "variants_apparatus",
+        ("John.1.1",),
+        {"categories": ["note"], "limit": 5},
+    ) in calls
+    assert ("fetch_morphology", ("John.1.1",), {}) in calls
+    assert (
+        "historicity_search",
+        ("bethlehem",),
+        {"year_from": 1900, "year_to": 2020, "limit": 3},
+    ) in calls
+    assert ("fallacy_detect", ("text",), {"min_confidence": 0.4}) in calls

@@ -857,22 +857,18 @@ class SharedLedger:
                             cache_key,
                             status=row.status,
                         )
-                        # Refresh the inflight row so that any waiters observe
-                        # the preserved payload on the next iteration.
-                        row = self._read_inflight(cache_key)
-                        shared_preserved = self._get_preserved(cache_key)
-                        if shared_preserved is not None and (
-                            preserved_record is None
-                            or shared_preserved.created_at
-                            >= (preserved_completed_at or shared_preserved.created_at)
-                        ):
-                            preserved_record = shared_preserved
-                            preserved_completed_at = shared_preserved.created_at
-                        if row is None:
-                            sleeper(poll_interval)
-                            continue
-                        continue
-                if _can_use_preserved():
+                        # Immediately return the preserved record after successful
+                        # rehydration. This avoids race conditions where another
+                        # event (e.g., error from a restarted router) could occur
+                        # before the waiter gets to observe the rehydrated output.
+                        _record_event(
+                            "delivered",
+                            cache_key,
+                            source="preserved_after_rehydration",
+                            status=row.status,
+                        )
+                        return preserved_record
+                if _can_use_preserved(include_unobserved=True):
                     if preserved_record is not None and row.output is None:
                         refreshed = self._read_inflight(cache_key)
                         shared_preserved = self._get_preserved(cache_key)

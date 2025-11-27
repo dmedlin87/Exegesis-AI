@@ -15,6 +15,7 @@
 - Response commitment: initial acknowledgement within **2 business days**, status update every **5 business days** until resolution.
 
 Include the following:
+
 - Affected component/module
 - Proof-of-concept or reproduction steps
 - Impact assessment (confidentiality/integrity/availability)

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -12,6 +14,9 @@ try:  # pragma: no cover - optional dependency
     import yaml
 except ImportError:  # pragma: no cover - exercised in tests when dependency missing
     yaml = None  # type: ignore[assignment]
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -60,6 +65,11 @@ class GapDiscoveryEngine:
     def detect(self, documents: Sequence[DocumentEmbedding]) -> list[GapDiscovery]:
         """Detect gaps between user documents and curated theological topics."""
 
+        if not documents:
+            logger.warning("Gap detection skipped: No documents provided.")
+            return []
+
+        logger.info("Loading reference topics...")
         reference_topics = self._load_reference_topics()
         if not reference_topics:
             return []
@@ -75,7 +85,12 @@ class GapDiscoveryEngine:
             return []
 
         topic_model = self._ensure_topic_model()
-        topics, _ = topic_model.fit_transform(texts)
+        logger.info("Fitting topic model on %d documents...", len(texts))
+        try:
+            topics, _ = topic_model.fit_transform(texts)
+        except RuntimeError as exc:
+            logger.error("Topic model fitting failed during gap detection.", exc_info=True)
+            raise
 
         topic_keywords: dict[int, set[str]] = {}
         topic_documents: dict[int, list[DocumentEmbedding]] = {}
@@ -191,6 +206,7 @@ class GapDiscoveryEngine:
         discoveries.sort(key=lambda item: item.confidence, reverse=True)
         if self.max_results > 0:
             discoveries = discoveries[: self.max_results]
+        logger.info("Analysis complete. Found %d potential gaps.", len(discoveries))
         return discoveries
 
     def _ensure_topic_model(self) -> Any:
