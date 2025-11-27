@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(python -m pytest:*)",
-      "Bash(python -c \"import sys; sys.path.insert(0, ''.''); from tests.api.routes.test_documents import *; import inspect; print(inspect.getsource(sample_document))\")"
+      "Bash(python -c \"import sys; sys.path.insert(0, ''.''); from tests.api.routes.test_documents import *; import inspect; print(inspect.getsource(sample_document))\")",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []
