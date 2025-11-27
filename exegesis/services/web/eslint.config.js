@@ -10,6 +10,7 @@ import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import globals from 'globals';
 import qualityBaseline from './config/ui-quality-baseline.json' with { type: 'json' };
+import exegesisPlugin from './eslint-rules/index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

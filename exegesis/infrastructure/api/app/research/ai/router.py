@@ -329,8 +329,14 @@ class LLMRouterService:
                 # finished between the initial check and now.
                 refreshed = self._ledger._read_inflight(cache_key)
                 if refreshed is not None and refreshed.status != "waiting":
-                    stale_status = refreshed.status
-                    wait_observed_updated_at = refreshed.updated_at
+                    # Only treat as stale if the row was last updated before this
+                    # request started.  An error status with a recent updated_at
+                    # indicates the current owner encountered a transient failure
+                    # and may still recover; followers should wait rather than
+                    # immediately retrying.
+                    if request_started_at >= refreshed.updated_at:
+                        stale_status = refreshed.status
+                        wait_observed_updated_at = refreshed.updated_at
 
             if stale_status is not None:
                 with self._ledger.transaction() as txn:
