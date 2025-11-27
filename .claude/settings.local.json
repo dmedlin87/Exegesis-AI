@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pytest:*)",
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
