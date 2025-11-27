@@ -32,7 +32,10 @@ def sample_document(api_session) -> str:
         text="Sample passage content for testing.",
     )
     session.add(passage)
-    session.flush()  # Flush only, let the outer transaction handle cleanup
+    # Commit so test client requests using separate sessions can see seeded rows
+    session.flush()
+    session.commit()
+    session.commit()
 
     yield "test-doc-1"
 

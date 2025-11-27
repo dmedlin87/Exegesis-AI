@@ -125,7 +125,9 @@ def _seed_graph_data(session) -> None:
         end_verse_id=c_end,
     )
     session.add_all([contradiction, harmony, commentary])
-    session.flush()  # Flush only, let the outer transaction handle commit/rollback
+    # Commit so API requests that obtain a new session can observe seeded rows
+    session.flush()
+    session.commit()
 
 
 def test_verse_graph_endpoint_combines_mentions_and_seeds(api_client: TestClient, api_session) -> None:

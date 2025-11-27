@@ -19,6 +19,11 @@ Stop losing citations in scattered notes and unreliable AI summaries. Exegesis A
 
 ---
 
+## Documentation
+
+- [`docs/00_DOCUMENTATION_STRATEGY.md`](docs/00_DOCUMENTATION_STRATEGY.md) outlines the only permitted `docs/` subdirectories and routing rules so agents can place new files with confidence.
+
+
 ## Why Exegesis AI
 
 Exegesis AI unifies your theological research library—papers, notes, transcripts, and audio—into a single verse-aware knowledge graph. Every result is anchored to normalized OSIS references, so citations remain verifiable whether you are preparing sermons, running comparative studies, or drafting devotionals.
