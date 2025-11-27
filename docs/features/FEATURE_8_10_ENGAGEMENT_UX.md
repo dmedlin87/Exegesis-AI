@@ -360,7 +360,7 @@ class ProgressService:
 
 ### Frontend Components
 
-**Directory:** `frontend/src/components/Progress/`
+**Directory:** `exegesis/services/web/app/components/Progress/`
 
 ```tsx
 // index.tsx - Dashboard
@@ -633,7 +633,7 @@ This is a frontend-only feature.
 
 ### Frontend Implementation
 
-**Directory:** `frontend/src/components/CommandPalette/`
+**Directory:** `exegesis/services/web/app/components/CommandPalette/`
 
 ```tsx
 // CommandPalette.tsx
@@ -890,7 +890,7 @@ CREATE TABLE user_layouts (
 
 ### Frontend Implementation
 
-**Directory:** `frontend/src/components/SplitLayout/`
+**Directory:** `exegesis/services/web/app/components/SplitLayout/`
 
 ```tsx
 // SplitLayout.tsx

@@ -143,7 +143,7 @@ class ParallelTranslationService:
 
 ### Frontend Components
 
-**Directory:** `frontend/src/components/ParallelViewer/`
+**Directory:** `exegesis/services/web/app/components/ParallelViewer/`
 
 ```
 ParallelViewer/
@@ -411,7 +411,7 @@ def parse_morphology(code: str, language: str) -> MorphologyBreakdown:
 
 ### Frontend Components
 
-**Directory:** `frontend/src/components/Interlinear/`
+**Directory:** `exegesis/services/web/app/components/Interlinear/`
 
 ```tsx
 // WordCard.tsx
@@ -609,7 +609,7 @@ class CrossReferenceService:
 
 ### Frontend Components
 
-**File:** `frontend/src/components/CrossRefGraph/ForceGraph.tsx`
+**File:** `exegesis/services/web/app/components/CrossRefGraph/ForceGraph.tsx`
 
 ```tsx
 import { useEffect, useRef } from 'react';

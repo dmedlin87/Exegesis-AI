@@ -234,7 +234,7 @@ class TimelineService:
 
 ### Frontend Components
 
-**Directory:** `frontend/src/components/Timeline/`
+**Directory:** `exegesis/services/web/app/components/Timeline/`
 
 ```tsx
 // index.tsx
@@ -814,7 +814,7 @@ class AudioService:
 
 ### Frontend Components
 
-**Directory:** `frontend/src/components/AudioPlayer/`
+**Directory:** `exegesis/services/web/app/components/AudioPlayer/`
 
 ```tsx
 // index.tsx

@@ -274,7 +274,7 @@ prompt_templates:
 
 ### Frontend Components
 
-**Directory:** `frontend/src/components/OutlineGenerator/`
+**Directory:** `exegesis/services/web/app/components/OutlineGenerator/`
 
 ```tsx
 // index.tsx
@@ -739,7 +739,7 @@ class SharedAnnotationService:
 
 ### Frontend Components
 
-**Directory:** `frontend/src/components/Collaboration/`
+**Directory:** `exegesis/services/web/app/components/Collaboration/`
 
 ```tsx
 // WorkspaceList.tsx
