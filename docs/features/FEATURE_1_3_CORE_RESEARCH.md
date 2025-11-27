@@ -2,11 +2,11 @@
 
 ## 1. Parallel Translation Viewer
 
-### Overview
+### Overview (Parallel Translation Viewer)
 
 Side-by-side comparison of 2-4 Bible translations with synchronized scrolling and diff highlighting for textual variants.
 
-### Database Schema
+### Database Schema (Parallel Translation Viewer)
 
 ```sql
 CREATE TABLE translations (
@@ -24,7 +24,7 @@ ALTER TABLE verses ADD COLUMN translation_id VARCHAR(36) REFERENCES translations
 CREATE INDEX ix_verses_osis_translation ON verses(osis_ref, translation_id);
 ```
 
-### API Specification
+### API Specification (Parallel Translation Viewer)
 
 **Endpoint:** `GET /verses/parallel`
 
@@ -60,7 +60,7 @@ class ParallelVerseResponse(BaseModel):
     alignment_matrix: list[list[int | None]]
 ```
 
-### Application Service
+### Application Service (Parallel Translation Viewer)
 
 **File:** `exegesis/application/canon/parallel_service.py`
 
@@ -141,11 +141,11 @@ class ParallelTranslationService:
         return None
 ```
 
-### Frontend Components
+### Frontend Components (Parallel Translation Viewer)
 
 **Directory:** `exegesis/services/web/app/components/ParallelViewer/`
 
-```
+```text
 ParallelViewer/
 ├── index.tsx                    # Main container
 ├── TranslationColumn.tsx        # Single translation pane
@@ -157,7 +157,7 @@ ParallelViewer/
     └── useSyncScroll.ts
 ```
 
-**Key Component: SyncScrollProvider.tsx**
+#### Key Component: SyncScrollProvider.tsx
 
 ```tsx
 import { createContext, useContext, useRef, useCallback } from 'react';
@@ -202,7 +202,7 @@ export function SyncScrollProvider({ children }: { children: React.ReactNode }) 
 export const useSyncScroll = () => useContext(SyncScrollContext);
 ```
 
-### Testing
+### Testing (Parallel Translation Viewer)
 
 ```python
 # tests/application/canon/test_parallel_service.py

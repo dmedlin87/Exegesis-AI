@@ -75,27 +75,31 @@ Based on existing control flow (see codemap):
 ## Data Sources (Free & Open)
 
 ### Biblical Language Resources
-- **OSHB (Open Scriptures Hebrew Bible)**: https://github.com/openscriptures/morphhb
+
+- **OSHB (Open Scriptures Hebrew Bible)**: <https://github.com/openscriptures/morphhb>
   - Westminster Leningrad Codex with morphology
   - Fully tagged Hebrew text with Strong's numbers
 
-- **SBLGNT (SBL Greek NT)**: https://github.com/LogosBible/SBLGNT
+- **SBLGNT (SBL Greek NT)**: <https://github.com/LogosBible/SBLGNT>
   - Morphologically tagged Greek text
   - Free for personal use
 
-- **Berean Interlinear**: https://berean.bible/downloads.htm
+- **Berean Interlinear**: <https://berean.bible/downloads.htm>
   - Public domain interlinear data
 
 ### Lexicons
-- **Strong's Concordance**: https://github.com/openscriptures/strongs (Public domain)
+
+- **Strong's Concordance**: <https://github.com/openscriptures/strongs> (Public domain)
 - **Abbott-Smith Greek Lexicon**: Public domain
 - **BDB Hebrew Lexicon**: Public domain
 
 ### Cross-References
-- **OpenBible.info**: https://github.com/openbibleinfo/Bible-Cross-Reference-Data
+
+- **OpenBible.info**: <https://github.com/openbibleinfo/Bible-Cross-Reference-Data>
   - 63,000+ cross-references (CC BY license)
 
 ### Translations (Public Domain)
+
 - KJV, ASV, WEB, YLT
 
 ---
@@ -118,12 +122,14 @@ See individual feature documents:
 **Goal:** Build foundational infrastructure required by core features.
 
 #### 0.1 Canon Service Layer (7 days)
+
 - Create `exegesis/application/canon/` service structure
 - Build `VerseRepository` interface and PostgreSQL adapter
 - Implement OSIS verse lookup and normalization
 - Seed initial translations (KJV, WEB public domain texts)
 
 #### 0.2 Multi-User Authentication (10 days)
+
 - User registration and login endpoints
 - JWT token generation and validation
 - User table and database migrations
@@ -131,6 +137,7 @@ See individual feature documents:
 - **Blocks:** Features 5, 8
 
 #### 0.3 Biblical Language Data Ingestion (14 days)
+
 - Download and parse OSHB (Hebrew) and SBLGNT (Greek)
 - Ingest Strong's lexicon data
 - Load OpenBible cross-references
@@ -139,6 +146,7 @@ See individual feature documents:
 - **Blocks:** Features 2, 3
 
 #### 0.4 Database Schema Audit (5 days)
+
 - Document existing schema
 - Plan migration strategy for new tables
 - Ensure backward compatibility
