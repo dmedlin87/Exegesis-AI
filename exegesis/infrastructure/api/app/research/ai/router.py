@@ -300,16 +300,29 @@ class LLMRouterService:
                         workflow=workflow,
                     )
                 else:
-                    stale_status = inflight.status
-                    owns_inflight = False
-                    wait_observed_updated_at = inflight.updated_at
-                    _record_router_ledger_event(
-                        "stale_row_detected",
-                        cache_key=cache_key,
-                        status=inflight.status,
-                        model=model.name,
-                        workflow=workflow,
-                    )
+                    inflight_updated_at = inflight.updated_at
+                    if request_started_at >= inflight_updated_at:
+                        stale_status = inflight.status
+                        owns_inflight = False
+                        wait_observed_updated_at = inflight_updated_at
+                        _record_router_ledger_event(
+                            "stale_row_detected",
+                            cache_key=cache_key,
+                            status=inflight.status,
+                            model=model.name,
+                            workflow=workflow,
+                        )
+                    else:
+                        cache_status = "wait"
+                        owns_inflight = False
+                        wait_observed_updated_at = inflight_updated_at
+                        _record_router_ledger_event(
+                            "dedup_waiting",
+                            cache_key=cache_key,
+                            status="wait",
+                            model=model.name,
+                            workflow=workflow,
+                        )
 
             if not owns_inflight and stale_status is None:
                 # Re-read after releasing the transaction to catch owners that
