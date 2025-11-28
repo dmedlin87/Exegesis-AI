@@ -52,10 +52,20 @@ def test_normalise_host_strips_and_lowercases() -> None:
 
 
 @HYPOTHESIS_SETTINGS
-@given(st.text(alphabet=st.characters(min_codepoint=32, max_codepoint=126, blacklist_categories=("Cs",)), max_size=64))
+@given(
+    st.text(
+        alphabet=st.characters(
+            min_codepoint=32,
+            max_codepoint=126,
+            exclude_categories=("Cs",),
+        ),
+        max_size=64,
+    )
+)
 def test_normalise_host_property(host: str) -> None:
     result = normalise_host(host)
-    assert result == host.strip().lower().rstrip(".")
+    expected = host.strip().lower().rstrip(". ")
+    assert result == expected
     assert normalise_host(result) == result
 
 

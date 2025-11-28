@@ -460,6 +460,9 @@ def test_sqlite_migration_backfills_contradiction_perspective(
     from exegesis.infrastructure.api.app.db import run_sql_migrations as migrations_module
     from exegesis.infrastructure.api.app.db import seeds as seeds_module
 
+    previous_engine = database_module._engine
+    previous_session_factory = database_module._SessionLocal
+
     migrations_dir = tmp_path / "migrations"
     migrations_dir.mkdir()
     migration_source = (
@@ -533,8 +536,8 @@ def test_sqlite_migration_backfills_contradiction_perspective(
     finally:
         engine.dispose()
         settings_module.get_settings.cache_clear()
-        database_module._engine = None  # type: ignore[attr-defined]
-        database_module._SessionLocal = None  # type: ignore[attr-defined]
+        database_module._engine = previous_engine  # type: ignore[attr-defined]
+        database_module._SessionLocal = previous_session_factory  # type: ignore[attr-defined]
 def _bootstrap_legacy_contradiction_database(
     database_url: str, ledger_value: str, entry: dict, legacy_identifier: str
 ) -> None:

@@ -27,7 +27,11 @@ _SAFE_SOURCE_URL_SCHEMES = {"http", "https"}
 
 
 def normalise_host(host: str) -> str:
-    return host.strip().lower().rstrip(".")
+    # Trim whitespace and lowercase before removing any trailing dots or whitespace.
+    normalised = host.strip().lower()
+    while normalised and (normalised.endswith(".") or normalised[-1].isspace()):
+        normalised = normalised[:-1]
+    return normalised
 
 
 IPAddress = IPv4Address | IPv6Address

@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import importlib
 import logging
 import re
+import sys
 from dataclasses import dataclass
+from types import ModuleType
 from typing import TYPE_CHECKING, Any, Sequence
 from sqlalchemy.orm import Session
 
@@ -77,6 +80,19 @@ else:  # pragma: no cover - runtime fallback
 
 
 LOGGER = logging.getLogger(__name__)
+
+
+_WORKFLOW_MODULE_NAME = f"{__package__}.workflow"
+
+
+def _resolve_workflow_module() -> ModuleType | None:
+    module = sys.modules.get(_WORKFLOW_MODULE_NAME)
+    if module is not None:
+        return module
+    try:
+        return importlib.import_module(_WORKFLOW_MODULE_NAME)
+    except Exception:
+        return None
 
 
 def _missing_deliverable_hook(name: str) -> Callable[..., Any]:
