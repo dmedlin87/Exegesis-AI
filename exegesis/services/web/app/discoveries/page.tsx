@@ -4,13 +4,17 @@ import { useState, useEffect } from "react";
 import styles from "./discoveries.module.css";
 import { DiscoveryCard } from "./components/DiscoveryCard";
 import { DiscoveryFilter } from "./components/DiscoveryFilter";
+import { DiscoveryGalaxy } from "./components/DiscoveryGalaxy";
 import type { Discovery, DiscoveryType } from "./types";
+
+type ViewMode = "list" | "galaxy";
 
 export default function DiscoveriesPage() {
   const [discoveries, setDiscoveries] = useState<Discovery[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<DiscoveryType | "all">("all");
   const [viewedOnly, setViewedOnly] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
 
   useEffect(() => {
     loadDiscoveries();
@@ -120,19 +124,42 @@ export default function DiscoveriesPage() {
           showUnviewedOnly={viewedOnly}
           onToggleUnviewed={setViewedOnly}
         />
-        
-        <button
-          className={styles.refreshButton}
-          onClick={loadDiscoveries}
-          disabled={loading}
-          aria-label="Refresh discoveries"
-        >
-          {loading ? "⟳ Analyzing..." : "↻ Refresh"}
-        </button>
+
+        <div className={styles.toolbarRight}>
+          <div className={styles.viewToggle}>
+            <button
+              className={`${styles.viewToggleButton} ${viewMode === "list" ? styles.active : ""}`}
+              onClick={() => setViewMode("list")}
+              aria-label="List view"
+              aria-pressed={viewMode === "list"}
+            >
+              📋 List
+            </button>
+            <button
+              className={`${styles.viewToggleButton} ${viewMode === "galaxy" ? styles.active : ""}`}
+              onClick={() => setViewMode("galaxy")}
+              aria-label="Galaxy view"
+              aria-pressed={viewMode === "galaxy"}
+            >
+              🌌 Galaxy
+            </button>
+          </div>
+
+          <button
+            className={styles.refreshButton}
+            onClick={loadDiscoveries}
+            disabled={loading}
+            aria-label="Refresh discoveries"
+          >
+            {loading ? "⟳ Analyzing..." : "↻ Refresh"}
+          </button>
+        </div>
       </div>
 
       <main className={styles.content}>
-        {loading && discoveries.length === 0 ? (
+        {viewMode === "galaxy" ? (
+          <DiscoveryGalaxy filter={filter} viewedOnly={viewedOnly} />
+        ) : loading && discoveries.length === 0 ? (
           <div className={styles.loading}>
             <div className={styles.spinner} />
             <p>Analyzing your corpus...</p>

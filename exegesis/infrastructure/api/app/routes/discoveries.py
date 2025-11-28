@@ -13,9 +13,12 @@ from exegesis.application.repositories import DiscoveryRepository, DocumentRepos
 from ..research.discoveries import DiscoveryService
 from ..models.discoveries import (
     DiscoveryFeedbackRequest,
+    DiscoveryGraphResponse,
     DiscoveryListResponse,
     DiscoveryResponse,
     DiscoveryStats,
+    GraphLink,
+    GraphNode,
 )
 from exegesis.application.core.security import Principal
 
@@ -138,6 +141,186 @@ def dismiss_discovery(
         session.rollback()
         raise
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get("/graph", response_model=DiscoveryGraphResponse)
+def get_discovery_graph(
+    discovery_type: str | None = Query(default=None),
+    viewed: bool | None = Query(default=None),
+    limit: int = Query(default=100, ge=1, le=500),
+    principal: Principal = Depends(require_principal),
+    service: DiscoveryService = Depends(get_discovery_service),
+) -> DiscoveryGraphResponse:
+    """
+    Return discoveries and their relationships as a graph structure.
+
+    This endpoint returns only metadata (no full content bodies) for efficient visualization.
+    Nodes represent discoveries and related evidence, links represent relationships.
+    """
+    user_id = _require_user_subject(principal)
+
+    # Fetch discoveries with metadata only
+    records = service.list(
+        user_id,
+        discovery_type=discovery_type,
+        viewed=viewed,
+        limit=limit,
+        offset=0,
+    )
+
+    nodes: list[GraphNode] = []
+    links: list[GraphLink] = []
+    evidence_ids: set[str] = set()
+
+    # Create discovery nodes
+    for record in records:
+        discovery_id = str(record.id)
+        nodes.append(
+            GraphNode(
+                id=discovery_id,
+                type="discovery",
+                label=record.title,
+                discoveryType=record.discovery_type,
+                confidence=record.confidence,
+                viewed=record.viewed,
+            )
+        )
+
+        # Extract evidence nodes from metadata
+        metadata = record.metadata if isinstance(record.metadata, dict) else {}
+
+        # Handle contradiction discoveries
+        if record.discovery_type == "contradiction":
+            doc_a_id = metadata.get("document_a_id")
+            doc_b_id = metadata.get("document_b_id")
+
+            if doc_a_id:
+                evidence_id = f"doc_{doc_a_id}"
+                if evidence_id not in evidence_ids:
+                    nodes.append(
+                        GraphNode(
+                            id=evidence_id,
+                            type="evidence",
+                            label=metadata.get("document_a_title", f"Document {doc_a_id}"),
+                        )
+                    )
+                    evidence_ids.add(evidence_id)
+                links.append(
+                    GraphLink(
+                        source=discovery_id,
+                        target=evidence_id,
+                        type="contradicts",
+                    )
+                )
+
+            if doc_b_id:
+                evidence_id = f"doc_{doc_b_id}"
+                if evidence_id not in evidence_ids:
+                    nodes.append(
+                        GraphNode(
+                            id=evidence_id,
+                            type="evidence",
+                            label=metadata.get("document_b_title", f"Document {doc_b_id}"),
+                        )
+                    )
+                    evidence_ids.add(evidence_id)
+                links.append(
+                    GraphLink(
+                        source=discovery_id,
+                        target=evidence_id,
+                        type="contradicts",
+                    )
+                )
+
+        # Handle anomaly discoveries
+        elif record.discovery_type == "anomaly":
+            doc_id = metadata.get("documentId")
+            if doc_id:
+                evidence_id = f"doc_{doc_id}"
+                if evidence_id not in evidence_ids:
+                    nodes.append(
+                        GraphNode(
+                            id=evidence_id,
+                            type="evidence",
+                            label=f"Document {doc_id}",
+                        )
+                    )
+                    evidence_ids.add(evidence_id)
+                links.append(
+                    GraphLink(
+                        source=discovery_id,
+                        target=evidence_id,
+                        type="references",
+                    )
+                )
+
+        # Handle gap discoveries
+        elif record.discovery_type == "gap":
+            related_docs = metadata.get("relatedDocuments", [])
+            for doc_id in related_docs[:5]:  # Limit to 5 related docs per gap
+                evidence_id = f"doc_{doc_id}"
+                if evidence_id not in evidence_ids:
+                    nodes.append(
+                        GraphNode(
+                            id=evidence_id,
+                            type="evidence",
+                            label=f"Document {doc_id}",
+                        )
+                    )
+                    evidence_ids.add(evidence_id)
+                links.append(
+                    GraphLink(
+                        source=discovery_id,
+                        target=evidence_id,
+                        type="references",
+                    )
+                )
+
+        # Handle connection discoveries
+        elif record.discovery_type == "connection":
+            related_docs = metadata.get("relatedDocuments", [])
+            for doc_id in related_docs[:5]:
+                evidence_id = f"doc_{doc_id}"
+                if evidence_id not in evidence_ids:
+                    nodes.append(
+                        GraphNode(
+                            id=evidence_id,
+                            type="evidence",
+                            label=f"Document {doc_id}",
+                        )
+                    )
+                    evidence_ids.add(evidence_id)
+                links.append(
+                    GraphLink(
+                        source=discovery_id,
+                        target=evidence_id,
+                        type="connects",
+                    )
+                )
+
+        # Handle generic related documents/verses
+        related_docs = metadata.get("relatedDocuments")
+        if related_docs and isinstance(related_docs, list):
+            for doc_id in related_docs[:3]:
+                evidence_id = f"doc_{doc_id}"
+                if evidence_id not in evidence_ids:
+                    nodes.append(
+                        GraphNode(
+                            id=evidence_id,
+                            type="evidence",
+                            label=f"Document {doc_id}",
+                        )
+                    )
+                    evidence_ids.add(evidence_id)
+                links.append(
+                    GraphLink(
+                        source=discovery_id,
+                        target=evidence_id,
+                        type="references",
+                    )
+                )
+
+    return DiscoveryGraphResponse(nodes=nodes, links=links)
 
 
 __all__ = ["router"]

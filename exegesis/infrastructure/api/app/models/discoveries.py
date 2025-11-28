@@ -54,10 +54,39 @@ class DiscoveryFeedbackRequest(BaseModel):
     helpful: bool
 
 
+class GraphNode(APIModel):
+    """A node in the discovery graph."""
+
+    id: str
+    type: str  # "discovery" or "evidence"
+    label: str
+    discoveryType: str | None = None  # For coloring: anomaly, contradiction, gap, etc.
+    confidence: float | None = None
+    viewed: bool | None = None
+
+
+class GraphLink(APIModel):
+    """A link between nodes in the discovery graph."""
+
+    source: str
+    target: str
+    type: str  # "references", "contradicts", "connects", etc.
+
+
+class DiscoveryGraphResponse(APIModel):
+    """Graph representation of discoveries and their relationships."""
+
+    nodes: list[GraphNode]
+    links: list[GraphLink]
+
+
 __all__ = [
     "DiscoveryFeedbackRequest",
+    "DiscoveryGraphResponse",
     "DiscoveryListResponse",
     "DiscoveryMetadata",
     "DiscoveryResponse",
     "DiscoveryStats",
+    "GraphLink",
+    "GraphNode",
 ]
