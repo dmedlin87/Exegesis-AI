@@ -602,7 +602,17 @@ def _guarded_answer_or_refusal(
     fallback_results: list[HybridSearchResult] = []
     fallback_used = False
     if not filtered_results and osis:
-        fallback_results = load_passages_for_osis(session, osis)
+        try:
+            from . import workflow as _workflow_module
+        except Exception:
+            loader = load_passages_for_osis
+        else:
+            loader = getattr(
+                _workflow_module,
+                "load_passages_for_osis",
+                load_passages_for_osis,
+            )
+        fallback_results = loader(session, osis)
         if fallback_results:
             filtered_results = fallback_results
             fallback_used = True
@@ -613,8 +623,19 @@ def _guarded_answer_or_refusal(
         else fallback_used
     )
 
+    # Resolve the guarded-answer helper through the workflow compatibility
+    # surface when available so tests can monkeypatch
+    # ``workflow._guarded_answer`` without needing to reach into this module
+    # directly.
     try:
-        return _guarded_answer(
+        from . import workflow as _workflow_module  # type: ignore[import]
+    except Exception:
+        guarded = _guarded_answer
+    else:
+        guarded = getattr(_workflow_module, "_guarded_answer", _guarded_answer)
+
+    try:
+        return guarded(
             session,
             question=question,
             results=candidate_results,

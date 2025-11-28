@@ -5,6 +5,9 @@ from __future__ import annotations
 from functools import partial
 from typing import Any
 
+from exegesis.application.facades.telemetry import instrument_workflow, set_span_attribute
+
+from ..registry import get_llm_registry
 from .chat import (
     DeliverableHooks,
     GuardedAnswerPipeline,
@@ -27,7 +30,7 @@ from .exports import (
     build_transcript_deliverable,
     build_transcript_package,
 )
-from .guardrail_helpers import GuardrailError
+from .guardrail_helpers import GuardrailError, load_passages_for_osis
 from .models import (
     CollaborationResponse,
     ComparativeAnalysisResponse,
@@ -109,22 +112,28 @@ __all__ = [
     "SermonPrepResponse",
     "VerseCopilotResponse",
     "WorkflowLoggingContext",
+    "_guarded_answer",
+    "_guarded_answer_or_refusal",
     "build_guardrail_refusal",
     "build_sermon_deliverable",
     "build_sermon_prep_package",
     "build_transcript_deliverable",
     "build_transcript_package",
     "configure_workflow_logging_context",
+    "get_llm_registry",
     "generate_comparative_analysis",
     "generate_devotional_flow",
     "generate_multimedia_digest",
     "generate_sermon_prep_outline",
     "generate_verse_brief",
     "get_workflow_logging_context",
+    "instrument_workflow",
     "log_workflow_event",
+    "load_passages_for_osis",
     "record_used_citation_feedback",
     "run_corpus_curation",
     "run_guarded_chat",
     "run_research_reconciliation",
+    "set_span_attribute",
     "search_passages",
 ]

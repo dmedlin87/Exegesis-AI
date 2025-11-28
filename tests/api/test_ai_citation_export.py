@@ -464,7 +464,7 @@ def test_sqlite_migration_backfills_contradiction_perspective(
     migrations_dir.mkdir()
     migration_source = (
         PROJECT_ROOT
-        / "theo"
+        / "exegesis"
         / "infrastructure"
         / "api"
         / "app"
