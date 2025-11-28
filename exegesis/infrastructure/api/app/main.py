@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import inspect
 import logging
-import os
-from functools import wraps
 from typing import Any
 
 from fastapi import FastAPI
@@ -122,73 +119,6 @@ def _enforce_secret_requirements() -> None:
         logger=logger,
     )
 
-
-def _should_patch_httpx() -> bool:
-    disabled = os.getenv("EXEGESIS_DISABLE_HTTPX_COMPAT_PATCH", "0").lower()
-    if disabled in {"1", "true", "yes"}:
-        return False
-    return True
-
-
-def _patch_httpx_testclient_compat() -> None:
-    try:
-        import httpx  # type: ignore[import]
-    except Exception:  # pragma: no cover - optional dependency
-        return
-    try:
-        client_signature = inspect.signature(httpx.Client.__init__)
-    except (AttributeError, ValueError):
-        return
-    if "app" in client_signature.parameters:
-        return
-    transport_cls = getattr(httpx, "ASGITransport", None)
-    if transport_cls is None:
-        return
-    original_client_init = httpx.Client.__init__
-    if getattr(original_client_init, "__EXEGESIS_patched__", False):
-        return
-
-    @wraps(original_client_init)
-    def compat_client_init(self, *args, app=None, transport=None, **kwargs):
-        if app is not None and transport is None:
-            transport = transport_cls(app=app)
-        return original_client_init(self, *args, transport=transport, **kwargs)
-
-    compat_client_init.__EXEGESIS_patched__ = True  # type: ignore[attr-defined]
-    httpx.Client.__init__ = compat_client_init  # type: ignore[assignment]
-
-    async_client_cls = getattr(httpx, "AsyncClient", None)
-    if async_client_cls is None:
-        return
-    if not inspect.isclass(async_client_cls):
-        return
-    # Skip patching if the class is a mock (e.g., from pytest fixtures)
-    if hasattr(async_client_cls, "_mock_name") or hasattr(async_client_cls, "assert_called"):
-        return
-    original_async_init = async_client_cls.__init__
-    try:
-        async_signature = inspect.signature(original_async_init)
-    except (AttributeError, ValueError):
-        return
-    if "app" in async_signature.parameters:
-        return
-
-    @wraps(original_async_init)
-    def compat_async_init(self, *args, app=None, transport=None, **kwargs):
-        if app is not None and transport is None:
-            transport = transport_cls(app=app)
-        return original_async_init(self, *args, transport=transport, **kwargs)
-
-    compat_async_init.__EXEGESIS_patched__ = True  # type: ignore[attr-defined]
-    try:
-        async_client_cls.__init__ = compat_async_init  # type: ignore[assignment]
-    except AttributeError:
-        # Cannot patch (e.g., mock objects don't allow __init__ assignment)
-        pass
-
-
-if _should_patch_httpx():
-    _patch_httpx_testclient_compat()
 
 app = create_app()
 
