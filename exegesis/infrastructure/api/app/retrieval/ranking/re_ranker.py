@@ -6,7 +6,10 @@ import hashlib
 from pathlib import Path
 from typing import Sequence
 
-import joblib  # type: ignore[import]
+try:
+    import joblib  # type: ignore[import]
+except Exception:  # pragma: no cover - joblib optional
+    joblib = None  # type: ignore[assignment]
 
 from ...models.search import HybridSearchResult
 from .features import extract_features
@@ -59,6 +62,8 @@ def _load_model(path: Path, *, expected_sha256: str | None = None):
                 "Hash mismatch for reranker model: expected %s but loaded %s"
                 % (expected_sha256, actual_sha256)
             )
+    if joblib is None:
+        raise RuntimeError("joblib is required to load reranker artifacts")
     return joblib.load(artifact_path)
 
 

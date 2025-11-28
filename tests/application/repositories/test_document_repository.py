@@ -6,7 +6,6 @@ from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import Mock
 
-import numpy as np
 import pytest
 from sqlalchemy.orm import Session
 
@@ -85,7 +84,7 @@ def test_list_with_embeddings_averages_vectors(session: Session):
     results = repo.list_with_embeddings("user-1")
 
     assert len(results) == 1
-    embedding = np.mean([[0.2, 0.4, 0.6], [0.0, 0.1, 0.2]], axis=0).tolist()
+    embedding = [(0.2 + 0.0) / 2, (0.4 + 0.1) / 2, (0.6 + 0.2) / 2]
     document = results[0]
     assert document.document_id == "doc-1"
     assert document.title == "Untitled Document"

@@ -4,8 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Iterable, Mapping, Sequence
-
-import numpy as np
+import math
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -161,13 +160,41 @@ class SQLAlchemyDocumentRepository(BaseRepository[Document], DocumentRepository)
 
     @staticmethod
     def _average_vectors(vectors: Sequence[Sequence[float]]) -> list[float]:
-        array = np.array(vectors, dtype=float)
-        if not np.isfinite(array).all():
-            mask = np.isfinite(array).all(axis=1)
-            array = array[mask]
-        if len(array) == 0:
+        sanitized: list[list[float]] = []
+        expected_length: int | None = None
+        for vector in vectors:
+            if not vector:
+                continue
+            length = len(vector)
+            if expected_length is None:
+                expected_length = length
+            elif length != expected_length:
+                continue
+            row: list[float] = []
+            valid = True
+            for value in vector:
+                try:
+                    number = float(value)
+                except (TypeError, ValueError):
+                    valid = False
+                    break
+                if not math.isfinite(number):
+                    valid = False
+                    break
+                row.append(number)
+            if not valid or not row:
+                continue
+            sanitized.append(row)
+        if not sanitized or expected_length is None:
             return []
-        return array.mean(axis=0).tolist()
+        totals = [0.0] * expected_length
+        for row in sanitized:
+            for index, value in enumerate(row):
+                totals[index] += value
+        count = len(sanitized)
+        if count == 0:
+            return []
+        return [total / count for total in totals]
 
     @staticmethod
     def _collect_verse_ids(passages) -> list[int]:

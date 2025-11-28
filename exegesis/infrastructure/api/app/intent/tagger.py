@@ -1,24 +1,29 @@
-"""Intent classification utilities backed by a scikit-learn pipeline."""
+"""Intent classification utilities powered by a semantic LLM router."""
 
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass
-from functools import lru_cache
-from pathlib import Path
 from typing import Any
 
-try:  # pragma: no cover - optional dependency resolution
-    import joblib
-except Exception:  # noqa: BLE001 - handled by fail-open logic
-    joblib = None  # type: ignore[assignment]
+from sqlalchemy.orm import Session
 
-try:  # pragma: no cover - optional dependency resolution
-    from sklearn.pipeline import Pipeline
-except Exception:  # noqa: BLE001 - handled by fail-open logic
-    Pipeline = Any  # type: ignore[assignment]
+from exegesis.application.ports.ai_registry import GenerationError
+from exegesis.application.prompts.routing import ROUTER_SYSTEM_PROMPT
+from exegesis.infrastructure.api.app.research.ai.router import LLMRouterService, get_router
+from exegesis.infrastructure.api.app.research.ai.registry import LLMRegistry
 
 LOGGER = logging.getLogger(__name__)
+
+_CATEGORY_NAMES = (
+    "SEARCH",
+    "CONTRADICTION_CHECK",
+    "SUMMARIZE",
+    "WORD_STUDY",
+    "GENERAL_CHAT",
+)
+_CATEGORY_PATTERN = re.compile(r"\b(" + r"|".join(_CATEGORY_NAMES) + r")\b", re.IGNORECASE)
 
 
 @dataclass(slots=True)
@@ -41,104 +46,96 @@ class IntentTag:
 
 
 class IntentTagger:
-    """Wrapper around a scikit-learn pipeline for intent inference."""
+    """Zero-shot intent classifier powered by the LLM router."""
 
-    def __init__(self, model_path: Path) -> None:
-        self._model_path = Path(model_path)
-        self._pipeline: Pipeline | None = None
-        self._label_separator: str = "|||"
-        self._label_schema: dict[str, Any] = {}
-
-    @property
-    def label_schema(self) -> dict[str, Any]:
-        """Return the label schema bundled with the model artifact."""
-
-        self._ensure_loaded()
-        return self._label_schema
+    def __init__(
+        self,
+        session: Session,
+        *,
+        router: LLMRouterService | None = None,
+        registry: LLMRegistry | None = None,
+        model_hint: str | None = None,
+    ) -> None:
+        self._session = session
+        self._router_override = router
+        self._registry = registry
+        self._model_hint = model_hint
+        self._router: LLMRouterService | None = None
 
     def predict(self, message: str) -> IntentTag:
         """Predict an intent tag for the provided user message."""
 
-        if not message:
+        cleaned = (message or "").strip()
+        if not cleaned:
             raise ValueError("message must be provided for intent tagging")
 
-        pipeline = self._ensure_loaded()
-        label = pipeline.predict([message])[0]
-        intent, stance = self._decode_label(str(label))
+        router = self._resolve_router()
+        if router is None:
+            raise RuntimeError("LLM router unavailable for intent tagging")
 
-        confidence: float | None = None
+        prompt = self._build_prompt(cleaned)
+        for candidate in router.iter_candidates("intent_classification", self._model_hint):
+            try:
+                routed = router.execute_generation(
+                    workflow="intent_classification",
+                    model=candidate,
+                    prompt=prompt,
+                    temperature=0.0,
+                    max_output_tokens=8,
+                )
+            except GenerationError as exc:
+                LOGGER.debug(
+                    "Intent tagging generation failed via %s",
+                    getattr(candidate, "name", "<unknown>"),
+                    exc_info=exc,
+                )
+                continue
+            category = self._extract_category(routed.output)
+            if category:
+                return IntentTag(intent=category)
+
+        raise RuntimeError("Failed to classify intent via LLM router")
+
+    def _build_prompt(self, message: str) -> str:
+        instruction = ROUTER_SYSTEM_PROMPT.strip()
+        return (
+            f"{instruction}\n\n"
+            f"User message:\n{message}\n\n"
+            "Category:"
+        )
+
+    def _extract_category(self, text: str) -> str | None:
+        for line in text.splitlines():
+            match = _CATEGORY_PATTERN.search(line)
+            if match:
+                return match.group(1).upper()
+        # Fallback: try to strip punctuation and match direct value
+        normalized = re.sub(r"[^A-Za-z_]", "", text).upper()
+        return normalized if normalized in _CATEGORY_NAMES else None
+
+    def _resolve_router(self) -> LLMRouterService | None:
+        if self._router_override is not None:
+            return self._router_override
+        if self._router is not None:
+            return self._router
         try:
-            probabilities = pipeline.predict_proba([message])[0]
-            classifier = pipeline.named_steps.get("classifier")
-            classes = getattr(classifier, "classes_", None)
-            if classes is None:
-                raise AttributeError("classifier missing classes_ attribute")
-            index = list(classes).index(label)
-            confidence = float(probabilities[index])
-        except Exception:  # noqa: BLE001 - prediction confidence is best-effort
-            LOGGER.debug("Intent classifier does not expose calibrated confidence", exc_info=True)
-
-        return IntentTag(intent=intent, stance=stance, confidence=confidence)
-
-    def _decode_label(self, value: str) -> tuple[str, str | None]:
-        if self._label_separator in value:
-            intent, stance = value.split(self._label_separator, 1)
-            return intent, stance or None
-        return value, None
-
-    def _ensure_loaded(self) -> Pipeline:
-        if joblib is None:
-            raise RuntimeError("joblib is required to load intent tagger models")
-        if self._pipeline is not None:
-            return self._pipeline
-
-        artifact = joblib.load(self._model_path)
-        pipeline: Pipeline | None = None
-        label_schema: dict[str, Any] = {}
-        separator = "|||"
-        if isinstance(artifact, dict):
-            pipeline = artifact.get("pipeline")
-            label_schema = artifact.get("label_schema") or {}
-            separator = artifact.get("label_separator", separator)
-        else:
-            pipeline = artifact
-
-        if pipeline is None:
-            raise ValueError("intent model artifact missing pipeline entry")
-
-        if not hasattr(pipeline, "predict"):
-            raise TypeError("intent model artifact does not expose predict()")
-
-        self._pipeline = pipeline
-        self._label_schema = label_schema
-        self._label_separator = separator
-        return pipeline
+            self._router = get_router(self._session, registry=self._registry)
+        except Exception:  # pragma: no cover - router may be misconfigured in tests
+            LOGGER.debug("Unable to resolve LLM router for intent tagging", exc_info=True)
+            self._router = None
+        return self._router
 
 
-@lru_cache
-def _load_tagger(path: str) -> IntentTagger:
-    return IntentTagger(Path(path))
-
-
-def get_intent_tagger(settings: Any) -> IntentTagger | None:
+def get_intent_tagger(session: Session, settings: Any) -> IntentTagger | None:
     """Instantiate an intent tagger based on runtime settings."""
 
     enabled = bool(getattr(settings, "intent_tagger_enabled", False))
     if not enabled:
         return None
 
-    if joblib is None:
-        LOGGER.warning("Intent tagger enabled but joblib is not installed")
-        return None
-
-    model_path = getattr(settings, "intent_model_path", None)
-    if not model_path:
-        LOGGER.warning("Intent tagger enabled but no model path configured")
-        return None
-
-    path_str = str(Path(model_path))
     try:
-        return _load_tagger(path_str)
-    except Exception:  # noqa: BLE001 - surface as warning and fall back gracefully
-        LOGGER.warning("Failed to load intent tagger from %s", path_str, exc_info=True)
+        return IntentTagger(session)
+    except Exception as exc:  # pragma: no cover - surface as warning and fall back gracefully
+        LOGGER.warning("Intent tagger could not be initialised: %s", exc)
         return None
+

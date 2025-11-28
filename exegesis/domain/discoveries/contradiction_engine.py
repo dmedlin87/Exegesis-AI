@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import re
 from dataclasses import dataclass
 from typing import Sequence
@@ -407,19 +408,24 @@ class ContradictionDiscoveryEngine:
         if not vec_a or not vec_b or len(vec_a) != len(vec_b):
             return 1.0  # If no embeddings, assume similar (don't filter out)
 
-        import numpy as np
+        numerator = 0.0
+        sum_a = 0.0
+        sum_b = 0.0
 
-        vec_arr_a = np.array(vec_a)
-        vec_arr_b = np.array(vec_b)
+        for a, b in zip(vec_a, vec_b):
+            try:
+                fa = float(a)
+                fb = float(b)
+            except (TypeError, ValueError):
+                continue
+            numerator += fa * fb
+            sum_a += fa * fa
+            sum_b += fb * fb
 
-        norm_a = np.linalg.norm(vec_arr_a)
-        norm_b = np.linalg.norm(vec_arr_b)
-
-        if norm_a == 0 or norm_b == 0:
+        if sum_a <= 0 or sum_b <= 0:
             return 1.0
 
-        return float(np.dot(vec_arr_a, vec_arr_b) / (norm_a * norm_b))
-
+        return float(numerator / math.sqrt(sum_a * sum_b))
     def _truncate_text(self, text: str, max_length: int = 500) -> str:
         """Truncate text respecting sentence boundaries."""
         if len(text) <= max_length:

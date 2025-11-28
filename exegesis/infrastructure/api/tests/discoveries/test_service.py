@@ -6,7 +6,6 @@ import sys
 from datetime import UTC, datetime
 from types import SimpleNamespace
 
-import numpy as np
 import pytest
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session, sessionmaker
@@ -316,7 +315,7 @@ def test_refresh_user_discoveries_creates_records(seeded_session: Session):
         "Service",
     ]
     assert primary.verse_ids == [1, 2, 3, 5, 7]
-    expected_embedding = np.mean([[0.2, 0.4, 0.6], [0.0, 0.1, 0.2]], axis=0).tolist()
+    expected_embedding = [(0.2 + 0.0) / 2, (0.4 + 0.1) / 2, (0.6 + 0.2) / 2]
     assert primary.embedding == pytest.approx(expected_embedding)
 
     assert contradiction_engine.seen_documents is documents

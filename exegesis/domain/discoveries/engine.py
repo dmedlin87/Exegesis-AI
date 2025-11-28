@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 from typing import Iterable, Mapping, Sequence
-
-import numpy as np
-from sklearn.cluster import DBSCAN
+import math
 
 from .models import (
     CorpusSnapshotSummary,
@@ -62,20 +60,12 @@ class PatternDiscoveryEngine:
         """Return pattern discoveries and corpus statistics for *documents*."""
 
         filtered = [doc for doc in documents if doc.embedding]
-        if len(filtered) < self.min_cluster_size:
-            snapshot = self._build_snapshot(filtered, [])
+        sanitized_docs, embeddings = self._prepare_vectors(filtered)
+        if len(sanitized_docs) < self.min_cluster_size:
+            snapshot = self._build_snapshot(sanitized_docs, [])
             return [], snapshot
 
-        embeddings = np.array([doc.embedding for doc in filtered], dtype=float)
-        if not np.isfinite(embeddings).all():
-            mask = np.isfinite(embeddings).all(axis=1)
-            filtered = [doc for doc, keep in zip(filtered, mask, strict=False) if keep]
-            embeddings = embeddings[mask]
-        if len(filtered) < self.min_cluster_size:
-            snapshot = self._build_snapshot(filtered, [])
-            return [], snapshot
-
-        clusterer = DBSCAN(eps=self.eps, min_samples=self.min_cluster_size, metric="cosine")
+        clusterer = self._load_clusterer()
         labels = clusterer.fit_predict(embeddings)
         core_indices = set(getattr(clusterer, "core_sample_indices_", []))
 
@@ -86,9 +76,9 @@ class PatternDiscoveryEngine:
             member_indices = [idx for idx, candidate in enumerate(labels) if candidate == label]
             if len(member_indices) < self.min_cluster_size:
                 continue
-            members = [filtered[idx] for idx in member_indices]
+            members = [sanitized_docs[idx] for idx in member_indices]
             themes = _top_keywords(members, limit=5)
-            cluster_strength = len(member_indices) / max(len(filtered), 1)
+            cluster_strength = len(member_indices) / max(len(sanitized_docs), 1)
             core_members = len([idx for idx in member_indices if idx in core_indices])
             core_ratio = core_members / len(member_indices)
             confidence = min(0.95, round(0.5 + 0.4 * core_ratio + 0.1 * cluster_strength, 4))
@@ -134,8 +124,40 @@ class PatternDiscoveryEngine:
                 )
             )
 
-        snapshot = self._build_snapshot(filtered, discoveries)
+        snapshot = self._build_snapshot(sanitized_docs, discoveries)
         return discoveries, snapshot
+
+    def _prepare_vectors(
+        self, documents: Sequence[DocumentEmbedding]
+    ) -> tuple[list[DocumentEmbedding], list[list[float]]]:
+        sanitized_docs: list[DocumentEmbedding] = []
+        sanitized_embeddings: list[list[float]] = []
+        for doc in documents:
+            raw_embedding = doc.embedding or []
+            vector: list[float] = []
+            valid = True
+            for value in raw_embedding:
+                try:
+                    number = float(value)
+                except (TypeError, ValueError):
+                    valid = False
+                    break
+                if not math.isfinite(number):
+                    valid = False
+                    break
+                vector.append(number)
+            if not valid or not vector:
+                continue
+            sanitized_docs.append(doc)
+            sanitized_embeddings.append(vector)
+        return sanitized_docs, sanitized_embeddings
+
+    def _load_clusterer(self):
+        try:
+            from sklearn.cluster import DBSCAN
+        except ModuleNotFoundError as exc:
+            raise RuntimeError("PatternDiscoveryEngine requires scikit-learn") from exc
+        return DBSCAN(eps=self.eps, min_samples=self.min_cluster_size, metric="cosine")
 
     def _build_snapshot(
         self,

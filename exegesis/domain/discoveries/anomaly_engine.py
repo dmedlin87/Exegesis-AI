@@ -4,9 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Sequence
-
-import numpy as np
-from sklearn.ensemble import IsolationForest
+import math
 
 from .models import DocumentEmbedding
 
@@ -46,25 +44,12 @@ class AnomalyDiscoveryEngine:
         """Identify anomalous documents from *documents*."""
 
         filtered = [doc for doc in documents if doc.embedding]
-        if len(filtered) < self.min_documents:
+        sanitized_docs, embeddings = self._prepare_vectors(filtered)
+        if len(sanitized_docs) < self.min_documents:
             return []
 
-        embeddings = np.array([doc.embedding for doc in filtered], dtype=float)
-        if embeddings.ndim != 2:
-            embeddings = embeddings.reshape(len(filtered), -1)
-        mask = np.isfinite(embeddings).all(axis=1)
-        if not mask.all():
-            filtered = [doc for doc, keep in zip(filtered, mask, strict=False) if keep]
-            embeddings = embeddings[mask]
-        if len(filtered) < self.min_documents:
-            return []
-
-        contamination = self._effective_contamination(len(filtered))
-        forest = IsolationForest(
-            n_estimators=self.n_estimators,
-            contamination=contamination,
-            random_state=self.random_state,
-        )
+        contamination = self._effective_contamination(len(sanitized_docs))
+        forest = self._load_forest(contamination)
         forest.fit(embeddings)
 
         scores = forest.decision_function(embeddings)
@@ -81,7 +66,7 @@ class AnomalyDiscoveryEngine:
         ordered_indices = sorted(anomaly_indices, key=lambda idx: scores[idx])
         discoveries: list[AnomalyDiscovery] = []
         for rank, idx in enumerate(ordered_indices, start=1):
-            doc = filtered[idx]
+            doc = sanitized_docs[idx]
             severity = max(0.0, -float(scores[idx]))
             normalised = severity / max_severity if max_severity else 0.0
             confidence = min(0.95, round(0.5 + 0.4 * normalised, 4))
@@ -120,6 +105,42 @@ class AnomalyDiscoveryEngine:
                 break
 
         return discoveries
+
+    def _prepare_vectors(
+        self, documents: Sequence[DocumentEmbedding]
+    ) -> tuple[list[DocumentEmbedding], list[list[float]]]:
+        sanitized_docs: list[DocumentEmbedding] = []
+        sanitized_embeddings: list[list[float]] = []
+        for doc in documents:
+            raw_embedding = doc.embedding or []
+            vector: list[float] = []
+            valid = True
+            for value in raw_embedding:
+                try:
+                    number = float(value)
+                except (TypeError, ValueError):
+                    valid = False
+                    break
+                if not math.isfinite(number):
+                    valid = False
+                    break
+                vector.append(number)
+            if not valid or not vector:
+                continue
+            sanitized_docs.append(doc)
+            sanitized_embeddings.append(vector)
+        return sanitized_docs, sanitized_embeddings
+
+    def _load_forest(self, contamination: float):
+        try:
+            from sklearn.ensemble import IsolationForest
+        except ModuleNotFoundError as exc:
+            raise RuntimeError("AnomalyDiscoveryEngine requires scikit-learn") from exc
+        return IsolationForest(
+            n_estimators=self.n_estimators,
+            contamination=contamination,
+            random_state=self.random_state,
+        )
 
     def _effective_contamination(self, document_count: int) -> float:
         ratio = max(1.0 / document_count, self.contamination)

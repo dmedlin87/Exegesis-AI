@@ -40,7 +40,31 @@ External Services
 - Zotero, realtime, telemetry, AI trails are stubbed via ``_stub_external_integrations``
 - Auth is bypassed by default; use ``@pytest.mark.no_auth_override`` to enforce auth
 """
+
 from __future__ import annotations
+
+import importlib
+import pickle
+import sys
+import types
+
+try:
+    importlib.import_module("joblib")
+except ModuleNotFoundError:
+    joblib_module = types.ModuleType("joblib")
+
+    def _dump(value: object, filename: str, *args: object, **kwargs: object) -> list[str]:
+        with open(filename, "wb") as handle:
+            pickle.dump(value, handle)
+        return [filename]
+
+    def _load(filename: str, *args: object, **kwargs: object) -> object:
+        with open(filename, "rb") as handle:
+            return pickle.load(handle)
+
+    joblib_module.dump = _dump
+    joblib_module.load = _load
+    sys.modules["joblib"] = joblib_module
 
 import contextlib
 import os
