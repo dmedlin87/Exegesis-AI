@@ -36,6 +36,7 @@ from exegesis.application.retrieval.embeddings.checkpoint_store import (
     load_checkpoint,
     save_checkpoint,
 )
+from exegesis.infrastructure.api.app.library.ingest import adapters as ingest_adapters
 from exegesis.infrastructure.api.app.library.ingest.embeddings import clear_embedding_cache
 from exegesis.application.services.bootstrap import resolve_application
 from exegesis.domain.services.embeddings import EmbeddingRebuildConfig
@@ -59,6 +60,8 @@ def _default_service_provider() -> EmbeddingRebuildService:
         raise click.ClickException("Embedding rebuild service unavailable")
     return service
 
+
+ingest_adapters.ensure_embedding_rebuild_adapters_registered()
 
 _SERVICE_PROVIDER: Callable[[], EmbeddingRebuildService] = _default_service_provider
 _CLEAR_CACHE: Callable[[], None] = clear_embedding_cache

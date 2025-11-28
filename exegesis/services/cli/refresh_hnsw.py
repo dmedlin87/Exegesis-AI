@@ -11,6 +11,7 @@ from typing import Callable, cast
 from celery.app.task import Task
 from importlib import import_module
 
+from exegesis.infrastructure.api.app.library.ingest import adapters as ingest_adapters
 from exegesis.application.services.bootstrap import resolve_application
 
 
@@ -25,6 +26,8 @@ def _load_refresh_task() -> Task:
     task = module.refresh_hnsw
     return cast(Task, task)
 
+
+ingest_adapters.ensure_embedding_rebuild_adapters_registered()
 
 _BOOTSTRAP: Callable[[], None] = _bootstrap_application
 _TASK_LOADER: Callable[[], Task] = _load_refresh_task

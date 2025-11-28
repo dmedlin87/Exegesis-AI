@@ -13,12 +13,15 @@ from sqlalchemy.orm import Session, sessionmaker
 from exegesis.adapters.persistence.discovery_repository import SQLAlchemyDiscoveryRepository
 from exegesis.adapters.persistence.document_repository import SQLAlchemyDocumentRepository
 from exegesis.infrastructure.api.app.persistence_models import Document
+from exegesis.infrastructure.api.app.library.ingest import adapters as ingest_adapters
 from exegesis.application.services.bootstrap import resolve_application
 
 from ..research.discoveries.service import DiscoveryService
 
 logger = logging.getLogger(__name__)
 
+
+ingest_adapters.ensure_embedding_rebuild_adapters_registered()
 
 _APPLICATION_CONTAINER, _ADAPTER_REGISTRY = resolve_application()
 _SESSION_FACTORY: sessionmaker[Session] | None = None

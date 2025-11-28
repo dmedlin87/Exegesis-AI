@@ -34,6 +34,7 @@ from exegesis.adapters.persistence.ingestion_job_repository import (
 from exegesis.adapters.persistence.types import VectorType
 from exegesis.application.dtos import ChatSessionDTO
 from exegesis.infrastructure.api.app.persistence_models import Document, Passage
+from exegesis.infrastructure.api.app.library.ingest import adapters as ingest_adapters
 from exegesis.application.services.bootstrap import resolve_application
 
 try:  # pragma: no cover - optional AI deliverables dependency
@@ -120,6 +121,8 @@ from ..models.search import HybridSearchFilters, HybridSearchRequest
 from ..retrieval.retriever.hybrid import hybrid_search
 from exegesis.application.facades.telemetry import log_workflow_event, record_counter
 from exegesis.application.core.telemetry import CITATION_DRIFT_EVENTS_METRIC
+
+ingest_adapters.ensure_embedding_rebuild_adapters_registered()
 
 APPLICATION_CONTAINER, _ADAPTER_REGISTRY = resolve_application()
 settings = _ADAPTER_REGISTRY.resolve("settings")

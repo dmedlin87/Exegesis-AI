@@ -15,7 +15,7 @@
 ## Domain Mapping (Shape Analogy)
 - Class/Base: Hypothesis (claim, status, confidence, claim_type, perspective_scores).
 - Attributes: ResearchNoteEvidence (osis_refs, citation, provenance, confidence).
-- Trigger/Note: Insight (detected via `InsightDetector.detect_from_reasoning` in `theo/infrastructure/api/app/research/ai/reasoning/insights.py`).
+- Trigger/Note: Insight (detected via `InsightDetector.detect_from_reasoning` in `exegesis/infrastructure/api/app/research/ai/reasoning/insights.py`).
 
 ## Planned Workflow
 1) HUD Retrieval Pipeline
@@ -23,7 +23,7 @@
 - Add prompt block injection in the RAG pipeline (pre-LLM call) with a concise "Known Concepts" section.
 
 2) Insight Capture in Trails
-- In `TrailRecorder` (`theo/infrastructure/api/app/research/ai/trails.py`), run InsightDetector against step reasoning/output_payload when text is present.
+- In `TrailRecorder` (`exegesis/infrastructure/api/app/research/ai/trails.py`), run InsightDetector against step reasoning/output_payload when text is present.
 - Map qualifying insights to HypothesisDraft objects (claim, status=draft, confidence=novelty_score, supporting_passage_ids=insight.supporting_passages, osis_refs=insight.osis_refs).
 - Store pending drafts on the trail; flush on finalize to avoid partial runs polluting memory.
 

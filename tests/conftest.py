@@ -494,6 +494,9 @@ def downgrade_ingestion_error_logs():
         yield
     finally:
         logger.removeFilter(flt)
+_EMBEDDING_MODULE_NAME = "exegesis.infrastructure.api.app.library.ingest.embeddings"
+
+
 class _BootstrapEmbeddingServiceStub:
     """Lightweight embedding backend used in bootstrap-oriented tests."""
 
@@ -524,25 +527,33 @@ class _BootstrapEmbeddingServiceStub:
 
 # Session-scoped to avoid repeated imports of the embeddings module
 @pytest.fixture(scope="session")
-def _embedding_stub_session() -> tuple[types.ModuleType, _BootstrapEmbeddingServiceStub]:
-    """Import embeddings module once and create a shared stub instance."""
+def _embedding_stub_session() -> _BootstrapEmbeddingServiceStub:
+    """Create a shared bootstrap embedding service stub."""
     from exegesis.application.facades.settings import get_settings
-    from exegesis.infrastructure.api.app.library.ingest import embeddings as embeddings_module
 
     settings = get_settings()
     stub = _BootstrapEmbeddingServiceStub(dimension=settings.embedding_dim)
-    return embeddings_module, stub
+    return stub
 
 
 @pytest.fixture(autouse=True)
 def _bootstrap_embedding_service_stub(
-    _embedding_stub_session: tuple[types.ModuleType, _BootstrapEmbeddingServiceStub],
+    _embedding_stub_session: _BootstrapEmbeddingServiceStub,
     monkeypatch: pytest.MonkeyPatch,
 ) -> Iterator[_BootstrapEmbeddingServiceStub]:
     """Patch bootstrap to provide a deterministic embedding service stub."""
-    embeddings_module, stub = _embedding_stub_session
+    stub = _embedding_stub_session
     stub.reset()  # Clear call history from previous test
-    monkeypatch.setattr(embeddings_module, "get_embedding_service", lambda: stub)
+    embeddings_module = importlib.import_module(_EMBEDDING_MODULE_NAME)
+    monkeypatch.setattr(
+        embeddings_module,
+        "get_embedding_service",
+        lambda: stub,
+        raising=False,
+    )
+    from exegesis.infrastructure.api.app.library.ingest import adapters as ingest_adapters
+
+    ingest_adapters.ensure_embedding_rebuild_adapters_registered()
     yield stub
 
 

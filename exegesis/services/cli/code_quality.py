@@ -10,6 +10,7 @@ from typing import Iterable, Sequence
 
 import click
 
+from exegesis.infrastructure.api.app.library.ingest import adapters as ingest_adapters
 from exegesis.application.services.bootstrap import resolve_application
 
 
@@ -44,6 +45,7 @@ _ALLOWED_EXECUTABLES: frozenset[str] = frozenset({"ruff", "pytest", "mypy"})
 
 
 # Ensure CLI piggybacks on the platform bootstrap wiring.
+ingest_adapters.ensure_embedding_rebuild_adapters_registered()
 resolve_application()
 
 def _stringify_path(path: Path | str) -> str:

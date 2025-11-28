@@ -17,6 +17,7 @@ from urllib.parse import urlparse
 
 from exegesis.adapters.persistence.models import Document
 from exegesis.infrastructure.api.app.enrich import MetadataEnricher
+from exegesis.infrastructure.api.app.library.ingest import adapters as ingest_adapters
 from exegesis.infrastructure.api.app.library.ingest.pipeline import (
     PipelineDependencies,
     run_pipeline_for_file,
@@ -25,6 +26,8 @@ from exegesis.infrastructure.api.app.library.ingest.pipeline import (
 from exegesis.infrastructure.api.app.core.telemetry import log_workflow_event
 from exegesis.application.services.bootstrap import resolve_application
 
+
+ingest_adapters.ensure_embedding_rebuild_adapters_registered()
 
 APPLICATION_CONTAINER, _ADAPTER_REGISTRY = resolve_application()
 

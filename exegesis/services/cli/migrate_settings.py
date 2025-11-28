@@ -7,8 +7,11 @@ from sqlalchemy.orm import Session
 
 from exegesis.application.facades.secret_migration import migrate_secret_settings
 from exegesis.application.facades.settings import get_settings_cipher
+from exegesis.infrastructure.api.app.library.ingest import adapters as ingest_adapters
 from exegesis.application.services.bootstrap import resolve_application
 
+
+ingest_adapters.ensure_embedding_rebuild_adapters_registered()
 
 APPLICATION_CONTAINER, _ADAPTER_REGISTRY = resolve_application()
 

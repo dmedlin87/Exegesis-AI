@@ -448,6 +448,7 @@ def test_build_csl_entry_uses_expected_type(source_type: str, expected: str) -> 
     assert entry["type"] == expected
 
 
+@pytest.mark.schema
 @pytest.mark.integration
 def test_sqlite_migration_backfills_contradiction_perspective(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch

@@ -6,8 +6,7 @@ from contextlib import contextmanager
 from functools import lru_cache
 from typing import Tuple
 
-from importlib import import_module
-
+from exegesis.adapters import AdapterRegistry
 from exegesis.adapters.persistence.sqlalchemy_support import (
     Session,
     select,
@@ -15,7 +14,6 @@ from exegesis.adapters.persistence.sqlalchemy_support import (
     selectinload,
 )
 
-from exegesis.adapters import AdapterRegistry
 from exegesis.adapters.persistence.collection_repository import (
     SQLAlchemyCollectionRepository,
 )
@@ -27,16 +25,33 @@ from exegesis.adapters.research import (
     SqlAlchemyHypothesisRepositoryFactory,
     SqlAlchemyResearchNoteRepositoryFactory,
 )
+from exegesis.application.facades.database import get_engine
+from exegesis.application.facades.settings import get_settings
+from exegesis.application.research import ResearchService
 from exegesis.application.retrieval.embeddings import (
     EmbeddingRebuildService,
     LazyEmbeddingBackend,
 )
-from exegesis.application.facades.database import get_engine
-from exegesis.application.facades.settings import get_settings
-from exegesis.application.research import ResearchService
 from exegesis.domain import Document, DocumentId, DocumentMetadata
 
 from .container import ApplicationContainer
+
+EMBEDDING_BACKEND_FACTORY_PORT = "embedding_backend_factory"
+EMBEDDING_SANITIZE_PORT = "sanitize_passage_text"
+EMBEDDING_CACHE_CLEARER_PORT = "clear_embedding_cache"
+
+_adapter_registry_hooks: list[Callable[[AdapterRegistry], None]] = []
+
+
+def register_adapter_hook(hook: Callable[[AdapterRegistry], None]) -> None:
+    """Register a callback invoked after the adapter registry is created."""
+
+    _adapter_registry_hooks.append(hook)
+
+
+def _run_adapter_hooks(registry: AdapterRegistry) -> None:
+    for hook in _adapter_registry_hooks:
+        hook(registry)
 
 
 @contextmanager
@@ -322,20 +337,20 @@ def resolve_application() -> Tuple[ApplicationContainer, AdapterRegistry]:
 
     registry.register("collection_service_factory", _build_collection_service_factory)
 
-    def _build_embedding_rebuild_service() -> EmbeddingRebuildService:
-        embeddings_module = import_module(
-            "exegesis.infrastructure.api.app.library.ingest.embeddings"
-        )
-        clear_embedding_cache = getattr(embeddings_module, "clear_embedding_cache")
-        get_embedding_service = getattr(embeddings_module, "get_embedding_service")
-        sanitizer_module = import_module(
-            "exegesis.infrastructure.api.app.library.ingest.sanitizer"
-        )
-        sanitize_passage_text = getattr(
-            sanitizer_module, "sanitize_passage_text"
-        )
+    _run_adapter_hooks(registry)
 
-        embedding_service = LazyEmbeddingBackend(get_embedding_service)
+    def _build_embedding_rebuild_service(registry: AdapterRegistry) -> EmbeddingRebuildService:
+        def _create_embedding_service() -> object:
+            backend_factory = registry.resolve(EMBEDDING_BACKEND_FACTORY_PORT)
+            return backend_factory()
+
+        sanitize_passage_text = registry.resolve(EMBEDDING_SANITIZE_PORT)
+        try:
+            cache_clearer = registry.resolve(EMBEDDING_CACHE_CLEARER_PORT)
+        except LookupError:
+            cache_clearer = None
+
+        embedding_service = LazyEmbeddingBackend(_create_embedding_service)
 
         def _session_factory() -> Session:
             engine = registry.resolve("engine")
@@ -349,10 +364,10 @@ def resolve_application() -> Tuple[ApplicationContainer, AdapterRegistry]:
             repository_factory=_repository_factory,
             embedding_service=embedding_service,
             sanitize_text=sanitize_passage_text,
-            cache_clearer=clear_embedding_cache,
+            cache_clearer=cache_clearer,
         )
 
-    embedding_rebuild_service = _build_embedding_rebuild_service()
+    embedding_rebuild_service = _build_embedding_rebuild_service(registry)
     registry.register(
         "embedding_rebuild_service", lambda: embedding_rebuild_service
     )
@@ -386,4 +401,10 @@ def resolve_application() -> Tuple[ApplicationContainer, AdapterRegistry]:
     return container, registry
 
 
-__all__ = ["resolve_application"]
+__all__ = [
+    "EMBEDDING_BACKEND_FACTORY_PORT",
+    "EMBEDDING_CACHE_CLEARER_PORT",
+    "EMBEDDING_SANITIZE_PORT",
+    "register_adapter_hook",
+    "resolve_application",
+]

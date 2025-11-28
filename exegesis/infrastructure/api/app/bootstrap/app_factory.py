@@ -28,6 +28,7 @@ from exegesis.application.facades.settings import (
 from exegesis.application.facades.telemetry import set_telemetry_provider
 from exegesis.application.services import ApplicationContainer
 from exegesis.application.services.bootstrap import resolve_application
+from exegesis.infrastructure.api.app.library.ingest import adapters as ingest_adapters
 
 from ..adapters.resilience import resilience_policy_factory
 from ..adapters.security import (
@@ -57,6 +58,8 @@ from .runtime_checks import (
     enforce_authentication_requirements,
     should_enable_console_traces,
 )
+
+ingest_adapters.ensure_embedding_rebuild_adapters_registered()
 
 logger = logging.getLogger(__name__)
 

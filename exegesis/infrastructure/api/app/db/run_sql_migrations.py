@@ -103,25 +103,32 @@ def _ensure_performance_indexes(engine: Engine) -> list[str]:
     with engine.connect() as connection:
         dialect_name = getattr(connection.dialect, "name", None)
         if dialect_name == "postgresql":
-            for entry in _PERFORMANCE_INDEXES_POSTGRES:
-                index_name = entry["name"]
-                table_name = entry["table"]
-                table_exists = connection.execute(
-                    text("SELECT to_regclass(:table)"),
-                    {"table": table_name},
-                ).scalar()
-                if not table_exists:
-                    logger.debug(
-                        "Skipping index %s; table %s missing", index_name, table_name
-                    )
-                    continue
-                exists = connection.execute(
-                    text("SELECT to_regclass(:name)"),
-                    {"name": index_name},
-                ).scalar()
-                if exists:
-                    continue
-                pending_postgres.append(entry)
+            try:
+                for entry in _PERFORMANCE_INDEXES_POSTGRES:
+                    index_name = entry["name"]
+                    table_name = entry["table"]
+                    table_exists = connection.execute(
+                        text("SELECT to_regclass(:table)"),
+                        {"table": table_name},
+                    ).scalar()
+                    if not table_exists:
+                        logger.debug(
+                            "Skipping index %s; table %s missing", index_name, table_name
+                        )
+                        continue
+                    exists = connection.execute(
+                        text("SELECT to_regclass(:name)"),
+                        {"name": index_name},
+                    ).scalar()
+                    if exists:
+                        continue
+                    pending_postgres.append(entry)
+            except Exception as exc:  # pragma: no cover - Postgres-specific functions unavailable
+                logger.debug(
+                    "Skipping Postgres performance index enforcement; database lacks required functions",
+                    exc_info=True,
+                )
+                return created
         elif dialect_name == "sqlite":
             for entry in _PERFORMANCE_INDEXES_GENERIC:
                 index_name = entry["name"]
@@ -583,6 +590,17 @@ def _execute_python_migration(path: Path, *, session: Session, engine: Engine) -
 
 import functools
 
+
+def _normalize_migrations_path(path: Path) -> Path:
+    try:
+        return path.resolve()
+    except Exception:
+        return path
+
+
+_LAST_MIGRATION_PATH: Path | None = None
+
+
 @functools.lru_cache(maxsize=1)
 def _cached_migration_files(migrations_path: Path) -> list[Path]:
     return list(_iter_migration_files(migrations_path))
@@ -600,6 +618,12 @@ def run_sql_migrations(
 
     if migrations_path is None:
         migrations_path = MIGRATIONS_PATH
+
+    migrations_path = _normalize_migrations_path(migrations_path)
+    global _LAST_MIGRATION_PATH
+    if _LAST_MIGRATION_PATH != migrations_path:
+        _cached_migration_files.cache_clear()
+        _LAST_MIGRATION_PATH = migrations_path
 
     dialect_name = getattr(engine.dialect, "name", None)
     supported_dialects = {"postgresql", "sqlite"}

@@ -95,6 +95,14 @@ def _resolve_workflow_module() -> ModuleType | None:
         return None
 
 
+_DEFAULT_INSTRUMENT_WORKFLOW = instrument_workflow
+_DEFAULT_SET_SPAN_ATTRIBUTE = set_span_attribute
+_DEFAULT_SEARCH_PASSAGES = search_passages
+_DEFAULT_GET_LLM_REGISTRY = get_llm_registry
+_DEFAULT_RECORD_USED_CITATION_FEEDBACK = record_used_citation_feedback
+_DEFAULT_BUILD_GUARDRAIL_REFUSAL = build_guardrail_refusal
+
+
 def _missing_deliverable_hook(name: str) -> Callable[..., Any]:
     def _missing(*_args: Any, **_kwargs: Any) -> Any:
         raise RuntimeError(
@@ -598,6 +606,9 @@ def _guarded_answer(
         mode=mode,
     )
 
+_DEFAULT_GUARDED_ANSWER = _guarded_answer
+
+
 def _guarded_answer_or_refusal(
     session: Session,
     *,
@@ -613,21 +624,15 @@ def _guarded_answer_or_refusal(
     allow_fallback: bool | None = None,
     mode: str | None = None,
 ) -> RAGAnswer:
+    workflow_module = _resolve_workflow_module()
     original_results = list(results)
     filtered_results = [result for result in original_results if result.osis_ref]
     fallback_results: list[HybridSearchResult] = []
     fallback_used = False
+    loader = load_passages_for_osis
+    if workflow_module is not None:
+        loader = getattr(workflow_module, "load_passages_for_osis", loader)
     if not filtered_results and osis:
-        try:
-            from . import workflow as _workflow_module
-        except Exception:
-            loader = load_passages_for_osis
-        else:
-            loader = getattr(
-                _workflow_module,
-                "load_passages_for_osis",
-                load_passages_for_osis,
-            )
         fallback_results = loader(session, osis)
         if fallback_results:
             filtered_results = fallback_results
@@ -643,12 +648,30 @@ def _guarded_answer_or_refusal(
     # surface when available so tests can monkeypatch
     # ``workflow._guarded_answer`` without needing to reach into this module
     # directly.
-    try:
-        from . import workflow as _workflow_module  # type: ignore[import]
-    except Exception:
-        guarded = _guarded_answer
-    else:
-        guarded = getattr(_workflow_module, "_guarded_answer", _guarded_answer)
+    workflow_guarded = (
+        getattr(
+            workflow_module,
+            "_guarded_answer",
+            _DEFAULT_GUARDED_ANSWER,
+        )
+        if workflow_module
+        else _DEFAULT_GUARDED_ANSWER
+    )
+    local_guarded = globals().get("_guarded_answer", _DEFAULT_GUARDED_ANSWER)
+    guarded = (
+        workflow_guarded
+        if workflow_guarded is not _DEFAULT_GUARDED_ANSWER
+        else local_guarded
+    )
+    workflow_refusal = (
+        getattr(
+            workflow_module,
+            "build_guardrail_refusal",
+            _DEFAULT_BUILD_GUARDRAIL_REFUSAL,
+        )
+        if workflow_module
+        else _DEFAULT_BUILD_GUARDRAIL_REFUSAL
+    )
 
     try:
         return guarded(
@@ -672,7 +695,15 @@ def _guarded_answer_or_refusal(
             exc,
             extra={"workflow": context},
         )
-        return build_guardrail_refusal(session, reason=str(exc))
+        local_refusal = globals().get(
+            "build_guardrail_refusal", _DEFAULT_BUILD_GUARDRAIL_REFUSAL
+        )
+        refusal_builder = (
+            workflow_refusal
+            if workflow_refusal is not _DEFAULT_BUILD_GUARDRAIL_REFUSAL
+            else local_refusal
+        )
+        return refusal_builder(session, reason=str(exc))
 
 
 def run_guarded_chat(
@@ -687,22 +718,83 @@ def run_guarded_chat(
     mode: str | None = None,
 ) -> RAGAnswer:
     filters = filters or HybridSearchFilters()
-    with instrument_workflow(
+    workflow_module = _resolve_workflow_module()
+    instrument = (
+        getattr(workflow_module, "instrument_workflow", instrument_workflow)
+        if workflow_module
+        else instrument_workflow
+    )
+    set_attr = (
+        getattr(workflow_module, "set_span_attribute", set_span_attribute)
+        if workflow_module
+        else set_span_attribute
+    )
+    workflow_search = (
+        getattr(workflow_module, "search_passages", _DEFAULT_SEARCH_PASSAGES)
+        if workflow_module
+        else _DEFAULT_SEARCH_PASSAGES
+    )
+    local_search = globals().get("search_passages", _DEFAULT_SEARCH_PASSAGES)
+    search_fn = (
+        workflow_search
+        if workflow_search is not _DEFAULT_SEARCH_PASSAGES
+        else local_search
+    )
+    workflow_registry = (
+        getattr(workflow_module, "get_llm_registry", _DEFAULT_GET_LLM_REGISTRY)
+        if workflow_module
+        else _DEFAULT_GET_LLM_REGISTRY
+    )
+    local_registry = globals().get(
+        "get_llm_registry", _DEFAULT_GET_LLM_REGISTRY
+    )
+    registry_fn = (
+        workflow_registry
+        if workflow_registry is not _DEFAULT_GET_LLM_REGISTRY
+        else local_registry
+    )
+    guarded_fn = (
+        getattr(
+            workflow_module,
+            "_guarded_answer_or_refusal",
+            _guarded_answer_or_refusal,
+        )
+        if workflow_module
+        else _guarded_answer_or_refusal
+    )
+    workflow_feedback = (
+        getattr(
+            workflow_module,
+            "record_used_citation_feedback",
+            _DEFAULT_RECORD_USED_CITATION_FEEDBACK,
+        )
+        if workflow_module
+        else _DEFAULT_RECORD_USED_CITATION_FEEDBACK
+    )
+    local_feedback = globals().get(
+        "record_used_citation_feedback", _DEFAULT_RECORD_USED_CITATION_FEEDBACK
+    )
+    feedback_fn = (
+        workflow_feedback
+        if workflow_feedback is not _DEFAULT_RECORD_USED_CITATION_FEEDBACK
+        else local_feedback
+    )
+    with instrument(
         "chat",
         question_present=bool(question),
         model_hint=model_name,
     ) as span:
-        set_span_attribute(
+        set_attr(
             span,
             "workflow.filters",
             filters.model_dump(exclude_none=True),
         )
         if mode:
-            set_span_attribute(span, "workflow.reasoning_mode", mode)
-        results = search_passages(session, query=question, osis=osis, filters=filters)
-        set_span_attribute(span, "workflow.result_count", len(results))
+            set_attr(span, "workflow.reasoning_mode", mode)
+        results = search_fn(session, query=question, osis=osis, filters=filters)
+        set_attr(span, "workflow.result_count", len(results))
         record_passages_retrieved(result_count=len(results))
-        registry = get_llm_registry(session)
+        registry = registry_fn(session)
         if recorder:
             recorder.log_step(
                 tool="hybrid_search",
@@ -724,7 +816,7 @@ def run_guarded_chat(
                 ],
                 output_digest=f"{len(results)} passages",
             )
-        answer = _guarded_answer_or_refusal(
+        answer = guarded_fn(
             session,
             context="chat",
             question=question,
@@ -737,15 +829,15 @@ def run_guarded_chat(
             osis=osis,
             mode=mode,
         )
-        record_used_citation_feedback(
+        feedback_fn(
             session,
             citations=answer.citations,
             results=results,
             query=question,
             recorder=recorder,
         )
-        set_span_attribute(span, "workflow.citation_count", len(answer.citations))
-        set_span_attribute(span, "workflow.summary_length", len(answer.summary))
+        set_attr(span, "workflow.citation_count", len(answer.citations))
+        set_attr(span, "workflow.summary_length", len(answer.summary))
         record_answer_event(citation_count=len(answer.citations))
         if recorder:
             recorder.record_citations(answer.citations)

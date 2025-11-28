@@ -1,7 +1,7 @@
 # Exegesis AI API
 
 Exegesis AI exposes a FastAPI application located at
-`theo/infrastructure/api/app`. The service is designed around JSON responses and
+`exegesis/infrastructure/api/app`. The service is designed around JSON responses and
 multipart uploads for binary content.
 
 - **Base URL:** `/` (all paths below are relative to the FastAPI root)
@@ -43,14 +43,14 @@ Example WebSocket connection with an API key:
 ```bash
 websocat \
   -H "X-API-Key: $EXEGESIS_API_KEYS" \
-  wss://api.theo.app/realtime/notebooks/<notebook-id>
+  wss://api.exegesis.app/realtime/notebooks/<notebook-id>
 ```
 
 Polling clients use the same header conventions:
 
 ```bash
 curl -H "Authorization: Bearer $EXEGESIS_API_TOKEN" \
-  https://api.theo.app/realtime/notebooks/<notebook-id>/poll
+  https://api.exegesis.app/realtime/notebooks/<notebook-id>/poll
 ```
 
 Authorization is evaluated before the connection is accepted, and notebook
@@ -158,7 +158,7 @@ Generates the weekly OpenAlex-enhanced topic digest. Optional body parameters:
 ```json
 {
   "since": "2024-08-05T00:00:00Z",
-  "notify": ["alerts@theo.app"]
+  "notify": ["alerts@exegesis.app"]
 }
 ```
 

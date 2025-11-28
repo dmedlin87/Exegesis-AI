@@ -16,8 +16,11 @@ from ..api.app.analytics.topics import (
     upsert_digest_document,
 )
 from exegesis.adapters.persistence.models import Document, Passage
+from exegesis.infrastructure.api.app.library.ingest import adapters as ingest_adapters
 from exegesis.application.services.bootstrap import resolve_application
 
+
+ingest_adapters.ensure_embedding_rebuild_adapters_registered()
 
 APPLICATION_CONTAINER, _ADAPTER_REGISTRY = resolve_application()
 

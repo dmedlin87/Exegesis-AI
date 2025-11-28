@@ -9,10 +9,16 @@ import click
 from sqlalchemy.orm import Session
 
 from exegesis.application.facades.database import Base, configure_engine
+from exegesis.infrastructure.api.app.library.ingest import adapters as ingest_adapters
 from exegesis.application.services.bootstrap import resolve_application
 
-from exegesis.infrastructure.api.app.library.ingest.pipeline import PipelineDependencies, import_osis_commentary
+from exegesis.infrastructure.api.app.library.ingest.pipeline import (
+    PipelineDependencies,
+    import_osis_commentary,
+)
 
+
+ingest_adapters.ensure_embedding_rebuild_adapters_registered()
 
 APPLICATION_CONTAINER, _ADAPTER_REGISTRY = resolve_application()
 

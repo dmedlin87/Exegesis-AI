@@ -10,6 +10,7 @@ from exegesis.application.facades.database import get_session
 from exegesis.application.research import ResearchService
 from exegesis.application.services import ApplicationContainer
 from exegesis.application.core.security import Principal
+from exegesis.infrastructure.api.app.library.ingest import adapters as ingest_adapters
 from exegesis.application.services.bootstrap import resolve_application
 
 
@@ -39,6 +40,7 @@ async def get_graphql_context(
 ) -> GraphQLContext:
     """Build the GraphQL execution context for the current request."""
 
+    ingest_adapters.ensure_embedding_rebuild_adapters_registered()
     container, _registry = resolve_application()
     principal = getattr(request.state, "principal", None)
     research_service = container.get_research_service(session)

@@ -23,8 +23,11 @@ from sqlalchemy.orm import Session
 from exegesis.infrastructure.api.app.research.ai import rag as rag_service
 from exegesis.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchRequest
 from exegesis.infrastructure.api.app.retrieval.retriever.hybrid import hybrid_search
+from exegesis.infrastructure.api.app.library.ingest import adapters as ingest_adapters
 from exegesis.application.services.bootstrap import resolve_application
 
+
+ingest_adapters.ensure_embedding_rebuild_adapters_registered()
 
 APPLICATION_CONTAINER, _ADAPTER_REGISTRY = resolve_application()
 

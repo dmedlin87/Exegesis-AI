@@ -167,7 +167,7 @@ Extract test client fixtures:
 @pytest.fixture(scope="session")
 def app_client() -> Iterator[TestClient]:
     """Session-scoped FastAPI test client."""
-    from theo.infrastructure.api.app.main import app
+    from exegesis.infrastructure.api.app.main import app
     with TestClient(app) as client:
         yield client
 

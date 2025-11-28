@@ -40,7 +40,7 @@ Address technical debt and establish stable foundation before feature developmen
 - **Priority:** HIGH
 - **Effort:** 1 week
 - **Actions:**
-  - Run coverage analysis: `pytest --cov=theo --cov-report=html`
+  - Run coverage analysis: `pytest --cov=exegesis --cov-report=html`
   - Identify untested critical paths (authentication, verse normalization, retrieval)
   - Create test matrix in `docs/testing/TEST_MAP.md`
   - Target: 80%+ coverage on core domain logic
@@ -567,7 +567,7 @@ Connect Exegesis-AI with existing projects and establish it as data layer for br
    ```
 
 2. **Prompt Versioning & Testing**
-   - Store all prompts in `theo/domain/prompts/`
+   - Store all prompts in `exegesis/application/prompts/`
    - Version control prompts like code
    - A/B test competing prompts on research tasks
    - Track which prompt version generated each result
