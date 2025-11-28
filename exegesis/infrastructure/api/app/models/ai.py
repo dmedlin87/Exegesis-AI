@@ -257,6 +257,28 @@ class ProviderSettingsResponse(APIModel):
     has_api_key: bool = False
 
 
+class TheologicalLensEnum(str, Enum):
+    """Theological interpretive framework for RAG contextualization."""
+
+    GENERAL = "General"
+    HISTORICAL_CRITICAL = "Historical-Critical"
+    PATRISTIC = "Patristic"
+    REFORMATIONAL = "Reformational"
+    MODERN = "Modern"
+
+
+class UserPreferencesRequest(APIModel):
+    """Request payload for updating user preferences."""
+
+    theological_lens: TheologicalLensEnum | None = None
+
+
+class UserPreferencesResponse(APIModel):
+    """Response containing current user preferences."""
+
+    theological_lens: TheologicalLensEnum = TheologicalLensEnum.GENERAL
+
+
 class VerseCopilotRequest(ModeAliasMixin, APIModel):
     osis: str | None = None
     passage: str | None = Field(None, max_length=200)
@@ -456,6 +478,9 @@ __all__ = [
     "LLMDefaultRequest",
     "ProviderSettingsRequest",
     "ProviderSettingsResponse",
+    "TheologicalLensEnum",
+    "UserPreferencesRequest",
+    "UserPreferencesResponse",
     "MultimediaDigestRequest",
     "SermonPrepRequest",
     "VerseCopilotRequest",

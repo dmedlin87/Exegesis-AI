@@ -18,7 +18,8 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from exegesis.application.facades.database import get_session
-from exegesis.application.facades.settings import get_settings
+from exegesis.application.facades.settings import TheologicalLens, get_settings
+from exegesis.application.facades.settings_store import load_setting
 from exegesis.infrastructure.api.app.research.ai import memory_index as memory_index_module
 from exegesis.infrastructure.api.app.research.ai.audit_logging import (
     AuditLogWriter,
@@ -230,6 +231,22 @@ def _touch_goal(goal: ChatGoalState, summary: str | None, now: datetime) -> None
     goal.summary = summary
     goal.last_interaction_at = now
     goal.updated_at = now
+
+
+def _load_theological_lens(session: Session) -> TheologicalLens:
+    """Load user's theological lens preference from persisted settings."""
+    preferences = load_setting(session, "user_preferences", default={})
+    if not isinstance(preferences, dict):
+        return TheologicalLens.GENERAL
+
+    theological_lens_value = preferences.get("theological_lens")
+    if isinstance(theological_lens_value, str):
+        try:
+            return TheologicalLens(theological_lens_value)
+        except ValueError:
+            pass
+
+    return TheologicalLens.GENERAL
 
 
 def _resolve_preferences(payload: ChatSessionRequest) -> ChatSessionPreferences:
@@ -792,6 +809,7 @@ def chat_turn(
             )
 
         active_reasoning_mode = payload.mode_id or payload.stance
+        theological_lens = _load_theological_lens(session)
 
         with recorder_context as recorder:
             if active_reasoning_mode:
@@ -805,6 +823,7 @@ def chat_turn(
                 recorder=recorder,
                 memory_context=memory_context,
                 mode=active_reasoning_mode,
+                theological_lens=theological_lens,
             )
             ensure_completion_safe(answer.model_output or answer.summary)
 

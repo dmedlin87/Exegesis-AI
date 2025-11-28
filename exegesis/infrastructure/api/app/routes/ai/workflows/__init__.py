@@ -6,7 +6,7 @@ from fastapi import APIRouter
 
 from exegesis.application.facades import telemetry  # noqa: F401
 
-from . import chat, exports, features, flows, llm, perspectives, settings
+from . import chat, exports, features, flows, llm, perspectives, settings, user_preferences
 from .guardrails import (
     DEFAULT_REFUSAL_MESSAGE,
     extract_refusal_text,
@@ -22,7 +22,9 @@ router.include_router(exports.router)
 router.include_router(flows.router)
 router.include_router(perspectives.router)
 
-settings_router = settings.router
+settings_router = APIRouter()
+settings_router.include_router(settings.router)
+settings_router.include_router(user_preferences.router)
 
 __all__ = [
     "router",

@@ -11,6 +11,7 @@ from types import ModuleType
 from typing import TYPE_CHECKING, Any, Sequence
 from sqlalchemy.orm import Session
 
+from exegesis.application.facades.settings import TheologicalLens
 from exegesis.application.ports.ai_registry import GenerationError
 from exegesis.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
 from exegesis.application.facades.telemetry import instrument_workflow, set_span_attribute
@@ -192,6 +193,7 @@ class GuardedAnswerPipeline:
         memory_context: Sequence[str] | None = None,
         allow_fallback: bool = False,
         mode: str | None = None,
+        theological_lens: "TheologicalLens | None" = None,
     ) -> RAGAnswer:
         ordered_results, guardrail_profile = apply_guardrail_profile(results, filters)
         citations = build_citations(ordered_results)
@@ -214,6 +216,7 @@ class GuardedAnswerPipeline:
             citations=citations,
             filters=filters,
             memory_context=memory_context,
+            theological_lens=theological_lens,
         )
         summary_text, summary_lines = prompt_context.build_summary(ordered_results)
 
@@ -581,6 +584,7 @@ def _guarded_answer(
     memory_context: Sequence[str] | None = None,
     allow_fallback: bool = False,
     mode: str | None = None,
+    theological_lens: TheologicalLens | None = None,
 ) -> RAGAnswer:
     pipeline = GuardedAnswerPipeline(
         session,
@@ -596,6 +600,7 @@ def _guarded_answer(
         memory_context=memory_context,
         allow_fallback=allow_fallback,
         mode=mode,
+        theological_lens=theological_lens,
     )
 
 def _guarded_answer_or_refusal(
@@ -612,6 +617,7 @@ def _guarded_answer_or_refusal(
     osis: str | None = None,
     allow_fallback: bool | None = None,
     mode: str | None = None,
+    theological_lens: TheologicalLens | None = None,
 ) -> RAGAnswer:
     original_results = list(results)
     filtered_results = [result for result in original_results if result.osis_ref]
@@ -662,6 +668,7 @@ def _guarded_answer_or_refusal(
             memory_context=memory_context,
             allow_fallback=enable_fallback,
             mode=mode,
+            theological_lens=theological_lens,
         )
     except GuardrailError as exc:
         if not getattr(exc, "safe_refusal", False):
@@ -685,6 +692,7 @@ def run_guarded_chat(
     recorder: "TrailRecorder | None" = None,
     memory_context: Sequence[str] | None = None,
     mode: str | None = None,
+    theological_lens: TheologicalLens | None = None,
 ) -> RAGAnswer:
     filters = filters or HybridSearchFilters()
     with instrument_workflow(
@@ -736,6 +744,7 @@ def run_guarded_chat(
             memory_context=memory_context,
             osis=osis,
             mode=mode,
+            theological_lens=theological_lens,
         )
         record_used_citation_feedback(
             session,

@@ -7,6 +7,7 @@ import logging
 import os
 import re
 from collections.abc import Callable
+from enum import Enum
 from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Any, Literal
@@ -113,6 +114,16 @@ class RedisStreamEventSink(_BaseEventSink):
 
 
 EventSink = Annotated[KafkaEventSink | RedisStreamEventSink, Field(discriminator="backend")]
+
+
+class TheologicalLens(str, Enum):
+    """Theological interpretive framework for RAG contextualization."""
+
+    GENERAL = "General"
+    HISTORICAL_CRITICAL = "Historical-Critical"
+    PATRISTIC = "Patristic"
+    REFORMATIONAL = "Reformational"
+    MODERN = "Modern"
 
 
 class Settings(BaseSettings):
@@ -674,6 +685,11 @@ class Settings(BaseSettings):
         description=(
             "Block URLs that resolve to private, loopback, or link-local addresses."
         ),
+    )
+    theological_lens: TheologicalLens = Field(
+        default=TheologicalLens.GENERAL,
+        validation_alias=AliasChoices("THEOLOGICAL_LENS", "theological_lens"),
+        description="Default theological interpretive framework for RAG responses",
     )
 
 

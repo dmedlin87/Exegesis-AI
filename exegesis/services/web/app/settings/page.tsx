@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import ApiAccessForm from "./components/ApiAccessForm";
+import LensSettingsCard from "./components/LensSettingsCard";
 import ProviderRegistrationForm from "./components/ProviderRegistrationForm";
 import ProviderSettingsCard from "./components/ProviderSettingsCard";
 import {
@@ -79,6 +80,17 @@ export default function SettingsPage(): JSX.Element {
         </p>
         <div className={styles.sectionBody}>
           <ApiAccessForm />
+        </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="lens-title">
+        <div className={styles.sectionHeader}>
+          <h2 id="lens-title" className={styles.sectionTitle}>
+            Theological Preferences
+          </h2>
+        </div>
+        <div className={styles.sectionBody}>
+          <LensSettingsCard client={client} />
         </div>
       </section>
 

@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass
 from typing import Sequence
 
+from exegesis.application.facades.settings import TheologicalLens
 from exegesis.infrastructure.api.app.models.search import (
     HybridSearchFilters,
     HybridSearchResult,
@@ -65,6 +66,33 @@ _MOJIBAKE_SEQUENCE_REPLACEMENTS: tuple[tuple[str, str], ...] = (
     ("Ã¶", "ö"),
     ("Ã¼", "ü"),
 )
+
+
+_THEOLOGICAL_LENS_INSTRUCTIONS: dict[TheologicalLens, str] = {
+    TheologicalLens.GENERAL: (
+        "Provide balanced interpretations drawing from multiple theological traditions and scholarly perspectives."
+    ),
+    TheologicalLens.HISTORICAL_CRITICAL: (
+        "Prioritize historical-critical methods: analyze original languages, historical context, authorial intent, "
+        "and source criticism. Ground interpretations in archaeological and historical evidence from the ancient Near East "
+        "and Greco-Roman world."
+    ),
+    TheologicalLens.PATRISTIC: (
+        "Prioritize commentary and interpretations from early church fathers (1st-8th centuries CE). "
+        "Emphasize patristic exegesis, typological readings, and the consensus of the early church councils. "
+        "Reference works from figures like Origen, Augustine, Chrysostom, Jerome, and the Cappadocian Fathers."
+    ),
+    TheologicalLens.REFORMATIONAL: (
+        "Prioritize Reformation-era interpretations and principles: sola scriptura, justification by faith, "
+        "priesthood of all believers, and grammatical-historical exegesis. Draw from commentaries by Luther, Calvin, "
+        "Zwingli, and other Reformers. Emphasize original languages and the plain meaning of Scripture."
+    ),
+    TheologicalLens.MODERN: (
+        "Prioritize contemporary scholarship and modern critical methods: literary criticism, social-scientific analysis, "
+        "canonical criticism, and interdisciplinary approaches. Incorporate insights from recent theological movements, "
+        "liberation theology, feminist interpretation, and postcolonial readings."
+    ),
+}
 
 
 def _normalise_mojibake(text: str) -> str:
@@ -129,6 +157,7 @@ class PromptContext:
     citations: Sequence[RAGCitation]
     filters: HybridSearchFilters | None = None
     memory_context: Sequence[str] | None = None
+    theological_lens: TheologicalLens | None = None
 
     def _normalise_part(self, value: str) -> str:
         """Normalise prompt segments to smooth out legacy encoding artefacts."""
@@ -152,6 +181,15 @@ class PromptContext:
             "Cite evidence using the bracketed indices and retain OSIS + anchor in a Sources line.",
             "If the passages do not answer the question, state that explicitly.",
         ]
+
+        # Inject theological lens instruction if specified
+        if self.theological_lens is not None:
+            lens_instruction = _THEOLOGICAL_LENS_INSTRUCTIONS.get(
+                self.theological_lens,
+                _THEOLOGICAL_LENS_INSTRUCTIONS[TheologicalLens.GENERAL]
+            )
+            parts.append(f"Interpretive framework: {lens_instruction}")
+
         if self.memory_context:
             parts.append("Prior conversation highlights:")
             for idx, snippet in enumerate(self.memory_context, start=1):
