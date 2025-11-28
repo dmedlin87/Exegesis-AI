@@ -26,7 +26,7 @@ export type {
     ChatWorkflowSuccess
 } from "./chat-client";
 export type { HybridSearchFilters } from "./guardrails";
-export { ExegesisApiError, NetworkError } from "./http";
+export { ExegesisApiError, ExegesisApiError as TheoApiError, NetworkError } from "./http";
 
 type ExportDeliverableResponse = components["schemas"]["ExportDeliverableResponse"];
 export type ProviderSettingsRequest = components["schemas"]["ProviderSettingsRequest"];

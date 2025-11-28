@@ -259,3 +259,4 @@ export function createHttpClient(baseUrl?: string): HttpClient {
 }
 
 export { handleResponse };
+export { ExegesisApiError as TheoApiError };
