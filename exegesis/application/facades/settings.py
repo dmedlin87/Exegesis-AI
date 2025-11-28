@@ -624,12 +624,7 @@ class Settings(BaseSettings):
     intent_tagger_enabled: bool = Field(
         default=False,
         validation_alias=AliasChoices("INTENT_TAGGER_ENABLED", "intent_tagger_enabled"),
-        description="Toggle automatic tagging of chat intents",
-    )
-    intent_model_path: Path | None = Field(
-        default=None,
-        validation_alias=AliasChoices("INTENT_MODEL_PATH", "intent_model_path"),
-        description="Path to the trained intent classification model",
+        description="Enable zero-shot intent classification via the LLM router",
     )
     ingest_upload_max_bytes: int = Field(
         default=16 * 1024 * 1024,
