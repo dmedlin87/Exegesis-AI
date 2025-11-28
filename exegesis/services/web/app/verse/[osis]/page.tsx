@@ -376,6 +376,16 @@ export default async function VersePage({ params, searchParams }: VersePageProps
     deliverableRequestPayload.filters = deliverableFilters;
   }
 
+  const sermonOutlineRequestPayload: DeliverableRequestPayload = {
+    type: "sermon_outline",
+    topic: `Sermon outline for ${osis}`,
+    osis,
+    formats: ["markdown", "ndjson", "pdf"],
+  };
+  if (Object.keys(deliverableFilters).length > 0) {
+    sermonOutlineRequestPayload.filters = deliverableFilters;
+  }
+
   return (
     <section aria-labelledby="verse-mentions-heading">
       <div className={features.research ? "sidebar-layout" : ""}>
@@ -420,8 +430,16 @@ export default async function VersePage({ params, searchParams }: VersePageProps
             label="Export sermon packet"
             preparingText="Generating sermon packet…"
             successText="Sermon packet ready."
-            idleText="Create a sermon outline with citations."
+            idleText="Create a sermon prep packet with citations."
             requestPayload={deliverableRequestPayload}
+          />
+
+          <DeliverableExportAction
+            label="Export sermon outline"
+            preparingText="Generating sermon outline…"
+            successText="Sermon outline ready."
+            idleText="Create a structured sermon outline with exegetical and homiletical points."
+            requestPayload={sermonOutlineRequestPayload}
           />
 
           {error ? (

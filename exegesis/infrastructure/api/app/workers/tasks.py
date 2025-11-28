@@ -541,6 +541,12 @@ _DELIVERABLE_ASSET_MAP: dict[str, dict[str, tuple[str, str]]] = {
         "csv": ("sermon.csv", "text/csv"),
         "pdf": ("sermon.pdf", "application/pdf"),
     },
+    "sermon_outline": {
+        "markdown": ("sermon_outline.md", "text/markdown"),
+        "ndjson": ("sermon_outline.ndjson", "application/x-ndjson"),
+        "csv": ("sermon_outline.csv", "text/csv"),
+        "pdf": ("sermon_outline.pdf", "application/pdf"),
+    },
     "transcript": {
         "markdown": ("transcript.md", "text/markdown"),
         "ndjson": ("transcript.ndjson", "application/x-ndjson"),
@@ -1374,9 +1380,36 @@ def generate_sermon_prep_outline(
     )
 
 
+def generate_sermon_outline(
+    session,
+    *,
+    topic,
+    osis=None,
+    filters=None,
+    model_name=None,
+    recorder=None,
+):
+    """Wrapper for generating sermon outlines."""
+    return rag_deliverables.generate_sermon_outline(
+        session,
+        topic=topic,
+        osis=osis,
+        filters=filters,
+        model_name=model_name,
+        recorder=recorder,
+    )
+
+
 def build_sermon_deliverable(response, *, formats, filters):
     """Wrapper for building sermon deliverables."""
     return rag_exports.build_sermon_deliverable(
+        response, formats=formats, filters=filters
+    )
+
+
+def build_sermon_outline_deliverable(response, *, formats, filters):
+    """Wrapper for building sermon outline deliverables."""
+    return rag_exports.build_sermon_outline_deliverable(
         response, formats=formats, filters=filters
     )
 
@@ -1418,6 +1451,22 @@ def build_deliverable(
                 model_name=model,
             )
             package = build_sermon_deliverable(
+                response,
+                formats=normalised_formats,
+                filters=filter_model.model_dump(exclude_none=True),
+            )
+        elif export_type == "sermon_outline":
+            if not topic:
+                raise ValueError("topic is required for sermon outline deliverables")
+            filter_model = HybridSearchFilters.model_validate(filters or {})
+            response = generate_sermon_outline(
+                session,
+                topic=topic,
+                osis=osis,
+                filters=filter_model,
+                model_name=model,
+            )
+            package = build_sermon_outline_deliverable(
                 response,
                 formats=normalised_formats,
                 filters=filter_model.model_dump(exclude_none=True),

@@ -198,7 +198,7 @@ class DeliverableDownload(APIModel):
 class DeliverableRequest(APIModel):
     """Parameters accepted by the deliverable export endpoint."""
 
-    type: Literal["sermon", "transcript"]
+    type: Literal["sermon", "sermon_outline", "transcript"]
     formats: list[Literal["markdown", "ndjson", "csv", "pdf"]] = Field(
         default_factory=lambda: ["markdown"]
     )

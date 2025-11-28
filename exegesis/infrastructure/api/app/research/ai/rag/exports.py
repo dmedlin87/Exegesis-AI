@@ -356,6 +356,235 @@ def build_sermon_deliverable(
     return DeliverablePackage(manifest=manifest, assets=assets)
 
 
+def _render_sermon_outline_markdown(
+    manifest: DeliverableManifest, response: "SermonOutlineResponse"
+) -> str:
+    """Render sermon outline as markdown."""
+    lines = _manifest_front_matter(manifest)
+    lines.append(
+        f"# Sermon Outline — {sanitize_markdown_field(response.topic)}"
+    )
+    if response.osis:
+        lines.append(
+            f"Focus Passage: {sanitize_markdown_field(response.osis)}\n"
+        )
+
+    # Main Idea
+    lines.append("## The Main Idea (Big Idea)")
+    lines.append(f"{sanitize_markdown_field(response.main_idea)}\n")
+
+    # Exegetical Outline
+    if response.exegetical_outline:
+        lines.append("## Exegetical Outline")
+        for idx, point in enumerate(response.exegetical_outline, start=1):
+            lines.append(f"{idx}. {sanitize_markdown_field(point)}")
+        lines.append("")
+
+    # Homiletical Outline
+    if response.homiletical_outline:
+        lines.append("## Homiletical Outline (Preaching Points)")
+        for idx, point in enumerate(response.homiletical_outline, start=1):
+            lines.append(f"{idx}. {sanitize_markdown_field(point)}")
+        lines.append("")
+
+    # Application Questions
+    if response.application_questions:
+        lines.append("## Application Questions")
+        for question in response.application_questions:
+            lines.append(f"- {sanitize_markdown_field(question)}")
+        lines.append("")
+
+    # Research Summary
+    if response.answer.summary:
+        lines.append("## Research Summary")
+        lines.append(sanitize_markdown_field(response.answer.summary))
+        lines.append("")
+
+    # Citations
+    if response.answer.citations:
+        lines.append("## Citations")
+        for citation in response.answer.citations:
+            osis = sanitize_markdown_field(citation.osis)
+            anchor = sanitize_markdown_field(citation.anchor)
+            snippet = sanitize_markdown_field(citation.snippet)
+            lines.append(f"- {osis} ({anchor}) — {snippet}")
+
+    return "\n".join(lines).strip() + "\n"
+
+
+def _render_sermon_outline_ndjson(
+    manifest: DeliverableManifest, response: "SermonOutlineResponse"
+) -> str:
+    """Render sermon outline as NDJSON."""
+    payload = manifest.model_dump(mode="json")
+    lines = [json.dumps(payload, ensure_ascii=False)]
+
+    # Main idea
+    lines.append(
+        json.dumps(
+            {"kind": "main_idea", "value": response.main_idea},
+            ensure_ascii=False,
+        )
+    )
+
+    # Exegetical outline
+    for idx, point in enumerate(response.exegetical_outline, start=1):
+        lines.append(
+            json.dumps(
+                {"kind": "exegetical_outline", "order": idx, "value": point},
+                ensure_ascii=False,
+            )
+        )
+
+    # Homiletical outline
+    for idx, point in enumerate(response.homiletical_outline, start=1):
+        lines.append(
+            json.dumps(
+                {"kind": "homiletical_outline", "order": idx, "value": point},
+                ensure_ascii=False,
+            )
+        )
+
+    # Application questions
+    for idx, question in enumerate(response.application_questions, start=1):
+        lines.append(
+            json.dumps(
+                {"kind": "application_question", "order": idx, "value": question},
+                ensure_ascii=False,
+            )
+        )
+
+    # Citations
+    for citation in response.answer.citations:
+        lines.append(
+            json.dumps(
+                sanitize_json_structure(
+                    {
+                        "kind": "citation",
+                        "osis": citation.osis,
+                        "anchor": citation.anchor,
+                        "snippet": citation.snippet,
+                        "document_id": citation.document_id,
+                    }
+                ),
+                ensure_ascii=False,
+            )
+        )
+
+    return "\n".join(lines).strip() + "\n"
+
+
+def _render_sermon_outline_csv(
+    manifest: DeliverableManifest, response: "SermonOutlineResponse"
+) -> str:
+    """Render sermon outline as CSV."""
+    import csv
+    from io import StringIO
+
+    buffer = StringIO()
+    writer = csv.writer(buffer)
+
+    # Header
+    writer.writerow(["section", "order", "content"])
+
+    # Main idea
+    writer.writerow(["main_idea", 1, response.main_idea])
+
+    # Exegetical outline
+    for idx, point in enumerate(response.exegetical_outline, start=1):
+        writer.writerow(["exegetical_outline", idx, point])
+
+    # Homiletical outline
+    for idx, point in enumerate(response.homiletical_outline, start=1):
+        writer.writerow(["homiletical_outline", idx, point])
+
+    # Application questions
+    for idx, question in enumerate(response.application_questions, start=1):
+        writer.writerow(["application_question", idx, question])
+
+    # Citations
+    for idx, citation in enumerate(response.answer.citations, start=1):
+        writer.writerow([
+            "citation",
+            idx,
+            f"{citation.osis} ({citation.anchor}) — {citation.snippet}"
+        ])
+
+    return _csv_manifest_prefix(manifest) + buffer.getvalue()
+
+
+def _render_sermon_outline_pdf(
+    manifest: DeliverableManifest, response: "SermonOutlineResponse"
+) -> bytes:
+    """Render sermon outline as PDF."""
+    markdown = _render_sermon_outline_markdown(manifest, response)
+    title = f"Sermon Outline — {response.topic}" if response.topic else None
+    return _render_markdown_pdf(markdown, title=title)
+
+
+def build_sermon_outline_deliverable(
+    response: "SermonOutlineResponse",
+    *,
+    formats: Sequence[str],
+    filters: Mapping[str, Any] | None = None,
+) -> DeliverablePackage:
+    """Render sermon outline content as a multi-format deliverable."""
+
+    from .models import SermonOutlineResponse
+
+    if not isinstance(response, SermonOutlineResponse):
+        raise TypeError("response must be a SermonOutlineResponse")
+
+    normalised = normalise_formats(formats)
+    citations = response.answer.citations
+    export_id = (
+        f"sermon-outline-{citations[0].document_id}"
+        if citations
+        else generate_export_id()
+    )
+    manifest_filters: dict[str, Any] = {"topic": response.topic}
+    if response.osis:
+        manifest_filters["osis"] = response.osis
+    if filters:
+        manifest_filters["search_filters"] = dict(filters)
+    manifest = build_deliverable_manifest(
+        "sermon_outline",
+        export_id=export_id,
+        filters=manifest_filters,
+        model_preset=response.answer.model_name,
+        sources=[citation.document_id for citation in citations],
+    )
+    assets: list[DeliverableAsset] = []
+    for fmt in normalised:
+        if fmt == "markdown":
+            body = _render_sermon_outline_markdown(manifest, response)
+            media_type = "text/markdown"
+            filename = "sermon_outline.md"
+        elif fmt == "ndjson":
+            body = _render_sermon_outline_ndjson(manifest, response)
+            media_type = "application/x-ndjson"
+            filename = "sermon_outline.ndjson"
+        elif fmt == "csv":
+            body = _render_sermon_outline_csv(manifest, response)
+            media_type = "text/csv"
+            filename = "sermon_outline.csv"
+        elif fmt == "pdf":
+            body = _render_sermon_outline_pdf(manifest, response)
+            media_type = "application/pdf"
+            filename = "sermon_outline.pdf"
+        else:  # pragma: no cover - guarded earlier
+            raise ValueError(f"Unsupported format: {fmt}")
+        assets.append(
+            DeliverableAsset(
+                format=fmt,
+                filename=filename,
+                media_type=media_type,
+                content=body,
+            )
+        )
+    return DeliverablePackage(manifest=manifest, assets=assets)
+
+
 def _build_transcript_rows(passages: Sequence[Passage]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for passage in passages:

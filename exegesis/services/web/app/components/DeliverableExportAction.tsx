@@ -36,7 +36,7 @@ interface DeliverableResponsePayload {
 }
 
 export interface DeliverableRequestPayload {
-  type: "sermon" | "transcript";
+  type: "sermon" | "sermon_outline" | "transcript";
   formats?: DeliverableFormat[];
   topic?: string;
   osis?: string | null;

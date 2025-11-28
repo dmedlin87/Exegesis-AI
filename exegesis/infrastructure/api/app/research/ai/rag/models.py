@@ -136,6 +136,16 @@ class DevotionalResponse(APIModel):
     answer: RAGAnswer
 
 
+class SermonOutlineResponse(APIModel):
+    topic: str
+    osis: str | None = None
+    main_idea: str
+    exegetical_outline: list[str]
+    homiletical_outline: list[str]
+    application_questions: list[str]
+    answer: RAGAnswer
+
+
 class CorpusCurationReport(APIModel):
     since: datetime
     documents_processed: int
@@ -162,6 +172,7 @@ __all__ = [
     "RAGCitation",
     "ReasoningCritique",
     "RevisionDetails",
+    "SermonOutlineResponse",
     "SermonPrepResponse",
     "VerseCopilotResponse",
 ]

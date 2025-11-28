@@ -86,6 +86,14 @@ def export_deliverable(payload: DeliverableRequest) -> DeliverableResponse:
             severity=Severity.USER,
             hint="Provide a topic value to generate sermon deliverables.",
         )
+    if payload.type == "sermon_outline" and not payload.topic:
+        raise ExportError(
+            "topic is required for sermon outline deliverables",
+            code="EXPORT_MISSING_TOPIC",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            severity=Severity.USER,
+            hint="Provide a topic value to generate sermon outline deliverables.",
+        )
     if payload.type == "transcript" and not payload.document_id:
         raise ExportError(
             "document_id is required for transcript deliverables",
@@ -94,13 +102,13 @@ def export_deliverable(payload: DeliverableRequest) -> DeliverableResponse:
             severity=Severity.USER,
             hint="Select a transcript document before exporting.",
         )
-    if payload.type not in {"sermon", "transcript"}:  # pragma: no cover - validation guard
+    if payload.type not in {"sermon", "sermon_outline", "transcript"}:  # pragma: no cover - validation guard
         raise ExportError(
             "Unsupported deliverable type",
             code="EXPORT_UNSUPPORTED_DELIVERABLE",
             status_code=status.HTTP_400_BAD_REQUEST,
             severity=Severity.USER,
-            hint="Choose either sermon or transcript deliverables.",
+            hint="Choose either sermon, sermon_outline, or transcript deliverables.",
         )
 
     try:
