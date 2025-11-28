@@ -1,6 +1,5 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { DashboardClient } from "../app/dashboard/DashboardClient";
@@ -11,11 +10,11 @@ describe("DashboardClient", () => {
 
   beforeEach(() => {
     process.env.NEXT_PUBLIC_API_BASE_URL = baseUrl;
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it("renders metrics and activity from initial data", () => {
@@ -57,7 +56,7 @@ describe("DashboardClient", () => {
 
   it("shows loading state while fetching initial data", async () => {
     let resolveFetch: (value: Response) => void;
-    (global.fetch as jest.Mock).mockImplementation(
+    (global.fetch as vi.Mock).mockImplementation(
       () =>
         new Promise<Response>((resolve) => {
           resolveFetch = resolve;
@@ -92,7 +91,7 @@ describe("DashboardClient", () => {
   });
 
   it("surfaces an error when the dashboard request fails", async () => {
-    (global.fetch as jest.Mock).mockResolvedValue(
+    (global.fetch as vi.Mock).mockResolvedValue(
       new Response("Server error", { status: 500, statusText: "Internal Server Error" }),
     );
 
@@ -102,7 +101,7 @@ describe("DashboardClient", () => {
       expect(screen.getByText(/Unable to refresh dashboard/i)).toBeInTheDocument();
     });
 
-    (global.fetch as jest.Mock).mockResolvedValue(
+    (global.fetch as vi.Mock).mockResolvedValue(
       new Response(JSON.stringify({
         generated_at: new Date().toISOString(),
         user: { name: "Researcher", plan: null, timezone: null, last_login: null },

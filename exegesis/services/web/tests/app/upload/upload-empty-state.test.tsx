@@ -1,32 +1,31 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { render, waitFor } from "@testing-library/react";
 
 import { ToastProvider } from "../../../app/components/Toast";
 import UploadPage from "../../../app/upload/page";
 
-jest.mock("../../../app/upload/components/SimpleIngestForm", () => ({
+vi.mock("../../../app/upload/components/SimpleIngestForm", () => ({
   __esModule: true,
   default: () => <div data-testid="simple-ingest-form" />,
 }));
 
-jest.mock("../../../app/upload/components/FileUploadForm", () => ({
+vi.mock("../../../app/upload/components/FileUploadForm", () => ({
   __esModule: true,
   default: () => <div data-testid="file-upload-form" />,
 }));
 
-jest.mock("../../../app/upload/components/UrlIngestForm", () => ({
+vi.mock("../../../app/upload/components/UrlIngestForm", () => ({
   __esModule: true,
   default: () => <div data-testid="url-ingest-form" />,
 }));
 
-jest.mock("../../../app/upload/components/JobsTable", () => ({
+vi.mock("../../../app/upload/components/JobsTable", () => ({
   __esModule: true,
   default: () => <div data-testid="jobs-table" />,
 }));
 
-jest.mock("../../../app/lib/api", () => ({
+vi.mock("../../../app/lib/api", () => ({
   getApiBaseUrl: () => "https://api.example.com",
 }));
 
@@ -35,12 +34,12 @@ describe("UploadPage empty state hero", () => {
 
   afterEach(() => {
     global.fetch = originalFetch;
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it("highlights supported formats before any jobs exist", async () => {
-    jest.useFakeTimers();
-    const fetchMock = jest.fn().mockResolvedValue({
+    vi.useFakeTimers();
+    const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({ jobs: [] }),
     } as Response);
@@ -57,6 +56,6 @@ describe("UploadPage empty state hero", () => {
     });
 
     expect(asFragment()).toMatchSnapshot();
-    jest.runOnlyPendingTimers();
+    vi.runOnlyPendingTimers();
   });
 });

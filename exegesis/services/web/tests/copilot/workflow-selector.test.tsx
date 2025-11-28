@@ -1,6 +1,5 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -8,7 +7,7 @@ import WorkflowSelector from "../../app/copilot/components/WorkflowSelector";
 
 describe("WorkflowSelector", () => {
   it("announces the selected workflow via aria-pressed", async () => {
-    const onSelect = jest.fn();
+    const onSelect = vi.fn();
     const user = userEvent.setup();
 
     render(

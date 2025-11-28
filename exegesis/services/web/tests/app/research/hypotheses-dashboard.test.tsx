@@ -1,4 +1,3 @@
-import "@testing-library/jest-dom";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -8,20 +7,20 @@ import type {
   HypothesisRecord,
 } from "../../../app/research/hypotheses/client";
 
-jest.mock("../../../app/research/hypotheses/client", () => {
-  const actual = jest.requireActual("../../../app/research/hypotheses/client");
+vi.mock("../../../app/research/hypotheses/client", () => {
+  const actual = vi.importActual("../../../app/research/hypotheses/client");
   return {
     ...actual,
-    fetchHypotheses: jest.fn(),
-    updateHypothesis: jest.fn(),
+    fetchHypotheses: vi.fn(),
+    updateHypothesis: vi.fn(),
   };
 });
 
-const { fetchHypotheses, updateHypothesis } = jest.requireMock(
+const { fetchHypotheses, updateHypothesis } = vi.importMock(
   "../../../app/research/hypotheses/client",
 ) as {
-  fetchHypotheses: jest.Mock;
-  updateHypothesis: jest.Mock;
+  fetchHypotheses: vi.Mock;
+  updateHypothesis: vi.Mock;
 };
 
 const BASE_FILTERS: HypothesisFilters = { statuses: [], query: undefined, minConfidence: undefined };

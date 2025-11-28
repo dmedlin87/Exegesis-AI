@@ -12,6 +12,7 @@ exegesis/adapters/graph/__init__.py
 exegesis/adapters/persistence/__init__.py
 exegesis/adapters/persistence/base_repository.py
 exegesis/adapters/persistence/chat_repository.py
+exegesis/adapters/persistence/collection_repository.py
 exegesis/adapters/persistence/discovery_repository.py
 exegesis/adapters/persistence/document_repository.py
 exegesis/adapters/persistence/embedding_repository.py
@@ -36,12 +37,14 @@ exegesis/adapters/secrets/vault.py
 exegesis/application/__init__.py
 exegesis/application/graph.py
 exegesis/application/interfaces.py
+exegesis/application/core/async_utils.py
 exegesis/application/core/observability.py
 exegesis/application/core/resilience.py
 exegesis/application/core/security.py
 exegesis/application/core/telemetry.py
 exegesis/application/dtos/__init__.py
 exegesis/application/dtos/chat.py
+exegesis/application/dtos/collection.py
 exegesis/application/dtos/discovery.py
 exegesis/application/dtos/document.py
 exegesis/application/dtos/ingestion_job.py
@@ -62,8 +65,11 @@ exegesis/application/ports/__init__.py
 exegesis/application/ports/ai_registry.py
 exegesis/application/ports/events.py
 exegesis/application/ports/secrets.py
+exegesis/application/prompts/__init__.py
+exegesis/application/prompts/routing.py
 exegesis/application/repositories/__init__.py
 exegesis/application/repositories/chat_repository.py
+exegesis/application/repositories/collection_repository.py
 exegesis/application/repositories/discovery_repository.py
 exegesis/application/repositories/document_repository.py
 exegesis/application/repositories/embedding_repository.py
@@ -80,8 +86,12 @@ exegesis/application/retrieval/search/query_rewriter.py
 exegesis/application/services/__init__.py
 exegesis/application/services/bootstrap.py
 exegesis/application/services/container.py
+exegesis/application/services/event_bus.py
+exegesis/application/services/collections/__init__.py
+exegesis/application/services/collections/service.py
 exegesis/application/services/geo/__init__.py
-exegesis/application/services/geo/seed_openbible_geo.py
+exegesis/application/use_cases/__init__.py
+exegesis/application/use_cases/refresh_discoveries.py
 exegesis/commands/__init__.py
 exegesis/commands/database_ops.py
 exegesis/commands/embedding_rebuild.py
@@ -99,6 +109,7 @@ exegesis/domain/__init__.py
 exegesis/domain/biblical_texts.py
 exegesis/domain/documents.py
 exegesis/domain/errors.py
+exegesis/domain/events.py
 exegesis/domain/references.py
 exegesis/domain/discoveries/__init__.py
 exegesis/domain/discoveries/anomaly_engine.py
@@ -117,6 +128,7 @@ exegesis/domain/repositories/research_notes.py
 exegesis/domain/research/__init__.py
 exegesis/domain/research/crossrefs.py
 exegesis/domain/research/datasets.py
+exegesis/domain/research/dossier.py
 exegesis/domain/research/dss_links.py
 exegesis/domain/research/entities.py
 exegesis/domain/research/fallacies.py
@@ -171,7 +183,6 @@ exegesis/infrastructure/api/app/creators/__init__.py
 exegesis/infrastructure/api/app/creators/service.py
 exegesis/infrastructure/api/app/creators/verse_perspectives.py
 exegesis/infrastructure/api/app/db/feedback.py
-exegesis/infrastructure/api/app/db/models.py
 exegesis/infrastructure/api/app/db/query_optimizations.py
 exegesis/infrastructure/api/app/db/run_sql_migrations.py
 exegesis/infrastructure/api/app/db/seeds.py
@@ -186,6 +197,9 @@ exegesis/infrastructure/api/app/db/migrations/20250420_audit_logs.py
 exegesis/infrastructure/api/app/db/migrations/20250424_audit_claim_cards.py
 exegesis/infrastructure/api/app/db/migrations/20250430_ensure_contradiction_perspective.py
 exegesis/infrastructure/api/app/db/migrations/20250510_remove_case_builder.py
+exegesis/infrastructure/api/app/db/migrations/20251127_create_evidence_dossiers.py
+exegesis/infrastructure/api/app/db/models/__init__.py
+exegesis/infrastructure/api/app/db/models/dossier.py
 exegesis/infrastructure/api/app/debug/__init__.py
 exegesis/infrastructure/api/app/debug/middleware.py
 exegesis/infrastructure/api/app/debug/reporting.py
@@ -237,6 +251,7 @@ exegesis/infrastructure/api/app/models/ai.py
 exegesis/infrastructure/api/app/models/analytics.py
 exegesis/infrastructure/api/app/models/audit.py
 exegesis/infrastructure/api/app/models/base.py
+exegesis/infrastructure/api/app/models/collections.py
 exegesis/infrastructure/api/app/models/creators.py
 exegesis/infrastructure/api/app/models/dashboard.py
 exegesis/infrastructure/api/app/models/discoveries.py
@@ -300,6 +315,7 @@ exegesis/infrastructure/api/app/research/ai/rag/refusals.py
 exegesis/infrastructure/api/app/research/ai/rag/retrieval.py
 exegesis/infrastructure/api/app/research/ai/rag/revisions.py
 exegesis/infrastructure/api/app/research/ai/rag/telemetry.py
+exegesis/infrastructure/api/app/research/ai/rag/types.py
 exegesis/infrastructure/api/app/research/ai/rag/verse.py
 exegesis/infrastructure/api/app/research/ai/rag/workflow.py
 exegesis/infrastructure/api/app/research/ai/reasoning/__init__.py
@@ -334,6 +350,7 @@ exegesis/infrastructure/api/app/retrieval/retriever/tests/test_export_mentions.p
 exegesis/infrastructure/api/app/retrieval/retriever/tests/test_filters.py
 exegesis/infrastructure/api/app/routes/__init__.py
 exegesis/infrastructure/api/app/routes/analytics.py
+exegesis/infrastructure/api/app/routes/collections.py
 exegesis/infrastructure/api/app/routes/creators.py
 exegesis/infrastructure/api/app/routes/dashboard.py
 exegesis/infrastructure/api/app/routes/discoveries.py
@@ -434,6 +451,8 @@ exegesis/services/cli/tests/__init__.py
 exegesis/services/cli/tests/test_cli_code_quality.py
 exegesis/services/cli/tests/test_export_data.py
 exegesis/services/cli/tests/test_ingest_folder.py
+exegesis/services/geo/__init__.py
+exegesis/services/geo/seed_openbible_geo.py
 exegesis/services/web/node_modules/flatted/python/flatted.py
 exegesis_ai.egg-info/PKG-INFO
 exegesis_ai.egg-info/SOURCES.txt

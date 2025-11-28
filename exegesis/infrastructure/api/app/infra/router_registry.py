@@ -32,7 +32,11 @@ from ..routes import (
     transcripts,
     verses,
 )
-from .registry import RouterRegistration, register_router
+from .registry import (
+    RouterRegistration,
+    register_router,
+    replace_router_registrations,
+)
 
 _DEFAULT_REGISTRATIONS: list[RouterRegistration] = []
 
@@ -129,7 +133,6 @@ else:
         RouterRegistration(router=jobs.router, prefix="/jobs", tags=("jobs",))
     )
 
-for _registration in _DEFAULT_REGISTRATIONS:
-    register_router(_registration)
+replace_router_registrations(_DEFAULT_REGISTRATIONS)
 
 __all__ = ["_DEFAULT_REGISTRATIONS"]

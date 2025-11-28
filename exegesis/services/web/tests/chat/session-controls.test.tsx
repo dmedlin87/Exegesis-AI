@@ -1,6 +1,5 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -8,8 +7,8 @@ import { SessionControls } from "../../app/chat/components/SessionControls";
 
 describe("SessionControls", () => {
   it("supports keyboard interaction for menu items", async () => {
-    const onReset = jest.fn();
-    const onFork = jest.fn();
+    const onReset = vi.fn();
+    const onFork = vi.fn();
     const user = userEvent.setup();
 
     render(<SessionControls disabled={false} onReset={onReset} onFork={onFork} />);
@@ -30,7 +29,7 @@ describe("SessionControls", () => {
   });
 
   it("opens a confirmation dialog before resetting", async () => {
-    const onReset = jest.fn();
+    const onReset = vi.fn();
     const user = userEvent.setup();
 
     render(<SessionControls disabled={false} onReset={onReset} onFork={() => undefined} />);

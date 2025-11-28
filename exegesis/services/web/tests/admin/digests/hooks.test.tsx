@@ -1,4 +1,4 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
 import { act, renderHook } from "@testing-library/react";
 
@@ -28,16 +28,16 @@ type MockApi = Pick<
   | "fetchWatchlistEvents"
 >;
 
-function createMockApi(): jest.Mocked<MockApi> {
+function createMockApi(): vi.Mocked<MockApi> {
   return {
-    getDigest: jest.fn(),
-    refreshDigest: jest.fn(),
-    listWatchlists: jest.fn(),
-    createWatchlist: jest.fn(),
-    updateWatchlist: jest.fn(),
-    deleteWatchlist: jest.fn(),
-    runWatchlist: jest.fn(),
-    fetchWatchlistEvents: jest.fn(),
+    getDigest: vi.fn(),
+    refreshDigest: vi.fn(),
+    listWatchlists: vi.fn(),
+    createWatchlist: vi.fn(),
+    updateWatchlist: vi.fn(),
+    deleteWatchlist: vi.fn(),
+    runWatchlist: vi.fn(),
+    fetchWatchlistEvents: vi.fn(),
   };
 }
 

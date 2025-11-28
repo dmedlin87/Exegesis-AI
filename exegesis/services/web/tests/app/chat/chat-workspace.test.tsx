@@ -1,6 +1,5 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -14,16 +13,16 @@ import ChatWorkspace from "../../../app/chat/ChatWorkspace";
 import { TheoApiError } from "../../../app/lib/api-client";
 import { emitTelemetry, submitFeedback } from "../../../app/lib/telemetry";
 
-const pushMock = jest.fn();
-const replaceMock = jest.fn();
+const pushMock = vi.fn();
+const replaceMock = vi.fn();
 const INTRO_VIDEO_URL = "https://docs.theoria.app/getting-started/intro-video";
 
-jest.mock("../../../app/lib/telemetry", () => ({
-  submitFeedback: jest.fn(),
-  emitTelemetry: jest.fn(),
+vi.mock("../../../app/lib/telemetry", () => ({
+  submitFeedback: vi.fn(),
+  emitTelemetry: vi.fn(),
 }));
 
-jest.mock("next/navigation", () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: pushMock,
     replace: replaceMock,
@@ -100,16 +99,16 @@ function createPlan(sessionId: string): ResearchPlan {
   } satisfies ResearchPlan;
 }
 
-jest.mock("../../../app/mode-context", () => {
+vi.mock("../../../app/mode-context", () => {
   const { RESEARCH_MODES, DEFAULT_MODE_ID } =
-    jest.requireActual<typeof import("../../../app/mode-config")>(
+    vi.importActual<typeof import("../../../app/mode-config")>(
       "../../../app/mode-config",
     );
   return {
     useMode: () => ({
       mode: RESEARCH_MODES[DEFAULT_MODE_ID],
       modes: Object.values(RESEARCH_MODES),
-      setMode: jest.fn(),
+      setMode: vi.fn(),
     }),
   };
 });
@@ -121,22 +120,22 @@ describe("ChatWorkspace", () => {
   beforeAll(() => {
     Object.defineProperty(window.HTMLElement.prototype, "scrollIntoView", {
       configurable: true,
-      value: jest.fn(),
+      value: vi.fn(),
     });
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     window.localStorage.clear();
   });
 
   it("renders empty-state CTAs for new sessions", () => {
     const client: ChatWorkflowClient = {
-      runChatWorkflow: jest.fn(),
-      fetchChatSession: jest.fn(async () => null),
+      runChatWorkflow: vi.fn(),
+      fetchChatSession: vi.fn(async () => null),
     };
     const originalOpen = window.open;
-    const openMock = jest.fn();
+    const openMock = vi.fn();
     window.open = openMock as typeof window.open;
 
     const { asFragment } = render(<ChatWorkspace client={client} />);
@@ -161,10 +160,10 @@ describe("ChatWorkspace", () => {
 
   it("prefills the textarea when a sample question chip is clicked", () => {
     const client: ChatWorkflowClient = {
-      runChatWorkflow: jest.fn(),
-      fetchChatSession: jest.fn(async () => null),
+      runChatWorkflow: vi.fn(),
+      fetchChatSession: vi.fn(async () => null),
     };
-    const telemetryMock = emitTelemetry as jest.MockedFunction<typeof emitTelemetry>;
+    const telemetryMock = emitTelemetry as vi.MockedFunction<typeof emitTelemetry>;
     telemetryMock.mockResolvedValue(undefined);
 
     render(<ChatWorkspace client={client} />);
@@ -199,7 +198,7 @@ describe("ChatWorkspace", () => {
       plan,
     };
     const client: ChatWorkflowClient = {
-      runChatWorkflow: jest.fn(async (_payload, options) => {
+      runChatWorkflow: vi.fn(async (_payload, options) => {
         options?.onEvent?.({ type: "answer_fragment", content: "In the beginning" });
         await new Promise((resolve) => setTimeout(resolve, 5));
         options?.onEvent?.({
@@ -208,7 +207,7 @@ describe("ChatWorkspace", () => {
         });
         return successResult;
       }),
-      fetchChatSession: jest.fn(async () => null),
+      fetchChatSession: vi.fn(async () => null),
     };
 
     render(<ChatWorkspace client={client} />);
@@ -266,7 +265,7 @@ describe("ChatWorkspace", () => {
       metadata: null,
     };
     const client: ChatWorkflowClient = {
-      runChatWorkflow: jest.fn(async (_payload, options) => {
+      runChatWorkflow: vi.fn(async (_payload, options) => {
         const guardrailEvent: ChatWorkflowStreamEvent = {
           type: "guardrail_violation",
           message: "Blocked by safeguards",
@@ -277,7 +276,7 @@ describe("ChatWorkspace", () => {
         options?.onEvent?.(guardrailEvent);
         return guardrailResult;
       }),
-      fetchChatSession: jest.fn(async () => null),
+      fetchChatSession: vi.fn(async () => null),
     };
 
     render(<ChatWorkspace client={client} />);
@@ -298,10 +297,10 @@ describe("ChatWorkspace", () => {
 
   it("shows a fallback error callout when the workflow fails", async () => {
     const client: ChatWorkflowClient = {
-      runChatWorkflow: jest.fn(async () => {
+      runChatWorkflow: vi.fn(async () => {
         throw new Error("Network offline");
       }),
-      fetchChatSession: jest.fn(async () => null),
+      fetchChatSession: vi.fn(async () => null),
     };
 
     render(<ChatWorkspace client={client} />);
@@ -319,10 +318,10 @@ describe("ChatWorkspace", () => {
 
   it("offers fallback suggestions when the API rejects the prompt", async () => {
     const client: ChatWorkflowClient = {
-      runChatWorkflow: jest.fn(async () => {
+      runChatWorkflow: vi.fn(async () => {
         throw new TheoApiError("Prompt invalid", 400);
       }),
-      fetchChatSession: jest.fn(async () => null),
+      fetchChatSession: vi.fn(async () => null),
     };
 
     render(<ChatWorkspace client={client} />);
@@ -352,14 +351,14 @@ describe("ChatWorkspace", () => {
       plan,
     };
     const client: ChatWorkflowClient = {
-      runChatWorkflow: jest.fn(async (_payload, options) => {
+      runChatWorkflow: vi.fn(async (_payload, options) => {
         events.forEach((event) => options?.onEvent?.(event));
         return successResult;
       }),
-      fetchChatSession: jest.fn(async () => null),
+      fetchChatSession: vi.fn(async () => null),
     };
 
-    const submitMock = submitFeedback as jest.MockedFunction<typeof submitFeedback>;
+    const submitMock = submitFeedback as vi.MockedFunction<typeof submitFeedback>;
     submitMock.mockResolvedValue(undefined);
 
     render(<ChatWorkspace client={client} />);
@@ -409,17 +408,17 @@ describe("ChatWorkspace", () => {
       plan,
     };
     const client: ChatWorkflowClient = {
-      runChatWorkflow: jest.fn(async (_payload, options) => {
+      runChatWorkflow: vi.fn(async (_payload, options) => {
         options?.onEvent?.({
           type: "complete",
           response: { sessionId: "session-99", answer: sampleAnswer, plan },
         });
         return successResult;
       }),
-      fetchChatSession: jest.fn(async () => null),
+      fetchChatSession: vi.fn(async () => null),
     };
 
-    const submitMock = submitFeedback as jest.MockedFunction<typeof submitFeedback>;
+    const submitMock = submitFeedback as vi.MockedFunction<typeof submitFeedback>;
     submitMock.mockRejectedValueOnce(new Error("failed"));
 
     render(<ChatWorkspace client={client} />);
@@ -459,14 +458,14 @@ describe("ChatWorkspace", () => {
       plan,
     };
     const client: ChatWorkflowClient = {
-      runChatWorkflow: jest.fn(async (_payload, options) => {
+      runChatWorkflow: vi.fn(async (_payload, options) => {
         options?.onEvent?.({
           type: "complete",
           response: { sessionId: "session-reset", answer: sampleAnswer, plan },
         });
         return successResult;
       }),
-      fetchChatSession: jest.fn(async () => null),
+      fetchChatSession: vi.fn(async () => null),
     };
 
     render(<ChatWorkspace client={client} />);
@@ -512,14 +511,14 @@ describe("ChatWorkspace", () => {
       plan,
     };
     const client: ChatWorkflowClient = {
-      runChatWorkflow: jest.fn(async (_payload, options) => {
+      runChatWorkflow: vi.fn(async (_payload, options) => {
         options?.onEvent?.({
           type: "complete",
           response: { sessionId: "session-fork", answer: sampleAnswer, plan },
         });
         return successResult;
       }),
-      fetchChatSession: jest.fn(async () => null),
+      fetchChatSession: vi.fn(async () => null),
     };
 
     render(<ChatWorkspace client={client} />);
@@ -552,13 +551,13 @@ describe("ChatWorkspace", () => {
 
   it("auto-submits new prompts when initialPrompt changes", async () => {
     const client: ChatWorkflowClient = {
-      runChatWorkflow: jest.fn(async () => ({
+      runChatWorkflow: vi.fn(async () => ({
         kind: "success" as const,
         sessionId: "session-1",
         answer: sampleAnswer,
         plan: createPlan("session-1"),
       })),
-      fetchChatSession: jest.fn(async () => null),
+      fetchChatSession: vi.fn(async () => null),
     };
 
     const { rerender } = render(

@@ -7,11 +7,12 @@ from unittest.mock import Mock
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
+import sys
 
 
 import pytest
 
-from exegesis.infrastructure.api.app.research.ai.clients import GenerationError
+from exegesis.application.ports.ai_registry import GenerationError
 from exegesis.infrastructure.api.app.research.ai.ledger import CacheRecord, SharedLedger
 from exegesis.infrastructure.api.app.research.ai.registry import LLMModel, LLMRegistry
 from exegesis.infrastructure.api.app.research.ai.router import (
@@ -1324,6 +1325,10 @@ def test_router_shared_spend_across_connections(tmp_path, sleep_stub):
 
 @pytest.mark.slow
 @pytest.mark.timeout(120)
+@pytest.mark.skipif(
+    sys.platform.startswith("win"),
+    reason="multiprocessing spawn is too slow on Windows; use connection-based variant instead",
+)
 def test_router_shared_spend_across_processes(tmp_path, sleep_stub):
     """Slow test: verifies spend sharing via SQLite WAL across OS processes.
 
@@ -1449,6 +1454,10 @@ def test_router_shared_latency_across_connections(tmp_path, sleep_stub):
 
 @pytest.mark.slow
 @pytest.mark.timeout(120)
+@pytest.mark.skipif(
+    sys.platform.startswith("win"),
+    reason="multiprocessing spawn is too slow on Windows; use connection-based variant instead",
+)
 def test_router_shared_latency_across_processes(tmp_path, sleep_stub):
     """Slow test: verifies latency sharing via SQLite WAL across OS processes.
 

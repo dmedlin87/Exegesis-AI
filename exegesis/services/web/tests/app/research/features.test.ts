@@ -2,14 +2,14 @@ import { getApiBaseUrl } from "../../../app/lib/api";
 import { fetchResearchFeatures } from "../../../app/research/features";
 import type { ResearchFeaturesResult } from "../../../app/research/features";
 
-jest.mock("../../../app/lib/api", () => ({
-  getApiBaseUrl: jest.fn(() => "https://api.example.com"),
+vi.mock("../../../app/lib/api", () => ({
+  getApiBaseUrl: vi.fn(() => "https://api.example.com"),
 }));
 
 describe("fetchResearchFeatures", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    (getApiBaseUrl as jest.Mock).mockReturnValue("https://api.example.com");
+    vi.clearAllMocks();
+    (getApiBaseUrl as vi.Mock).mockReturnValue("https://api.example.com");
   });
 
   it("returns feature flags when the request succeeds", async () => {
@@ -17,7 +17,7 @@ describe("fetchResearchFeatures", () => {
       ok: true,
       json: async () => ({ features: { research: true } }),
     } as unknown as Response;
-    global.fetch = jest.fn().mockResolvedValue(mockResponse) as unknown as typeof fetch;
+    global.fetch = vi.fn().mockResolvedValue(mockResponse) as unknown as typeof fetch;
 
     const result = await fetchResearchFeatures();
 
@@ -38,7 +38,7 @@ describe("fetchResearchFeatures", () => {
       statusText: "Service Unavailable",
       text: async () => "maintenance",
     } as unknown as Response;
-    global.fetch = jest.fn().mockResolvedValue(mockResponse) as unknown as typeof fetch;
+    global.fetch = vi.fn().mockResolvedValue(mockResponse) as unknown as typeof fetch;
 
     const result = await fetchResearchFeatures();
 
@@ -49,7 +49,7 @@ describe("fetchResearchFeatures", () => {
   });
 
   it("returns an error when the fetch throws", async () => {
-    global.fetch = jest.fn().mockRejectedValue(new Error("network down")) as unknown as typeof fetch;
+    global.fetch = vi.fn().mockRejectedValue(new Error("network down")) as unknown as typeof fetch;
 
     const result = await fetchResearchFeatures();
 

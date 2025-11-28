@@ -7,15 +7,12 @@ from typing import TYPE_CHECKING, Sequence
 from sqlalchemy.orm import Session
 
 from exegesis.infrastructure.api.app.models.search import HybridSearchFilters
-from exegesis.application.facades.telemetry import (
-    instrument_workflow,
-    log_workflow_event,
-    set_span_attribute,
-)
+from exegesis.application.facades.telemetry import instrument_workflow, set_span_attribute
 from ..registry import get_llm_registry
 from .models import CollaborationResponse
 from .retrieval import record_used_citation_feedback, search_passages
 from .chat import _guarded_answer_or_refusal
+from .types import WorkflowLoggingContext
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..trails import TrailRecorder
@@ -32,9 +29,11 @@ def run_research_reconciliation(
     viewpoints: Sequence[str],
     model_name: str | None = None,
     recorder: "TrailRecorder | None" = None,
+    logger: WorkflowLoggingContext | None = None,
 ) -> CollaborationResponse:
     """Reconcile multiple viewpoints for a passage using grounded generation."""
 
+    logger = logger or WorkflowLoggingContext.default()
     filters = HybridSearchFilters()
     with instrument_workflow(
         "research_reconciliation",
@@ -52,7 +51,7 @@ def run_research_reconciliation(
             session, query="; ".join(viewpoints), osis=osis, filters=filters, k=10
         )
         set_span_attribute(span, "workflow.result_count", len(results))
-        log_workflow_event(
+        logger.log_event(
             "workflow.passages_retrieved",
             workflow="research_reconciliation",
             thread=thread,
@@ -100,7 +99,7 @@ def run_research_reconciliation(
             recorder=recorder,
         )
         set_span_attribute(span, "workflow.citation_count", len(answer.citations))
-        log_workflow_event(
+        logger.log_event(
             "workflow.answer_composed",
             workflow="research_reconciliation",
             citations=len(answer.citations),

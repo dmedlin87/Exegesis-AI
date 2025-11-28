@@ -1,4 +1,4 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
 import { fireEvent, render, screen } from "@testing-library/react";
 
@@ -16,7 +16,7 @@ describe("admin digest components", () => {
       window_start: "2024-01-01T00:00:00Z",
       topics: [],
     };
-    const onRefresh = jest.fn();
+    const onRefresh = vi.fn();
     render(
       <DigestOverview
         digest={digest}
@@ -33,7 +33,7 @@ describe("admin digest components", () => {
   });
 
   it("renders watchlist creation form", () => {
-    const onSubmit = jest.fn();
+    const onSubmit = vi.fn();
     render(
       <WatchlistCreationForm
         name=""
@@ -74,12 +74,12 @@ describe("admin digest components", () => {
         updated_at: "",
       },
     ];
-    const onEdit = jest.fn();
-    const onSave = jest.fn();
-    const onPreview = jest.fn();
-    const onRun = jest.fn();
-    const onDelete = jest.fn();
-    const onViewEvents = jest.fn();
+    const onEdit = vi.fn();
+    const onSave = vi.fn();
+    const onPreview = vi.fn();
+    const onRun = vi.fn();
+    const onDelete = vi.fn();
+    const onViewEvents = vi.fn();
     render(
       <WatchlistTable
         watchlists={watchlists}

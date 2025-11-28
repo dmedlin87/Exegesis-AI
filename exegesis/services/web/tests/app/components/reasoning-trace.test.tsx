@@ -1,6 +1,5 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { render, screen, within } from "@testing-library/react";
 
 import { ReasoningTrace as ReasoningTraceComponent } from "../../../app/components/ReasoningTrace";

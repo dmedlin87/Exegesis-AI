@@ -7,11 +7,7 @@ from typing import TYPE_CHECKING, Sequence
 from sqlalchemy.orm import Session
 
 from exegesis.infrastructure.api.app.models.search import HybridSearchFilters
-from exegesis.application.facades.telemetry import (
-    instrument_workflow,
-    log_workflow_event,
-    set_span_attribute,
-)
+from exegesis.application.facades.telemetry import instrument_workflow, set_span_attribute
 from ..registry import get_llm_registry
 from .guardrail_helpers import GuardrailError
 from .models import (
@@ -22,6 +18,7 @@ from .models import (
     SermonPrepResponse,
 )
 from .retrieval import record_used_citation_feedback
+from .types import WorkflowLoggingContext
 
 if TYPE_CHECKING:  # pragma: no cover - hints only
     from ..trails import TrailRecorder
@@ -68,9 +65,11 @@ def generate_sermon_prep_outline(
     recorder: "TrailRecorder | None" = None,
     outline_template: list[str] | None = None,
     key_points_limit: int = 4,
+    logger: WorkflowLoggingContext | None = None,
 ):
     from .chat import _guarded_answer_or_refusal  # Imported lazily to avoid cycles.
 
+    logger = logger or WorkflowLoggingContext.default()
     filters = filters or HybridSearchFilters()
     query = topic if not osis else f"{topic} {osis}"
     with instrument_workflow(
@@ -88,7 +87,7 @@ def generate_sermon_prep_outline(
 
         results = search_passages(session, query=query, osis=osis, filters=filters, k=10)
         set_span_attribute(span, "workflow.result_count", len(results))
-        log_workflow_event(
+        logger.log_event(
             "workflow.passages_retrieved",
             workflow="sermon_prep",
             topic=topic,
@@ -151,7 +150,7 @@ def generate_sermon_prep_outline(
         )
         set_span_attribute(span, "workflow.citation_count", len(answer.citations))
         set_span_attribute(span, "workflow.summary_length", len(answer.summary))
-        log_workflow_event(
+        logger.log_event(
             "workflow.answer_composed",
             workflow="sermon_prep",
             citations=len(answer.citations),
@@ -171,12 +170,12 @@ def generate_sermon_prep_outline(
         )
         set_span_attribute(span, "workflow.outline_steps", len(outline))
         set_span_attribute(span, "workflow.key_point_count", len(key_points))
-        log_workflow_event(
+        logger.log_event(
             "workflow.outline_ready",
             workflow="sermon_prep",
             outline_steps=len(outline),
         )
-        log_workflow_event(
+        logger.log_event(
             "workflow.key_points_selected",
             workflow="sermon_prep",
             key_point_count=len(key_points),
@@ -192,9 +191,11 @@ def generate_comparative_analysis(
     osis: str,
     participants: Sequence[str],
     model_name: str | None = None,
+    logger: WorkflowLoggingContext | None = None,
 ):
     from .chat import _guarded_answer_or_refusal
 
+    logger = logger or WorkflowLoggingContext.default()
     filters = HybridSearchFilters()
     with instrument_workflow(
         "comparative_analysis",
@@ -213,7 +214,7 @@ def generate_comparative_analysis(
             session, query="; ".join(participants), osis=osis, filters=filters, k=12
         )
         set_span_attribute(span, "workflow.result_count", len(results))
-        log_workflow_event(
+        logger.log_event(
             "workflow.passages_retrieved",
             workflow="comparative_analysis",
             osis=osis,
@@ -238,7 +239,7 @@ def generate_comparative_analysis(
             query=question_text,
         )
         set_span_attribute(span, "workflow.citation_count", len(answer.citations))
-        log_workflow_event(
+        logger.log_event(
             "workflow.answer_composed",
             workflow="comparative_analysis",
             citations=len(answer.citations),
@@ -261,9 +262,11 @@ def generate_multimedia_digest(
     collection: str | None = None,
     model_name: str | None = None,
     recorder: "TrailRecorder | None" = None,
+    logger: WorkflowLoggingContext | None = None,
 ):
     from .chat import _guarded_answer_or_refusal
 
+    logger = logger or WorkflowLoggingContext.default()
     filters = HybridSearchFilters(
         collection=collection, source_type="audio" if collection else None
     )
@@ -281,7 +284,7 @@ def generate_multimedia_digest(
 
         results = search_passages(session, query="highlights", osis=None, filters=filters, k=8)
         set_span_attribute(span, "workflow.result_count", len(results))
-        log_workflow_event(
+        logger.log_event(
             "workflow.passages_retrieved",
             workflow="multimedia_digest",
             result_count=len(results),
@@ -345,9 +348,11 @@ def generate_devotional_flow(
     focus: str,
     model_name: str | None = None,
     recorder: "TrailRecorder | None" = None,
+    logger: WorkflowLoggingContext | None = None,
 ):
     from .chat import _guarded_answer_or_refusal
 
+    logger = logger or WorkflowLoggingContext.default()
     filters = HybridSearchFilters()
     with instrument_workflow(
         "devotional",
@@ -364,7 +369,7 @@ def generate_devotional_flow(
 
         results = search_passages(session, query=focus, osis=osis, filters=filters, k=6)
         set_span_attribute(span, "workflow.result_count", len(results))
-        log_workflow_event(
+        logger.log_event(
             "workflow.passages_retrieved",
             workflow="devotional",
             osis=osis,
@@ -412,7 +417,7 @@ def generate_devotional_flow(
             recorder=recorder,
         )
         set_span_attribute(span, "workflow.citation_count", len(answer.citations))
-        log_workflow_event(
+        logger.log_event(
             "workflow.answer_composed",
             workflow="devotional",
             citations=len(answer.citations),

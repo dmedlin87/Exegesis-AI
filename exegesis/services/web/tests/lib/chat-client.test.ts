@@ -14,13 +14,13 @@ describe("createChatClient", () => {
     } else {
       Reflect.deleteProperty(globalThis, "fetch");
     }
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   function createClient(): ReturnType<typeof createChatClient> {
     const httpClient: HttpClient = {
       baseUrl: "https://api.test",
-      request: jest.fn() as HttpClient["request"],
+      request: vi.fn() as HttpClient["request"],
     };
     return createChatClient(httpClient);
   }
@@ -36,7 +36,7 @@ describe("createChatClient", () => {
         ],
       },
     };
-    const fetchMock = jest.fn().mockResolvedValueOnce({
+    const fetchMock = vi.fn().mockResolvedValueOnce({
       ok: false,
       status: 403,
       headers: {
@@ -81,7 +81,7 @@ describe("createChatClient", () => {
       },
       session_id: "session-42",
     };
-    const fetchMock = jest.fn().mockResolvedValueOnce({
+    const fetchMock = vi.fn().mockResolvedValueOnce({
       ok: true,
       headers: {
         get(name: string) {

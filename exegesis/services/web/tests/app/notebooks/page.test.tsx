@@ -1,40 +1,39 @@
-import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 
 import NotebookPage from "../../../app/notebooks/[id]/page";
 import { fetchResearchFeatures } from "../../../app/research/features";
 
-jest.mock("next/link", () => ({
+vi.mock("next/link", () => ({
   __esModule: true,
   default: ({ children, href }: { children: ReactNode; href: string }) => (
     <a href={href}>{children}</a>
   ),
 }));
 
-jest.mock("../../../app/lib/api", () => ({
+vi.mock("../../../app/lib/api", () => ({
   getApiBaseUrl: () => "https://example.com",
 }));
 
-jest.mock("../../../app/components/NotebookRealtimeListener", () => ({
+vi.mock("../../../app/components/NotebookRealtimeListener", () => ({
   __esModule: true,
   default: () => <div data-testid="realtime-listener" />,
 }));
 
-jest.mock("../../../app/components/DeliverableExportAction", () => ({
+vi.mock("../../../app/components/DeliverableExportAction", () => ({
   __esModule: true,
   default: () => <div data-testid="deliverable-export" />,
 }));
 
-jest.mock("../../../app/research/features", () => ({
-  fetchResearchFeatures: jest.fn(),
+vi.mock("../../../app/research/features", () => ({
+  fetchResearchFeatures: vi.fn(),
 }));
 
 describe("NotebookPage", () => {
   const originalFetch = global.fetch;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
@@ -42,7 +41,7 @@ describe("NotebookPage", () => {
   });
 
   it("renders entries even when research feature discovery fails", async () => {
-    const mockFetch = jest.fn();
+    const mockFetch = vi.fn();
     global.fetch = mockFetch as unknown as typeof fetch;
 
     const notebookResponse = {
@@ -83,9 +82,9 @@ describe("NotebookPage", () => {
       json: async () => ({ version: 1 }),
     });
 
-    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => undefined);
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
 
-    const mockFetchFeatures = fetchResearchFeatures as jest.MockedFunction<
+    const mockFetchFeatures = fetchResearchFeatures as vi.MockedFunction<
       typeof fetchResearchFeatures
     >;
     mockFetchFeatures.mockRejectedValueOnce(new Error("discovery offline"));

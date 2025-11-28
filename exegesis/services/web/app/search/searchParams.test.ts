@@ -1,14 +1,14 @@
 import { parseSearchParams, serializeSearchParams } from "./searchParams";
 
-jest.mock("next/link", () => ({
+vi.mock("next/link", () => ({
   __esModule: true,
   default: () => null,
 }));
 
-jest.mock("next/navigation", () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
+    push: vi.fn(),
+    replace: vi.fn(),
   }),
   useSearchParams: () => new URLSearchParams(),
 }));

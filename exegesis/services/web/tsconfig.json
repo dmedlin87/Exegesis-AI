@@ -24,7 +24,7 @@
     "incremental": true,
     "types": [
       "node",
-      "jest",
+      "vitest",
       "react"
     ],
     "esModuleInterop": true,

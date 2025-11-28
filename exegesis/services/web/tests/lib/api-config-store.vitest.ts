@@ -4,13 +4,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 type ConsoleErrorSpy = ReturnType<typeof vi.spyOn<typeof console, "error">>;
 
 describe("api-config-store decryptData", () => {
+  const passphraseKey = "EXEGESIS_API_ENCRYPTION_PASSPHRASE";
   const originalCryptoDescriptor = Object.getOwnPropertyDescriptor(
     window,
     "crypto",
   );
   const originalPassphraseDescriptor = Object.getOwnPropertyDescriptor(
     window,
-    "THEO_API_ENCRYPTION_PASSPHRASE",
+    passphraseKey,
   );
   let consoleErrorSpy: ConsoleErrorSpy;
 
@@ -32,13 +33,13 @@ describe("api-config-store decryptData", () => {
     if (originalPassphraseDescriptor) {
       Object.defineProperty(
         window,
-        "THEO_API_ENCRYPTION_PASSPHRASE",
+        passphraseKey,
         originalPassphraseDescriptor,
       );
     } else {
       delete (window as typeof window & {
-        THEO_API_ENCRYPTION_PASSPHRASE?: string;
-      }).THEO_API_ENCRYPTION_PASSPHRASE;
+        EXEGESIS_API_ENCRYPTION_PASSPHRASE?: string;
+      }).EXEGESIS_API_ENCRYPTION_PASSPHRASE;
     }
 
     vi.restoreAllMocks();
@@ -65,7 +66,7 @@ describe("api-config-store decryptData", () => {
       writable: true,
     });
 
-    Object.defineProperty(window, "THEO_API_ENCRYPTION_PASSPHRASE", {
+    Object.defineProperty(window, passphraseKey, {
       value: "0123456789ab",
       configurable: true,
       writable: true,

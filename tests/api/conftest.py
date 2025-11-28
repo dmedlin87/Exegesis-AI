@@ -619,11 +619,21 @@ def _api_engine_template(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
 
 @pytest.fixture(scope="session")
-def _shared_api_engine(_api_engine_template: Path):
-    """Shared engine instance connected to the template database."""
-    engine = create_engine(f"sqlite:///{_api_engine_template}", future=True)
-    yield engine
-    engine.dispose()
+def _shared_api_engine(
+    _api_engine_template: Path,
+    tmp_path_factory: pytest.TempPathFactory,
+):
+    """Shared engine connected to a copy of the template database."""
+
+    shared_dir = tmp_path_factory.mktemp("shared-api-engine")
+    shared_db = shared_dir / "shared.sqlite"
+    shutil.copy(_api_engine_template, shared_db)
+
+    engine = create_engine(f"sqlite:///{shared_db}", future=True)
+    try:
+        yield engine
+    finally:
+        engine.dispose()
 
 
 @pytest.fixture()

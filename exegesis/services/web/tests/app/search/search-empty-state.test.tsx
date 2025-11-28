@@ -1,16 +1,15 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
 
 import SearchPageClient from "../../../app/search/components/SearchPageClient";
 import { ToastProvider } from "../../../app/components/Toast";
 import type { SearchFilters } from "../../../app/search/searchParams";
 
-jest.mock("next/navigation", () => {
+vi.mock("next/navigation", () => {
   const params = new URLSearchParams();
   return {
-    useRouter: () => ({ replace: jest.fn(), push: jest.fn() }),
+    useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
     useSearchParams: () => ({
       get: (key: string) => params.get(key),
       toString: () => params.toString(),
@@ -24,9 +23,9 @@ jest.mock("next/navigation", () => {
   };
 });
 
-jest.mock("../../../app/lib/telemetry", () => ({
-  emitTelemetry: jest.fn(),
-  submitFeedback: jest.fn(),
+vi.mock("../../../app/lib/telemetry", () => ({
+  emitTelemetry: vi.fn(),
+  submitFeedback: vi.fn(),
 }));
 
 const EMPTY_FILTERS: SearchFilters = {

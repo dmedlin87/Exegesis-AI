@@ -123,16 +123,22 @@ def test_sermon_prep_guardrail_error_includes_metadata(monkeypatch: pytest.Monke
 
     monkeypatch.setattr(workflow, "instrument_workflow", _fake_instrument)
     monkeypatch.setattr(workflow, "search_passages", lambda *args, **kwargs: [])
-    monkeypatch.setattr(workflow, "log_workflow_event", lambda *args, **kwargs: None)
 
-    filters = HybridSearchFilters(collection="lectionary")
+    original_logger = workflow.get_workflow_logging_context()
+    workflow.configure_workflow_logging_context(
+        workflow.WorkflowLoggingContext(callback=lambda *args, **kwargs: None)
+    )
+    try:
+        filters = HybridSearchFilters(collection="lectionary")
 
-    with pytest.raises(GuardrailError) as exc:
-        workflow.generate_sermon_prep_outline(
-            object(),
-            topic="Advent hope",
-            filters=filters,
-        )
+        with pytest.raises(GuardrailError) as exc:
+            workflow.generate_sermon_prep_outline(
+                object(),
+                topic="Advent hope",
+                filters=filters,
+            )
+    finally:
+        workflow.configure_workflow_logging_context(original_logger)
 
     error = exc.value
     assert error.safe_refusal is True

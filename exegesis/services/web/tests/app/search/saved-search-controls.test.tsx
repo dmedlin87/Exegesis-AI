@@ -1,6 +1,5 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 
 import { SavedSearchControls } from "../../../app/search/components/SavedSearchControls";
@@ -35,21 +34,21 @@ describe("SavedSearchControls", () => {
         createdAt: Date.now(),
       },
     ];
-    const formatFilters = jest.fn().mockReturnValue({
+    const formatFilters = vi.fn().mockReturnValue({
       chips: [
         { id: "chip-1", text: "Query: logos" },
         { id: "chip-2", text: "Variants on" },
       ],
       description: "Includes variant readings",
     });
-    const handleApply = jest.fn();
-    const handleDelete = jest.fn();
+    const handleApply = vi.fn();
+    const handleDelete = vi.fn();
 
     render(
       <SavedSearchControls
         savedSearchName=""
-        onSavedSearchNameChange={jest.fn()}
-        onSubmit={jest.fn()}
+        onSavedSearchNameChange={vi.fn()}
+        onSubmit={vi.fn()}
         savedSearches={savedSearches}
         onApplySavedSearch={handleApply}
         onDeleteSavedSearch={handleDelete}
@@ -74,11 +73,11 @@ describe("SavedSearchControls", () => {
     render(
       <SavedSearchControls
         savedSearchName=""
-        onSavedSearchNameChange={jest.fn()}
-        onSubmit={jest.fn()}
+        onSavedSearchNameChange={vi.fn()}
+        onSubmit={vi.fn()}
         savedSearches={[]}
-        onApplySavedSearch={jest.fn()}
-        onDeleteSavedSearch={jest.fn()}
+        onApplySavedSearch={vi.fn()}
+        onDeleteSavedSearch={vi.fn()}
         formatFilters={() => ({ chips: [], description: "" })}
       />,
     );

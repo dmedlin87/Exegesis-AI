@@ -1,17 +1,18 @@
-"""Compatibility surface for guardrailed RAG workflows."""
+"""Compatibility surface and wiring helpers for guardrailed RAG workflows."""
 
 from __future__ import annotations
 
-import sys
-import types
+from functools import partial
 from typing import Any
 
-from . import chat as _chat_module
-from . import collaboration as _collaboration_module
-from . import corpus as _corpus_module
-from . import deliverables as _deliverables_module
-from . import telemetry as _telemetry_module
-from . import verse as _verse_module
+from .chat import (
+    DeliverableHooks,
+    GuardedAnswerPipeline,
+    _guarded_answer,
+    _guarded_answer_or_refusal,
+    configure_deliverable_hooks,
+    run_guarded_chat,
+)
 from .collaboration import run_research_reconciliation
 from .corpus import run_corpus_curation
 from .deliverables import (
@@ -26,12 +27,7 @@ from .exports import (
     build_transcript_deliverable,
     build_transcript_package,
 )
-from .guardrail_helpers import (
-    GuardrailError,
-    build_citations,
-    ensure_completion_safe,
-    validate_model_completion,
-)
+from .guardrail_helpers import GuardrailError
 from .models import (
     CollaborationResponse,
     ComparativeAnalysisResponse,
@@ -46,44 +42,56 @@ from .models import (
 from .refusals import REFUSAL_MESSAGE, REFUSAL_MODEL_NAME, build_guardrail_refusal
 from .retrieval import record_used_citation_feedback, search_passages
 from .verse import generate_verse_brief
+from .types import WorkflowLoggingContext
 
 
-def _propagate_log_workflow_event(callback: Any) -> None:
-    """Ensure guardrail modules share the same workflow logging hook."""
+def _build_deliverable_hooks(logger: WorkflowLoggingContext) -> DeliverableHooks:
+    """Bind the workflow logging context into each deliverable helper."""
 
-    _telemetry_module.log_workflow_event = callback
-    _deliverables_module.log_workflow_event = callback
-    _collaboration_module.log_workflow_event = callback
-    _corpus_module.log_workflow_event = callback
-    _verse_module.log_workflow_event = callback
-    # ``cache`` also logs workflow events (e.g., cache hits/misses).
-    # Import lazily to avoid circular imports during module initialisation.
-    from . import cache as _cache_module  # noqa: WPS433  (local import for dependency cycle)
-
-    _cache_module.log_workflow_event = callback
-
-
-log_workflow_event = _telemetry_module.log_workflow_event
-_propagate_log_workflow_event(log_workflow_event)
-
-_chat_module.configure_deliverable_hooks(
-    _chat_module.DeliverableHooks(
-        generate_sermon_prep_outline=generate_sermon_prep_outline,
-        generate_comparative_analysis=generate_comparative_analysis,
-        generate_devotional_flow=generate_devotional_flow,
-        generate_multimedia_digest=generate_multimedia_digest,
+    return DeliverableHooks(
+        generate_sermon_prep_outline=partial(generate_sermon_prep_outline, logger=logger),
+        generate_comparative_analysis=partial(generate_comparative_analysis, logger=logger),
+        generate_devotional_flow=partial(generate_devotional_flow, logger=logger),
+        generate_multimedia_digest=partial(generate_multimedia_digest, logger=logger),
         build_sermon_deliverable=build_sermon_deliverable,
         build_sermon_prep_package=build_sermon_prep_package,
         build_transcript_deliverable=build_transcript_deliverable,
         build_transcript_package=build_transcript_package,
     )
-)
 
-# Delegate primary workflow helpers to the chat module ---------------------
-GuardedAnswerPipeline = _chat_module.GuardedAnswerPipeline
-_guarded_answer = _chat_module._guarded_answer
-_guarded_answer_or_refusal = _chat_module._guarded_answer_or_refusal
-run_guarded_chat = _chat_module.run_guarded_chat
+
+_workflow_logging_context = WorkflowLoggingContext.default()
+
+
+def _apply_deliverable_hooks(context: WorkflowLoggingContext) -> None:
+    configure_deliverable_hooks(_build_deliverable_hooks(context))
+
+
+def configure_workflow_logging_context(
+    context: WorkflowLoggingContext | None = None,
+) -> WorkflowLoggingContext:
+    """Install a logging callback that all workflow helpers share."""
+
+    global _workflow_logging_context
+    effective = context or WorkflowLoggingContext.default()
+    _workflow_logging_context = effective
+    _apply_deliverable_hooks(effective)
+    return effective
+
+
+def get_workflow_logging_context() -> WorkflowLoggingContext:
+    """Return the currently configured workflow logging context."""
+
+    return _workflow_logging_context
+
+
+def log_workflow_event(event: str, *, workflow: str, **context: Any) -> None:
+    """Forward workflow events using the injected context."""
+
+    _workflow_logging_context.log_event(event, workflow=workflow, **context)
+
+
+_apply_deliverable_hooks(_workflow_logging_context)
 
 
 __all__ = [
@@ -100,16 +108,19 @@ __all__ = [
     "REFUSAL_MODEL_NAME",
     "SermonPrepResponse",
     "VerseCopilotResponse",
+    "WorkflowLoggingContext",
     "build_guardrail_refusal",
     "build_sermon_deliverable",
     "build_sermon_prep_package",
     "build_transcript_deliverable",
     "build_transcript_package",
+    "configure_workflow_logging_context",
     "generate_comparative_analysis",
     "generate_devotional_flow",
     "generate_multimedia_digest",
     "generate_sermon_prep_outline",
     "generate_verse_brief",
+    "get_workflow_logging_context",
     "log_workflow_event",
     "record_used_citation_feedback",
     "run_corpus_curation",
@@ -117,23 +128,3 @@ __all__ = [
     "run_research_reconciliation",
     "search_passages",
 ]
-
-
-class _WorkflowModule(types.ModuleType):
-    """Module proxy ensuring patches propagate to the chat implementation."""
-
-    def __getattr__(self, name: str) -> Any:
-        if hasattr(_chat_module, name):
-            return getattr(_chat_module, name)
-        raise AttributeError(name)
-
-    def __setattr__(self, name: str, value: Any) -> None:
-        if hasattr(_chat_module, name):
-            _chat_module.__dict__[name] = value
-        if name == "log_workflow_event":
-            _propagate_log_workflow_event(value)
-        super().__setattr__(name, value)
-
-
-sys.modules[__name__].__class__ = _WorkflowModule
-

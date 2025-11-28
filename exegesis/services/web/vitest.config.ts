@@ -1,11 +1,14 @@
-import { defineConfig } from "vitest/config.js";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   esbuild: {
     jsx: "automatic",
   },
   test: {
-    include: ["tests/**/*.vitest.{ts,tsx}"],
+    threads: 1,
+    moveMocksToGlobal: true,
+    globals: true,
+    include: ["tests/**/*.vitest.{ts,tsx}", "tests/**/*.test.{ts,tsx}"],
     environment: "jsdom",
     setupFiles: ["tests/vitest.setup.ts"],
     coverage: {

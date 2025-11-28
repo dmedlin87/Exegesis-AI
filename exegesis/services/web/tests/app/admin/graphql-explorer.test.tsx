@@ -1,28 +1,27 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 
 import GraphQLExplorer from "../../../app/admin/graphql/GraphQLExplorer";
 
-const graphiqlPropsSpy = jest.fn();
+const graphiqlPropsSpy = vi.fn();
 
-jest.mock("graphiql", () => ({
+vi.mock("graphiql", () => ({
   GraphiQL: (props: unknown) => {
     graphiqlPropsSpy(props);
     return <div data-testid="graphiql" />;
   },
 }));
 
-jest.mock("../../../app/lib/api-config", () => ({
-  useApiHeaders: jest.fn(),
-  useGraphQLExplorerEnabled: jest.fn(),
+vi.mock("../../../app/lib/api-config", () => ({
+  useApiHeaders: vi.fn(),
+  useGraphQLExplorerEnabled: vi.fn(),
 }));
 
 const useApiHeadersMock =
-  require("../../../app/lib/api-config").useApiHeaders as jest.MockedFunction<() => Record<string, string>>;
+  require("../../../app/lib/api-config").useApiHeaders as vi.MockedFunction<() => Record<string, string>>;
 const useGraphQLExplorerEnabledMock =
-  require("../../../app/lib/api-config").useGraphQLExplorerEnabled as jest.MockedFunction<() => boolean>;
+  require("../../../app/lib/api-config").useGraphQLExplorerEnabled as vi.MockedFunction<() => boolean>;
 
 describe("GraphQLExplorer", () => {
   const originalFetch = global.fetch;
@@ -31,7 +30,7 @@ describe("GraphQLExplorer", () => {
     graphiqlPropsSpy.mockClear();
     useApiHeadersMock.mockReset();
     useGraphQLExplorerEnabledMock.mockReset();
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
     delete process.env.NEXT_PUBLIC_API_BASE_URL;
   });
 
@@ -55,7 +54,7 @@ describe("GraphQLExplorer", () => {
     process.env.NEXT_PUBLIC_API_BASE_URL = "https://api.test";
 
     const jsonResponse = { data: { hello: "world" } };
-    (global.fetch as jest.Mock).mockResolvedValue({
+    (global.fetch as vi.Mock).mockResolvedValue({
       headers: new Headers({ "content-type": "application/json" }),
       json: async () => jsonResponse,
       text: async () => JSON.stringify(jsonResponse),

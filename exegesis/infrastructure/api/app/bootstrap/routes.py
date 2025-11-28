@@ -107,6 +107,3 @@ def get_router_registrations() -> tuple[RouterRegistration, ...]:
     """Return the materialized router registrations."""
 
     return tuple(iter_router_registrations())
-
-
-ROUTER_REGISTRATIONS = get_router_registrations()

@@ -11,7 +11,7 @@
 - `RERANKER_ENABLED` — gate the ONNX reranker execution. Defaults to `0` in `.env.example` so only opt-in environments activate it.
 - `RERANKER_MODEL_PATH` — filesystem path to the exported reranker artifact. Use local relative paths (e.g. `./models/reranker/model.onnx`) for development.
 - `INTENT_TAGGER_ENABLED` — guardrail for the intent classifier. Disabled by default to prevent accidental rollout.
-- `INTENT_MODEL_PATH` — location of the serialized intent tagger (ONNX or TorchScript). Stored alongside reranker assets under `./models/intent/` by convention.
+- `INTENT_MODEL_PATH` - legacy configuration; intent classification now runs through the LLM router when `INTENT_TAGGER_ENABLED` is true.
 
 ## Training Pipeline Overview
 1. **Curate datasets**

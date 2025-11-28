@@ -7,15 +7,12 @@ from typing import TYPE_CHECKING
 from sqlalchemy.orm import Session
 
 from exegesis.infrastructure.api.app.models.search import HybridSearchFilters
-from exegesis.application.facades.telemetry import (
-    instrument_workflow,
-    log_workflow_event,
-    set_span_attribute,
-)
+from exegesis.application.facades.telemetry import instrument_workflow, set_span_attribute
 from ..registry import get_llm_registry
 from .models import VerseCopilotResponse
 from .retrieval import record_used_citation_feedback, search_passages
 from .chat import _guarded_answer_or_refusal
+from .types import WorkflowLoggingContext
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..trails import TrailRecorder
@@ -32,9 +29,11 @@ def generate_verse_brief(
     filters: HybridSearchFilters | None = None,
     model_name: str | None = None,
     recorder: "TrailRecorder | None" = None,
+    logger: WorkflowLoggingContext | None = None,
 ) -> VerseCopilotResponse:
     """Produce a grounded answer for the verse copilot workflow."""
 
+    logger = logger or WorkflowLoggingContext.default()
     filters = filters or HybridSearchFilters()
     with instrument_workflow(
         "verse_copilot",
@@ -49,7 +48,7 @@ def generate_verse_brief(
         )
         results = search_passages(session, query=question or osis, osis=osis, filters=filters)
         set_span_attribute(span, "workflow.result_count", len(results))
-        log_workflow_event(
+        logger.log_event(
             "workflow.passages_retrieved",
             workflow="verse_copilot",
             osis=osis,
@@ -97,7 +96,7 @@ def generate_verse_brief(
         )
         set_span_attribute(span, "workflow.citation_count", len(answer.citations))
         set_span_attribute(span, "workflow.summary_length", len(answer.summary))
-        log_workflow_event(
+        logger.log_event(
             "workflow.answer_composed",
             workflow="verse_copilot",
             citations=len(answer.citations),
@@ -110,7 +109,7 @@ def generate_verse_brief(
             "Surface sermons that emphasise this verse",
         ]
         set_span_attribute(span, "workflow.follow_up_count", len(follow_ups))
-        log_workflow_event(
+        logger.log_event(
             "workflow.follow_ups_suggested",
             workflow="verse_copilot",
             follow_up_count=len(follow_ups),

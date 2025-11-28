@@ -7,8 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "EXEGESIS_AUTH_ALLOW_ANONYMOUS=1 jest",
-    "test:vitest": "vitest run",
+    "test": "vitest run",
     "lint": "npm run lint:eslint && npm run lint:types",
     "lint:eslint": "eslint . --ext .ts,.tsx --max-warnings=0",
     "lint:types": "tsc --noEmit",
@@ -52,7 +51,6 @@
     "@testing-library/react": "16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/d3": "^7.4.3",
-    "@types/jest": "30.0.0",
     "@types/node": "24.10.1",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
@@ -66,13 +64,9 @@
     "eslint-plugin-promise": "^7.1.0",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "identity-obj-proxy": "^3.0.0",
-    "jest": "30.2.0",
-    "jest-environment-jsdom": "30.2.0",
     "openapi-typescript": "^7.10.1",
-    "ts-jest": "29.4.5",
     "typescript": "5.9.3",
     "undici": "7.16.0",
-    "vitest": "4.0.3"
+    "vitest": "4.0.8"
   }
 }

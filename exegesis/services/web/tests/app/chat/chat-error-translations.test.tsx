@@ -1,21 +1,20 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import ChatWorkspace from "../../../app/chat/ChatWorkspace";
 import type { ChatWorkflowClient } from "../../../app/lib/chat-client";
 import { TheoApiError } from "../../../app/lib/api-client";
 
-jest.mock("../../../app/lib/telemetry", () => ({
-  submitFeedback: jest.fn(),
-  emitTelemetry: jest.fn(),
+vi.mock("../../../app/lib/telemetry", () => ({
+  submitFeedback: vi.fn(),
+  emitTelemetry: vi.fn(),
 }));
 
-jest.mock("next/navigation", () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
+    push: vi.fn(),
+    replace: vi.fn(),
   }),
 }));
 
@@ -27,16 +26,16 @@ describe("ChatWorkspace error translations", () => {
   }
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     window.localStorage.clear();
   });
 
   it("prompts the user to add an API key for authentication failures", async () => {
     const client: ChatWorkflowClient = {
-      runChatWorkflow: jest.fn(async () => {
+      runChatWorkflow: vi.fn(async () => {
         throw new TheoApiError("Unauthorized", 401, "https://api.test/chat");
       }),
-      fetchChatSession: jest.fn(async () => null),
+      fetchChatSession: vi.fn(async () => null),
     };
 
     renderChat(client);
@@ -58,10 +57,10 @@ describe("ChatWorkspace error translations", () => {
 
   it("surfaces retry guidance for server failures", async () => {
     const client: ChatWorkflowClient = {
-      runChatWorkflow: jest.fn(async () => {
+      runChatWorkflow: vi.fn(async () => {
         throw new TheoApiError("Service unavailable", 503, "https://api.test/chat");
       }),
-      fetchChatSession: jest.fn(async () => null),
+      fetchChatSession: vi.fn(async () => null),
     };
 
     renderChat(client);

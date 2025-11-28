@@ -1,4 +1,4 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
 import { act, renderHook } from "@testing-library/react";
 
@@ -29,18 +29,18 @@ type MockApi = Pick<
   | "exportCitations"
 >;
 
-function createMockApi(): jest.Mocked<MockApi> {
+function createMockApi(): vi.Mocked<MockApi> {
   return {
-    runVerseWorkflow: jest.fn(),
-    runSermonWorkflow: jest.fn(),
-    runComparativeWorkflow: jest.fn(),
-    runMultimediaWorkflow: jest.fn(),
-    runDevotionalWorkflow: jest.fn(),
-    runCollaborationWorkflow: jest.fn(),
-    runCurationWorkflow: jest.fn(),
-    runSermonExport: jest.fn(),
-    runTranscriptExport: jest.fn(),
-    exportCitations: jest.fn(),
+    runVerseWorkflow: vi.fn(),
+    runSermonWorkflow: vi.fn(),
+    runComparativeWorkflow: vi.fn(),
+    runMultimediaWorkflow: vi.fn(),
+    runDevotionalWorkflow: vi.fn(),
+    runCollaborationWorkflow: vi.fn(),
+    runCurationWorkflow: vi.fn(),
+    runSermonExport: vi.fn(),
+    runTranscriptExport: vi.fn(),
+    exportCitations: vi.fn(),
   };
 }
 

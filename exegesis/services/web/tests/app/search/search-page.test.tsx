@@ -1,6 +1,9 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
+declare module "next/navigation" {
+  export function __setSearchParams(value: string): void;
+}
+
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { ReactElement } from "react";
 
@@ -8,10 +11,9 @@ import SearchPageClient from "../../../app/search/components/SearchPageClient";
 import type { SearchFilters } from "../../../app/search/searchParams";
 import { submitFeedback } from "../../../app/lib/telemetry";
 import { ToastProvider } from "../../../app/components/Toast";
+import { __setSearchParams } from "next/navigation";
 
-let updateSearchParams: (value: string) => void;
-
-jest.mock("next/navigation", () => {
+vi.mock("next/navigation", () => {
   let params = new URLSearchParams("q=logos");
   const createSearchParams = () => ({
     get: (key: string) => params.get(key),
@@ -23,33 +25,33 @@ jest.mock("next/navigation", () => {
     forEach: (callback: (value: string, key: string) => void) => params.forEach(callback),
     [Symbol.iterator]: () => params[Symbol.iterator](),
   });
-  updateSearchParams = (value: string) => {
+  const setSearchParams = (value: string) => {
     params = new URLSearchParams(value);
   };
 
   return {
-    useRouter: () => ({ replace: jest.fn(), push: jest.fn() }),
+    useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
     useSearchParams: () => createSearchParams(),
-    __setSearchParams: updateSearchParams,
+    __setSearchParams: setSearchParams,
   };
 });
 
-jest.mock("../../../app/lib/telemetry", () => ({
-  emitTelemetry: jest.fn(),
-  submitFeedback: jest.fn(),
+vi.mock("../../../app/lib/telemetry", () => ({
+  emitTelemetry: vi.fn(),
+  submitFeedback: vi.fn(),
 }));
 
-const setSearchParams = (value: string) => updateSearchParams(value);
+const setSearchParams = (value: string) => __setSearchParams(value);
 
 const renderWithToast = (ui: ReactElement) => render(<ToastProvider>{ui}</ToastProvider>);
 
 describe("SearchPageClient feedback", () => {
   const originalFetch = global.fetch;
-  const fetchMock = jest.fn();
-  const submitMock = submitFeedback as jest.MockedFunction<typeof submitFeedback>;
+  const fetchMock = vi.fn();
+  const submitMock = submitFeedback as vi.MockedFunction<typeof submitFeedback>;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     fetchMock.mockReset();
     global.fetch = fetchMock as unknown as typeof fetch;
     setSearchParams("");

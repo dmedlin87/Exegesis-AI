@@ -47,7 +47,6 @@ from .middleware import (
     register_trace_handlers as _base_register_trace_handlers,
 )
 from .routes import (
-    ROUTER_REGISTRATIONS,
     get_router_registrations,
     include_router_registrations,
     register_health_routes as _base_register_health_routes,
@@ -61,10 +60,12 @@ from .runtime_checks import (
 
 logger = logging.getLogger(__name__)
 
+ROUTER_REGISTRATIONS = get_router_registrations()
+
 __all__ = [
+    "app",
     "create_app",
-    "ROUTER_REGISTRATIONS",
-    "get_router_registrations",
+    "lifespan",
     "create_dependency_container",
     "get_registry",
     "set_registry",

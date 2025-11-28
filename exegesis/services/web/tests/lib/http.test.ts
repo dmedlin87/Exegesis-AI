@@ -45,11 +45,11 @@ describe("createHttpClient", () => {
     } else {
       Reflect.deleteProperty(globalThis, "fetch");
     }
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("includes response text for 404 errors", async () => {
-    const fetchMock = jest.fn().mockResolvedValueOnce(
+    const fetchMock = vi.fn().mockResolvedValueOnce(
       createMockResponse({ status: 404, body: "Document not found" }),
     );
     Object.defineProperty(globalThis, "fetch", {
@@ -63,7 +63,7 @@ describe("createHttpClient", () => {
   });
 
   it("does not set Content-Type header for GET requests", async () => {
-    const fetchMock = jest.fn().mockResolvedValueOnce(
+    const fetchMock = vi.fn().mockResolvedValueOnce(
       createMockResponse({
         status: 200,
         body: JSON.stringify({ features: {} }),
@@ -83,7 +83,7 @@ describe("createHttpClient", () => {
   });
 
   it("propagates API error payloads for 400 responses", async () => {
-    const fetchMock = jest.fn().mockResolvedValueOnce(
+    const fetchMock = vi.fn().mockResolvedValueOnce(
       createMockResponse({
         status: 400,
         body: JSON.stringify({ detail: "Invalid request" }),
@@ -105,7 +105,7 @@ describe("createHttpClient", () => {
   });
 
   it("falls back to status code messaging for empty 413 responses", async () => {
-    const fetchMock = jest
+    const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(createMockResponse({ status: 413, body: null }));
     Object.defineProperty(globalThis, "fetch", {
@@ -120,7 +120,7 @@ describe("createHttpClient", () => {
   });
 
   it("attaches parsed payload to thrown TheoApiError", async () => {
-    const fetchMock = jest.fn().mockResolvedValueOnce(
+    const fetchMock = vi.fn().mockResolvedValueOnce(
       createMockResponse({
         status: 422,
         body: JSON.stringify({ detail: { message: "Not allowed" }, metadata: { foo: "bar" } }),

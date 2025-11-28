@@ -1,33 +1,32 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { ReactElement } from "react";
 
 import { ToastProvider } from "../../../app/components/Toast";
 import UploadPage from "../../../app/upload/page";
 
-jest.mock("../../../app/upload/components/SimpleIngestForm", () => ({
+vi.mock("../../../app/upload/components/SimpleIngestForm", () => ({
   __esModule: true,
   default: () => <div data-testid="simple-ingest-form" />,
 }));
 
-jest.mock("../../../app/upload/components/FileUploadForm", () => ({
+vi.mock("../../../app/upload/components/FileUploadForm", () => ({
   __esModule: true,
   default: () => <div data-testid="file-upload-form" />,
 }));
 
-jest.mock("../../../app/upload/components/UrlIngestForm", () => ({
+vi.mock("../../../app/upload/components/UrlIngestForm", () => ({
   __esModule: true,
   default: () => <div data-testid="url-ingest-form" />,
 }));
 
-jest.mock("../../../app/upload/components/JobsTable", () => ({
+vi.mock("../../../app/upload/components/JobsTable", () => ({
   __esModule: true,
   default: () => <div data-testid="jobs-table" />,
 }));
 
-jest.mock("../../../app/lib/api", () => ({
+vi.mock("../../../app/lib/api", () => ({
   getApiBaseUrl: () => "https://api.example.com",
 }));
 
@@ -41,7 +40,7 @@ describe("UploadPage trace details", () => {
   });
 
   it("surfaces trace information in a toast when requested", async () => {
-    const fetchMock = jest.fn().mockResolvedValue(
+    const fetchMock = vi.fn().mockResolvedValue(
       new Response(
         JSON.stringify({ message: "Failed to load jobs", traceId: "trace-5678" }),
         {

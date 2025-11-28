@@ -1,34 +1,33 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 
 import ErrorCallout from "../../../app/components/ErrorCallout";
 import { emitTelemetry } from "../../../app/lib/telemetry";
 
-jest.mock("next/link", () => ({
+vi.mock("next/link", () => ({
   __esModule: true,
   default: ({ children, href }: { children: ReactNode; href: string }) => (
     <a href={href}>{children}</a>
   ),
 }));
 
-jest.mock("../../../app/lib/telemetry", () => ({
+vi.mock("../../../app/lib/telemetry", () => ({
   __esModule: true,
-  emitTelemetry: jest.fn().mockResolvedValue(undefined),
+  emitTelemetry: vi.fn().mockResolvedValue(undefined),
 }));
 
 describe("ErrorCallout", () => {
-  const emitTelemetryMock = emitTelemetry as jest.MockedFunction<typeof emitTelemetry>;
+  const emitTelemetryMock = emitTelemetry as vi.MockedFunction<typeof emitTelemetry>;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it("renders retry, details, and help actions with telemetry", () => {
-    const handleRetry = jest.fn();
-    const handleDetails = jest.fn();
+    const handleRetry = vi.fn();
+    const handleDetails = vi.fn();
 
     render(
       <ErrorCallout

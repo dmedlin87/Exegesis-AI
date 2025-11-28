@@ -89,40 +89,46 @@ def test_run_guarded_chat_records_feedback_integration(monkeypatch: pytest.Monke
 
     monkeypatch.setattr(workflow, "instrument_workflow", fake_instrument)
     monkeypatch.setattr(workflow, "set_span_attribute", lambda *args, **kwargs: None)
-    monkeypatch.setattr(workflow, "log_workflow_event", lambda *args, **kwargs: None)
 
-    def fake_search(session_arg, *, query, osis, filters):
-        captured["search"] = (session_arg, query, osis, filters)
-        return results
-
-    monkeypatch.setattr(workflow, "search_passages", fake_search)
-    monkeypatch.setattr(workflow, "get_llm_registry", lambda session_arg: "registry")
-
-    answer = RAGAnswer(summary="summary", citations=[_make_citation(identifier="1")])
-
-    def fake_guarded(session_arg, **kwargs):
-        captured["guarded"] = (session_arg, kwargs)
-        return answer
-
-    monkeypatch.setattr(workflow, "_guarded_answer_or_refusal", fake_guarded)
-
-    feedback_payloads: list[tuple[object, dict[str, object]]] = []
-
-    def fake_feedback(session_arg, **kwargs):
-        feedback_payloads.append((session_arg, kwargs))
-
-    monkeypatch.setattr(workflow, "record_used_citation_feedback", fake_feedback)
-
-    returned = workflow.run_guarded_chat(
-        session,
-        question="What is hope?",
-        filters=filters,
+    original_logger = workflow.get_workflow_logging_context()
+    workflow.configure_workflow_logging_context(
+        workflow.WorkflowLoggingContext(callback=lambda *args, **kwargs: None)
     )
+    try:
+        def fake_search(session_arg, *, query, osis, filters):
+            captured["search"] = (session_arg, query, osis, filters)
+            return results
 
-    assert returned is answer
-    assert captured["instrument"][0] == "chat"
-    assert captured["search"][1:] == ("What is hope?", None, filters)
-    # ``_guarded_answer_or_refusal`` receives the same retrieval payload the router would use.
-    assert captured["guarded"][1]["results"] == results
-    assert feedback_payloads[0][1]["citations"] == answer.citations
+        monkeypatch.setattr(workflow, "search_passages", fake_search)
+        monkeypatch.setattr(workflow, "get_llm_registry", lambda session_arg: "registry")
+
+        answer = RAGAnswer(summary="summary", citations=[_make_citation(identifier="1")])
+
+        def fake_guarded(session_arg, **kwargs):
+            captured["guarded"] = (session_arg, kwargs)
+            return answer
+
+        monkeypatch.setattr(workflow, "_guarded_answer_or_refusal", fake_guarded)
+
+        feedback_payloads: list[tuple[object, dict[str, object]]] = []
+
+        def fake_feedback(session_arg, **kwargs):
+            feedback_payloads.append((session_arg, kwargs))
+
+        monkeypatch.setattr(workflow, "record_used_citation_feedback", fake_feedback)
+
+        returned = workflow.run_guarded_chat(
+            session,
+            question="What is hope?",
+            filters=filters,
+        )
+
+        assert returned is answer
+        assert captured["instrument"][0] == "chat"
+        assert captured["search"][1:] == ("What is hope?", None, filters)
+        # ``_guarded_answer_or_refusal`` receives the same retrieval payload the router would use.
+        assert captured["guarded"][1]["results"] == results
+        assert feedback_payloads[0][1]["citations"] == answer.citations
+    finally:
+        workflow.configure_workflow_logging_context(original_logger)
 

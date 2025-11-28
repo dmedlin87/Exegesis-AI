@@ -1,26 +1,25 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 
 import ResearchPanels from "../app/research/ResearchPanels";
 import type { ResearchFeatureFlags } from "../app/research/types";
 
-jest.mock("../app/mode-context", () => {
-  const { RESEARCH_MODES, DEFAULT_MODE_ID } = jest.requireActual<
+vi.mock("../app/mode-context", () => {
+  const { RESEARCH_MODES, DEFAULT_MODE_ID } = vi.importActual<
     typeof import("../app/mode-config")
   >("../app/mode-config");
   return {
     useMode: () => ({
       mode: RESEARCH_MODES[DEFAULT_MODE_ID],
       modes: Object.values(RESEARCH_MODES),
-      setMode: jest.fn(),
+      setMode: vi.fn(),
     }),
   };
 });
 
 beforeEach(() => {
-  global.fetch = jest.fn().mockResolvedValue({
+  global.fetch = vi.fn().mockResolvedValue({
     ok: true,
     json: async () => ({}),
     text: async () => "",
@@ -28,7 +27,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
 describe("ResearchPanels", () => {

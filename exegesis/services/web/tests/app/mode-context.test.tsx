@@ -1,6 +1,5 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { Fragment } from "react";
 import { useRouter } from "next/navigation";
@@ -13,12 +12,12 @@ import {
   type ResearchModeId,
 } from "../../app/mode-config";
 
-jest.mock("next/navigation", () => ({
-  useRouter: jest.fn(),
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(),
 }));
 
-const useRouterMock = useRouter as unknown as jest.Mock;
-const refreshMock = jest.fn();
+const useRouterMock = useRouter as unknown as vi.Mock;
+const refreshMock = vi.fn();
 
 type OptionalModeConsumerProps = {
   nextMode?: ResearchModeId;
@@ -59,15 +58,15 @@ describe("ModeProvider storage resilience", () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("falls back to the default mode when storage reads throw", async () => {
-    jest.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("storage unavailable");
     });
 
-    jest.spyOn(document, "cookie", "get").mockImplementation(() => {
+    vi.spyOn(document, "cookie", "get").mockImplementation(() => {
       throw new Error("cookies unavailable");
     });
 
@@ -83,11 +82,11 @@ describe("ModeProvider storage resilience", () => {
   });
 
   it("does not refresh the router when storage writes throw", async () => {
-    jest.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
       throw new Error("storage unavailable");
     });
 
-    jest.spyOn(document, "cookie", "set").mockImplementation(() => {
+    vi.spyOn(document, "cookie", "set").mockImplementation(() => {
       throw new Error("cookies unavailable");
     });
 
@@ -105,7 +104,7 @@ describe("ModeProvider storage resilience", () => {
 
 describe("ModeProvider", () => {
   beforeEach(() => {
-    useRouterMock.mockReturnValue({ refresh: jest.fn() });
+    useRouterMock.mockReturnValue({ refresh: vi.fn() });
     localStorage.clear();
     document.cookie = `${MODE_COOKIE_KEY}=; Max-Age=0`;
   });
@@ -154,7 +153,7 @@ describe("ModeProvider", () => {
   });
 
   it("updates the mode and refreshes the router when the user selects a new mode", async () => {
-    const refresh = jest.fn();
+    const refresh = vi.fn();
     useRouterMock.mockReturnValue({ refresh });
 
     renderWithProvider(DEFAULT_MODE_ID);

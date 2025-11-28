@@ -1,6 +1,5 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 
@@ -11,19 +10,19 @@ describe("Onboarding wizard", () => {
   beforeAll(() => {
     Object.assign(navigator, {
       clipboard: {
-        writeText: jest.fn().mockResolvedValue(undefined),
+        writeText: vi.fn().mockResolvedValue(undefined),
       },
     });
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     window.localStorage.clear();
-    (navigator.clipboard.writeText as jest.Mock).mockClear();
+    (navigator.clipboard.writeText as vi.Mock).mockClear();
   });
 
   it("advances through steps, copies env commands, and persists completion", async () => {
-    (emitTelemetry as jest.MockedFunction<typeof emitTelemetry>).mockResolvedValue(undefined);
+    (emitTelemetry as vi.MockedFunction<typeof emitTelemetry>).mockResolvedValue(undefined);
 
     render(<OnboardingOverlay />);
 
@@ -70,11 +69,11 @@ describe("Onboarding wizard", () => {
   });
 });
 
-jest.mock("../../../app/lib/telemetry", () => ({
-  emitTelemetry: jest.fn(),
+vi.mock("../../../app/lib/telemetry", () => ({
+  emitTelemetry: vi.fn(),
 }));
 
-jest.mock("next/link", () => ({
+vi.mock("next/link", () => ({
   __esModule: true,
   default: ({ children, href, ...rest }: { children: ReactNode; href: string }) => (
     <a href={href} {...rest}>

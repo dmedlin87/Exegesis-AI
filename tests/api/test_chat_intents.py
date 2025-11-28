@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from types import SimpleNamespace
 from typing import Iterator
 
@@ -139,7 +138,7 @@ def test_chat_turn_attaches_intent_tags(
 ) -> None:
     client, context = chat_client
 
-    settings = SimpleNamespace(intent_tagger_enabled=True, intent_model_path=Path("dummy.joblib"))
+    settings = SimpleNamespace(intent_tagger_enabled=True)
     monkeypatch.setattr(chat_module, "get_settings", lambda: settings)
 
     tag = IntentTag(intent="sermon_prep", stance="supportive", confidence=0.87)
@@ -149,7 +148,7 @@ def test_chat_turn_attaches_intent_tags(
             assert message == "Plan a sermon on hope"
             return tag
 
-    monkeypatch.setattr(chat_module, "get_intent_tagger", lambda _settings: StubTagger())
+    monkeypatch.setattr(chat_module, "get_intent_tagger", lambda _session, _settings: StubTagger())
 
     response = client.post("/ai/chat", json=_chat_payload("Plan a sermon on hope"))
     assert response.status_code == 200
@@ -179,10 +178,10 @@ def test_chat_turn_omits_tags_when_disabled(
 ) -> None:
     client, context = chat_client
 
-    settings = SimpleNamespace(intent_tagger_enabled=False, intent_model_path=None)
+    settings = SimpleNamespace(intent_tagger_enabled=False)
     monkeypatch.setattr(chat_module, "get_settings", lambda: settings)
 
-    def _should_not_run(_settings: object) -> None:
+    def _should_not_run(_session: object, _settings: object) -> None:
         raise AssertionError("intent tagger should not be resolved when disabled")
 
     monkeypatch.setattr(chat_module, "get_intent_tagger", _should_not_run)
@@ -204,7 +203,7 @@ def test_chat_turn_records_prompt(
 ) -> None:
     client, context = chat_client
 
-    settings = SimpleNamespace(intent_tagger_enabled=False, intent_model_path=None)
+    settings = SimpleNamespace(intent_tagger_enabled=False)
     monkeypatch.setattr(chat_module, "get_settings", lambda: settings)
 
     response = client.post(
@@ -234,7 +233,7 @@ def test_chat_turn_declares_goal_records_trail(
 ) -> None:
     client, context = chat_client
 
-    settings = SimpleNamespace(intent_tagger_enabled=False, intent_model_path=None)
+    settings = SimpleNamespace(intent_tagger_enabled=False)
     monkeypatch.setattr(chat_module, "get_settings", lambda: settings)
 
     response = client.post("/ai/chat", json=_chat_payload("Goal: Study Romans"))
@@ -263,7 +262,7 @@ def test_chat_turn_resumes_existing_goal(
 ) -> None:
     client, context = chat_client
 
-    settings = SimpleNamespace(intent_tagger_enabled=False, intent_model_path=None)
+    settings = SimpleNamespace(intent_tagger_enabled=False)
     monkeypatch.setattr(chat_module, "get_settings", lambda: settings)
 
     now = datetime.now(UTC).isoformat()

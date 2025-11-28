@@ -1,4 +1,4 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 
@@ -38,21 +38,19 @@ const EXPORT_PRESETS: ExportPreset[] = [
 ];
 
 beforeEach(() => {
-  (globalThis as typeof globalThis & { fetch: jest.Mock }).fetch = jest
-    .fn()
-    .mockResolvedValue({
-      ok: true,
-      json: async () => [],
-    });
+  (globalThis as typeof globalThis & { fetch: vi.Mock }).fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => [],
+  });
 });
 
 afterEach(() => {
-  jest.resetAllMocks();
+  vi.resetAllMocks();
 });
 
 describe("copilot components", () => {
   it("renders workflow selector and triggers selection", () => {
-    const onSelect = jest.fn();
+    const onSelect = vi.fn();
     render(
       <WorkflowSelector
         options={[{ id: "verse", label: "Verse", description: "Desc" }]}
@@ -71,7 +69,7 @@ describe("copilot components", () => {
       description: "Description",
       workflow: "verse",
     };
-    const onSelect = jest.fn();
+    const onSelect = vi.fn();
     render(<QuickStartPresets presets={[preset]} onSelect={onSelect} />);
     fireEvent.click(screen.getByRole("button", { name: /title/i }));
     expect(onSelect).toHaveBeenCalledWith(preset);
@@ -109,7 +107,7 @@ describe("copilot components", () => {
         summary="Summary"
         exporting={false}
         status={null}
-        onExport={jest.fn()}
+        onExport={vi.fn()}
         workflowId="verse"
         result={{
           kind: "verse",
@@ -127,7 +125,7 @@ describe("copilot components", () => {
   });
 
   it("renders citation list and triggers export", async () => {
-    const onExport = jest.fn();
+    const onExport = vi.fn();
     await act(async () => {
       render(
         <CitationList
@@ -172,7 +170,7 @@ describe("copilot components", () => {
         citations={citations}
         summaryText="Summary"
         workflowId="verse"
-        onExport={jest.fn()}
+        onExport={vi.fn()}
       />,
     );
 
@@ -180,14 +178,14 @@ describe("copilot components", () => {
       expect(globalThis.fetch).toHaveBeenCalledTimes(1);
     });
 
-    (globalThis.fetch as jest.Mock).mockClear();
+    (globalThis.fetch as vi.Mock).mockClear();
 
     rerender(
       <CitationList
         citations={citations.map((citation) => ({ ...citation }))}
         summaryText="Summary"
         workflowId="verse"
-        onExport={jest.fn()}
+        onExport={vi.fn()}
       />,
     );
 
@@ -209,4 +207,4 @@ describe("copilot components", () => {
     expect(screen.getByText(/Next/)).toBeInTheDocument();
   });
 });
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */

@@ -3,12 +3,12 @@ import { cookies } from "next/headers";
 import { DEFAULT_MODE_ID, RESEARCH_MODES } from "../../app/mode-config";
 import { getActiveMode } from "../../app/mode-server";
 
-jest.mock("next/headers", () => ({
-  cookies: jest.fn(),
+vi.mock("next/headers", () => ({
+  cookies: vi.fn(),
 }));
 
 describe("getActiveMode", () => {
-  const cookiesMock = cookies as unknown as jest.Mock;
+  const cookiesMock = cookies as unknown as vi.Mock;
 
   beforeEach(() => {
     cookiesMock.mockReset();

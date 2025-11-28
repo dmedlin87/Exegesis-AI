@@ -10,12 +10,9 @@ from sqlalchemy.orm import Session
 
 from exegesis.infrastructure.api.app.persistence_models import Document
 
-from exegesis.application.facades.telemetry import (
-    instrument_workflow,
-    log_workflow_event,
-    set_span_attribute,
-)
+from exegesis.application.facades.telemetry import instrument_workflow, set_span_attribute
 from .models import CorpusCurationReport
+from .types import WorkflowLoggingContext
 
 if TYPE_CHECKING:  # pragma: no cover - type checking only
     from ..trails import TrailRecorder
@@ -29,8 +26,11 @@ def run_corpus_curation(
     *,
     since: datetime | None = None,
     recorder: "TrailRecorder | None" = None,
+    logger: WorkflowLoggingContext | None = None,
 ) -> CorpusCurationReport:
     """Summarise recent corpus additions for researcher review."""
+
+    logger = logger or WorkflowLoggingContext.default()
 
     with instrument_workflow(
         "corpus_curation",
@@ -50,7 +50,7 @@ def run_corpus_curation(
         else:
             rows = session.execute(query).scalars().all()
         set_span_attribute(span, "workflow.documents_processed", len(rows))
-        log_workflow_event(
+        logger.log_event(
             "workflow.documents_loaded",
             workflow="corpus_curation",
             count=len(rows),

@@ -632,7 +632,7 @@ def chat_turn(
     serialized_intent_tags: list[dict[str, object]] | None = None
     if settings.intent_tagger_enabled:
         try:
-            tagger = get_intent_tagger(settings)
+            tagger = get_intent_tagger(session, settings)
             if tagger is not None:
                 predicted = tagger.predict(question)
                 tag_payload = IntentTagPayload(**predicted.to_payload())

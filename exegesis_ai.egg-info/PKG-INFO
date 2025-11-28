@@ -1,7 +1,7 @@
 Metadata-Version: 2.4
 Name: exegesis-ai
 Version: 0.0.0
-Summary: Theo application
+Summary: Exegesis AI application
 Requires-Python: >=3.11
 Description-Content-Type: text/markdown
 Provides-Extra: base
@@ -57,11 +57,8 @@ Requires-Dist: bertopic<1,>=0.15; extra == "ml"
 Requires-Dist: datasets<5,>=2.19; extra == "ml"
 Requires-Dist: evaluate<1,>=0.4; extra == "ml"
 Requires-Dist: FlagEmbedding<2,>=1.2; extra == "ml"
-Requires-Dist: joblib<2,>=1.3; extra == "ml"
 Requires-Dist: networkx<4,>=3.0; extra == "ml"
-Requires-Dist: numpy<3,>=1.24; extra == "ml"
 Requires-Dist: ragas<0.2,>=0.1.13; extra == "ml"
-Requires-Dist: scikit-learn<2,>=1.4; extra == "ml"
 Requires-Dist: scipy<2,>=1.10; extra == "ml"
 Requires-Dist: sentencepiece<0.3,>=0.2.0; extra == "ml"
 Requires-Dist: threadpoolctl<4,>=3.1; extra == "ml"
@@ -105,6 +102,11 @@ Stop losing citations in scattered notes and unreliable AI summaries. Exegesis A
 10. [Support & Contribution](#support--contribution)
 
 ---
+
+## Documentation
+
+- [`docs/00_DOCUMENTATION_STRATEGY.md`](docs/00_DOCUMENTATION_STRATEGY.md) outlines the only permitted `docs/` subdirectories and routing rules so agents can place new files with confidence.
+
 
 ## Why Exegesis AI
 

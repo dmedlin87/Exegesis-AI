@@ -1,6 +1,5 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 
 import DigestDashboard from "../app/admin/digests/DigestDashboard";
@@ -9,9 +8,9 @@ describe("DigestDashboard", () => {
   const baseUrl = "http://127.0.0.1:8000";
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     process.env.NEXT_PUBLIC_API_BASE_URL = baseUrl;
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
   });
 
   function okJson(data: unknown) {
@@ -51,7 +50,7 @@ describe("DigestDashboard", () => {
     };
 
     let digestCalls = 0;
-    (global.fetch as jest.Mock).mockImplementation((input: RequestInfo, init?: RequestInit) => {
+    (global.fetch as vi.Mock).mockImplementation((input: RequestInfo, init?: RequestInit) => {
       const url = typeof input === "string" ? input : input.url;
       if (url === `${baseUrl}/ai/digest` && (!init || !init.method || init.method === "GET")) {
         digestCalls += 1;
@@ -139,7 +138,7 @@ describe("DigestDashboard", () => {
       },
     ];
 
-    (global.fetch as jest.Mock).mockImplementation((input: RequestInfo, init?: RequestInit) => {
+    (global.fetch as vi.Mock).mockImplementation((input: RequestInfo, init?: RequestInit) => {
       const url = typeof input === "string" ? input : input.url;
       const method = init?.method ?? "GET";
       if (url === `${baseUrl}/ai/digest` && method === "GET") {
@@ -224,7 +223,7 @@ describe("DigestDashboard", () => {
       updated_at: "2024-03-01T00:00:00Z",
     };
 
-    (global.fetch as jest.Mock).mockImplementation((input: RequestInfo, init?: RequestInit) => {
+    (global.fetch as vi.Mock).mockImplementation((input: RequestInfo, init?: RequestInit) => {
       const url = typeof input === "string" ? input : input.url;
       const method = init?.method ?? "GET";
       if (url === `${baseUrl}/ai/digest` && method === "GET") {

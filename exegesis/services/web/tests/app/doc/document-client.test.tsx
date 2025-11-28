@@ -1,6 +1,5 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -22,7 +21,7 @@ function buildDocument(overrides: Partial<DocumentDetail> = {}): DocumentDetail 
 
 describe("DocumentClient source URL safety", () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("renders safe links for http URLs", () => {
@@ -84,7 +83,7 @@ describe("DocumentClient source URL safety", () => {
   });
 
   it("does not call the API when metadata is unchanged", async () => {
-    const fetchSpy = jest.spyOn(global, "fetch");
+    const fetchSpy = vi.spyOn(global, "fetch");
     const document = buildDocument({
       title: "Document title",
       collection: "Collection",

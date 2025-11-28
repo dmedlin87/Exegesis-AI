@@ -9,7 +9,7 @@ function createRequest(query: string, init?: { headers?: Record<string, string> 
   return { nextUrl: url, headers } as unknown as NextRequest;
 }
 
-function getFetchHeaders(fetchMock: jest.MockedFunction<typeof fetch>): Headers | undefined {
+function getFetchHeaders(fetchMock: vi.MockedFunction<typeof fetch>): Headers | undefined {
   const fetchOptions = fetchMock.mock.calls[0]?.[1] as { headers?: HeadersInit } | undefined;
   if (!fetchOptions?.headers) {
     return undefined;
@@ -28,7 +28,7 @@ describe("/api/search proxy", () => {
     } else {
       process.env.THEO_SEARCH_API_KEY = originalApiKey;
     }
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("adds an Authorization header when the API key includes a Bearer prefix", async () => {
@@ -37,7 +37,7 @@ describe("/api/search proxy", () => {
       status: 200,
       headers: { "content-type": "application/json" },
     });
-    const fetchSpy = jest.fn().mockResolvedValue(mockResponse) as jest.MockedFunction<typeof fetch>;
+    const fetchSpy = vi.fn().mockResolvedValue(mockResponse) as vi.MockedFunction<typeof fetch>;
     global.fetch = fetchSpy;
 
     const request = createRequest("q=faith");
@@ -54,7 +54,7 @@ describe("/api/search proxy", () => {
       status: 200,
       headers: { "content-type": "application/json" },
     });
-    const fetchSpy = jest.fn().mockResolvedValue(mockResponse) as jest.MockedFunction<typeof fetch>;
+    const fetchSpy = vi.fn().mockResolvedValue(mockResponse) as vi.MockedFunction<typeof fetch>;
     global.fetch = fetchSpy;
 
     const request = createRequest("q=hope");
@@ -71,7 +71,7 @@ describe("/api/search proxy", () => {
       status: 401,
       headers: { "content-type": "text/plain" },
     });
-    const fetchMock = jest.fn().mockResolvedValue(mockResponse) as jest.MockedFunction<typeof fetch>;
+    const fetchMock = vi.fn().mockResolvedValue(mockResponse) as vi.MockedFunction<typeof fetch>;
     global.fetch = fetchMock;
 
     const request = createRequest("q=love");
@@ -102,7 +102,7 @@ describe("/api/search proxy", () => {
         ...upstreamTraceHeaders,
       },
     });
-    const fetchMock = jest.fn().mockResolvedValue(mockResponse) as jest.MockedFunction<typeof fetch>;
+    const fetchMock = vi.fn().mockResolvedValue(mockResponse) as vi.MockedFunction<typeof fetch>;
     global.fetch = fetchMock;
 
     const request = createRequest("q=grace");
@@ -123,7 +123,7 @@ describe("/api/search proxy", () => {
       status: 200,
       headers: { "content-type": "application/json" },
     });
-    const fetchMock = jest.fn().mockResolvedValue(mockResponse) as jest.MockedFunction<typeof fetch>;
+    const fetchMock = vi.fn().mockResolvedValue(mockResponse) as vi.MockedFunction<typeof fetch>;
     global.fetch = fetchMock;
 
     const request = createRequest("q=grace", { headers: traceHeaders });

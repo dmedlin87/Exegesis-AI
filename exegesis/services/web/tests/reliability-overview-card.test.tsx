@@ -1,6 +1,5 @@
-/** @jest-environment jsdom */
+/** @vitest-environment jsdom */
 
-import "@testing-library/jest-dom";
 import { render, screen, within } from "@testing-library/react";
 
 import ReliabilityOverviewCard from "../app/verse/[osis]/ReliabilityOverviewCard";
@@ -9,12 +8,12 @@ describe("ReliabilityOverviewCard", () => {
   const baseUrl = "http://127.0.0.1:8000";
 
   beforeEach(() => {
-    jest.resetAllMocks();
-    global.fetch = jest.fn();
+    vi.resetAllMocks();
+    global.fetch = vi.fn();
   });
 
   it("renders snapshot content for apologetic mode", async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    (global.fetch as vi.Mock).mockResolvedValue({
       ok: true,
       json: async () => ({
         osis: "John.1.1",
@@ -50,7 +49,7 @@ describe("ReliabilityOverviewCard", () => {
   });
 
   it("renders empty state when no overview data", async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    (global.fetch as vi.Mock).mockResolvedValue({
       ok: true,
       json: async () => ({
         osis: "John.1.1",
@@ -71,7 +70,7 @@ describe("ReliabilityOverviewCard", () => {
   });
 
   it("renders error state when overview fails", async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    (global.fetch as vi.Mock).mockResolvedValue({
       ok: false,
       statusText: "Server error",
       text: async () => "Boom",
@@ -84,7 +83,7 @@ describe("ReliabilityOverviewCard", () => {
   });
 
   it("falls back to empty sections when API omits a list", async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
+    (global.fetch as vi.Mock).mockResolvedValue({
       ok: true,
       json: async () => ({
         osis: "John.1.1",
