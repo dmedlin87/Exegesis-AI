@@ -42,7 +42,7 @@ def celery_app():  # type: ignore[override]
 
 
 @pytest.mark.celery
-@pytest.mark.pgvector
+@pytest.mark.integration
 def test_process_url_retry_uses_exponential_backoff(
     monkeypatch: pytest.MonkeyPatch,
     celery_app,
@@ -123,7 +123,7 @@ def test_process_url_retry_uses_exponential_backoff(
 
 
 @pytest.mark.celery
-@pytest.mark.pgvector
+@pytest.mark.integration
 def test_topic_digest_task_is_idempotent(
     monkeypatch: pytest.MonkeyPatch,
     celery_app,

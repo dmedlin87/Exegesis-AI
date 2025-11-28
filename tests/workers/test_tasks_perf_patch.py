@@ -242,7 +242,7 @@ class TestWorkerPerformance:
             assert result["sample_size"] == 5
 
 # Performance test to measure improvements
-@pytest.mark.performance
+@pytest.mark.perf
 class TestPerformanceMetrics:
     """Tests to measure actual performance improvements."""
     

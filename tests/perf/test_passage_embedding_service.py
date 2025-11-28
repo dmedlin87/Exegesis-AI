@@ -63,7 +63,7 @@ def sqlite_session() -> Iterator[Session]:
         engine.dispose()
 
 
-@pytest.mark.performance
+@pytest.mark.perf
 def test_service_avoids_duplicate_queries(sqlite_session: Session) -> None:
     store = SQLAlchemyPassageEmbeddingStore(sqlite_session)
     service = PassageEmbeddingService(store, cache_max_size=8)
@@ -83,7 +83,7 @@ def test_service_avoids_duplicate_queries(sqlite_session: Session) -> None:
     assert initial_queries >= 1
 
 
-@pytest.mark.performance
+@pytest.mark.perf
 def test_bulk_fetch_populates_cache(sqlite_session: Session) -> None:
     store = SQLAlchemyPassageEmbeddingStore(sqlite_session)
     service = PassageEmbeddingService(store, cache_max_size=8)
