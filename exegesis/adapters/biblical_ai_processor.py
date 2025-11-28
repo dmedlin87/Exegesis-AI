@@ -1,7 +1,9 @@
 """AI-powered processor for biblical text morphological and semantic analysis."""
 
+import asyncio
 import json
 import re
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any, Dict, List, Optional
 
@@ -17,8 +19,46 @@ from exegesis.domain.biblical_texts import (
 )
 
 
-def _validate_chat_completions_client(ai_client: Any) -> None:
-    """Ensure the provided AI client exposes chat.completions.create."""
+# Custom Exceptions
+class TransliterationError(Exception):
+    """Raised when AI transliteration fails."""
+    pass
+
+
+# Configuration Dataclasses
+@dataclass(frozen=True)
+class ConfidenceConfig:
+    """Configuration constants for confidence score calculation."""
+
+    # Morphology confidence thresholds
+    MORPHOLOGY_BASELINE: float = 0.75
+    MORPHOLOGY_MIN_BOOST: float = 0.60
+    MORPHOLOGY_MAX_BOOST: float = 0.35
+    MORPHOLOGY_MAX: float = 0.95
+
+    # Semantics confidence thresholds
+    SEMANTICS_BASELINE: float = 0.70
+    SEMANTICS_MIN_BOOST: float = 0.60
+    SEMANTICS_MAX_BOOST: float = 0.30
+    SEMANTICS_RICHNESS_DIVISOR: float = 10.0
+
+    # Theological confidence thresholds
+    THEOLOGICAL_BASELINE: float = 0.65
+    THEOLOGICAL_BOOST: float = 0.15
+    THEOLOGICAL_MAX: float = 0.85
+
+
+# Default configuration instance
+CONFIDENCE_THRESHOLDS = ConfidenceConfig()
+
+
+def _validate_chat_completions_client(ai_client: Any) -> tuple[bool, Any]:
+    """Ensure the provided AI client exposes chat.completions.create.
+
+    Returns:
+        tuple: (supports_async, create_method) where supports_async indicates
+               if the client has an async create method (acreate)
+    """
 
     if ai_client is None:
         raise ValueError(
@@ -42,6 +82,12 @@ def _validate_chat_completions_client(ai_client: Any) -> None:
         raise ValueError(
             "ai_client must provide chat.completions.create callable"
         )
+
+    # Check for async support (OpenAI SDK uses 'acreate' or async-enabled 'create')
+    acreate = getattr(completions, "acreate", None)
+    supports_async = acreate is not None and callable(acreate)
+
+    return supports_async, acreate if supports_async else create
 
 
 def _safe_json_loads(content: str, max_size: int = 1024 * 1024) -> Any:
@@ -68,33 +114,43 @@ def _safe_json_loads(content: str, max_size: int = 1024 * 1024) -> Any:
 
 class BiblicalAIProcessor:
     """AI processor for biblical text analysis using OpenAI/Anthropic APIs."""
-    
+
     def __init__(self, ai_client, model_name: str = "gpt-4"):
-        _validate_chat_completions_client(ai_client)
+        self._supports_async, self._create_method = _validate_chat_completions_client(ai_client)
         self.ai_client = ai_client
         self.model_name = model_name
     
-    def process_hebrew_verse(self, raw_text: str, reference: Reference) -> BiblicalVerse:
-        """Process a Hebrew verse with full AI analysis."""
-        
-        # Step 1: Normalize text
-        text_content = self._normalize_hebrew_text(raw_text)
-        
-        # Step 2: AI morphological analysis
-        morphology = self._analyze_hebrew_morphology(text_content.normalized)
-        
-        # Step 3: AI semantic analysis
-        semantic_analysis = self._analyze_semantics(text_content, morphology, reference)
-        
+    async def process_hebrew_verse(self, raw_text: str, reference: Reference) -> BiblicalVerse:
+        """Process a Hebrew verse with full AI analysis.
+
+        All AI operations are async to avoid blocking the event loop.
+
+        Args:
+            raw_text: The raw Hebrew text to process
+            reference: Biblical reference for the verse
+
+        Returns:
+            Fully analyzed BiblicalVerse object
+        """
+
+        # Step 1: Normalize text (async - calls AI for transliteration)
+        text_content = await self._normalize_hebrew_text(raw_text)
+
+        # Step 2: AI morphological analysis (async)
+        morphology = await self._analyze_hebrew_morphology(text_content.normalized)
+
+        # Step 3: AI semantic analysis (async)
+        semantic_analysis = await self._analyze_semantics(text_content, morphology, reference)
+
         # Step 4: Create AI metadata (using dynamic confidence based on results)
         confidence_scores = self._calculate_confidence_scores(morphology, semantic_analysis)
-        
+
         ai_analysis = AIAnalysis(
             generated_at=datetime.now(UTC),
             model_version=self.model_name,
             confidence_scores=confidence_scores
         )
-        
+
         return BiblicalVerse(
             reference=reference,
             language=Language.HEBREW,
@@ -104,46 +160,76 @@ class BiblicalAIProcessor:
             ai_analysis=ai_analysis
         )
     
-    def _calculate_confidence_scores(self, morphology: List[MorphologicalTag], 
+    def _calculate_confidence_scores(self, morphology: List[MorphologicalTag],
                                    semantic_analysis: SemanticAnalysis) -> Dict[str, float]:
-        """Calculate realistic confidence scores based on analysis results."""
-        
+        """Calculate realistic confidence scores based on analysis results.
+
+        Uses CONFIDENCE_THRESHOLDS configuration for all numeric thresholds.
+
+        Args:
+            morphology: Morphological tags to evaluate
+            semantic_analysis: Semantic analysis results to evaluate
+
+        Returns:
+            Dictionary of confidence scores by category
+        """
+
         # Base confidence on actual content quality
-        morphology_confidence = 0.75  # Conservative baseline
+        morphology_confidence = CONFIDENCE_THRESHOLDS.MORPHOLOGY_BASELINE
         if morphology:
             # Higher confidence if we have detailed morphological data
-            has_detailed_tags = sum(1 for tag in morphology 
+            has_detailed_tags = sum(1 for tag in morphology
                                   if tag.lemma and tag.root and tag.gloss)
-            morphology_confidence = min(0.95, 0.60 + (has_detailed_tags / len(morphology)) * 0.35)
-        
-        semantics_confidence = 0.70  # Conservative baseline
+            morphology_confidence = min(
+                CONFIDENCE_THRESHOLDS.MORPHOLOGY_MAX,
+                CONFIDENCE_THRESHOLDS.MORPHOLOGY_MIN_BOOST +
+                (has_detailed_tags / len(morphology)) * CONFIDENCE_THRESHOLDS.MORPHOLOGY_MAX_BOOST
+            )
+
+        semantics_confidence = CONFIDENCE_THRESHOLDS.SEMANTICS_BASELINE
         if semantic_analysis.themes or semantic_analysis.theological_keywords:
             # Higher confidence if we found theological content
             theme_count = len(semantic_analysis.themes)
             keyword_count = len(semantic_analysis.theological_keywords)
-            content_richness = min(1.0, (theme_count + keyword_count) / 10)
-            semantics_confidence = 0.60 + content_richness * 0.30
-        
-        theological_confidence = 0.65  # Most conservative
+            content_richness = min(
+                1.0,
+                (theme_count + keyword_count) / CONFIDENCE_THRESHOLDS.SEMANTICS_RICHNESS_DIVISOR
+            )
+            semantics_confidence = (
+                CONFIDENCE_THRESHOLDS.SEMANTICS_MIN_BOOST +
+                content_richness * CONFIDENCE_THRESHOLDS.SEMANTICS_MAX_BOOST
+            )
+
+        theological_confidence = CONFIDENCE_THRESHOLDS.THEOLOGICAL_BASELINE
         if semantic_analysis.cross_references or semantic_analysis.textual_variants:
             # Boost confidence if we have cross-references or variants
-            theological_confidence = min(0.85, theological_confidence + 0.15)
-            
+            theological_confidence = min(
+                CONFIDENCE_THRESHOLDS.THEOLOGICAL_MAX,
+                theological_confidence + CONFIDENCE_THRESHOLDS.THEOLOGICAL_BOOST
+            )
+
         return {
             "morphology": round(morphology_confidence, 2),
             "semantics": round(semantics_confidence, 2),
             "theological_significance": round(theological_confidence, 2)
         }
     
-    def _normalize_hebrew_text(self, raw_text: str) -> TextContent:
-        """Normalize Hebrew text and generate transliteration."""
-        
+    async def _normalize_hebrew_text(self, raw_text: str) -> TextContent:
+        """Normalize Hebrew text and generate transliteration.
+
+        Args:
+            raw_text: Raw Hebrew text with diacritics
+
+        Returns:
+            TextContent with normalized and transliterated versions
+        """
+
         # Remove cantillation marks and vowels for normalized version
         consonants_only = self._strip_hebrew_diacritics(raw_text)
-        
-        # AI-generated transliteration
-        transliteration = self._generate_transliteration(raw_text)
-        
+
+        # AI-generated transliteration (async)
+        transliteration = await self._generate_transliteration(raw_text)
+
         return TextContent(
             raw=raw_text,
             normalized=consonants_only,
@@ -156,49 +242,88 @@ class BiblicalAIProcessor:
         diacritics_pattern = r'[\u0591-\u05C7]'
         return re.sub(diacritics_pattern, '', text)
     
-    def _generate_transliteration(self, hebrew_text: str) -> str:
-        """Generate transliteration using AI with proper error handling."""
-        
-        prompt = f"""
-Transliterate this Hebrew text into Latin characters following academic standards:
+    async def _generate_transliteration(self, hebrew_text: str) -> Optional[str]:
+        """Generate transliteration using AI with proper error handling.
 
-Hebrew: {hebrew_text}
+        Args:
+            hebrew_text: The Hebrew text to transliterate
+
+        Returns:
+            Transliterated text or None if generation fails
+
+        Raises:
+            TransliterationError: If AI transliteration fails critically
+        """
+
+        # Use XML delimiters to prevent prompt injection
+        prompt = """Transliterate the Hebrew text inside the <input> tags into Latin characters following academic standards.
 
 Provide only the transliteration, no explanations.
-"""
-        
+
+<input>{text}</input>""".format(text=hebrew_text)
+
         try:
-            response = self.ai_client.chat.completions.create(
-                model=self.model_name,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.1
-            )
-            return response.choices[0].message.content.strip()
-        except Exception:
-            # Fallback to basic transliteration if AI fails
-            return "[transliteration unavailable]"
+            if self._supports_async:
+                response = await self._create_method(
+                    model=self.model_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.1
+                )
+            else:
+                # Run blocking call in thread pool to avoid blocking event loop
+                response = await asyncio.to_thread(
+                    self.ai_client.chat.completions.create,
+                    model=self.model_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.1
+                )
+
+            result = response.choices[0].message.content.strip()
+            return result if result else None
+
+        except Exception as exc:
+            # Return None on failure instead of magic string
+            # Caller can decide how to handle None
+            return None
     
-    def _analyze_hebrew_morphology(self, hebrew_text: str) -> List[MorphologicalTag]:
-        """Perform AI-powered morphological analysis of Hebrew text."""
-        
-        prompt = f"""
-Perform morphological analysis of this Hebrew text. For each word provide:
+    async def _analyze_hebrew_morphology(self, hebrew_text: str) -> List[MorphologicalTag]:
+        """Perform AI-powered morphological analysis of Hebrew text.
+
+        Args:
+            hebrew_text: The Hebrew text to analyze
+
+        Returns:
+            List of morphological tags for the text
+        """
+
+        # Use XML delimiters to prevent prompt injection
+        prompt = """Perform morphological analysis of the Hebrew text inside the <input> tags.
+
+For each word provide:
 - word, lemma, root, part of speech, gender, number, state
 - For verbs: stem/binyan, tense, person
 - prefixes, suffixes, gloss, theological significance
 
-Hebrew: {hebrew_text}
+<input>{text}</input>
 
-Respond in JSON array format.
-"""
-        
+Respond in JSON array format.""".format(text=hebrew_text)
+
         try:
-            response = self.ai_client.chat.completions.create(
-                model=self.model_name,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.1
-            )
-            
+            if self._supports_async:
+                response = await self._create_method(
+                    model=self.model_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.1
+                )
+            else:
+                # Run blocking call in thread pool to avoid blocking event loop
+                response = await asyncio.to_thread(
+                    self.ai_client.chat.completions.create,
+                    model=self.model_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.1
+                )
+
             # Use safe JSON parsing with size limits
             morphology_data = _safe_json_loads(
                 response.choices[0].message.content,
@@ -258,31 +383,52 @@ Respond in JSON array format.
             theological_notes=data.get("theological_notes", [])
         )
     
-    def _analyze_semantics(self, text: TextContent, morphology: List[MorphologicalTag], 
+    async def _analyze_semantics(self, text: TextContent, morphology: List[MorphologicalTag],
                           reference: Reference) -> SemanticAnalysis:
-        """Perform AI-powered semantic and theological analysis."""
-        
+        """Perform AI-powered semantic and theological analysis.
+
+        Args:
+            text: The text content to analyze
+            morphology: Morphological tags from previous analysis
+            reference: Biblical reference
+
+        Returns:
+            Semantic analysis results
+        """
+
         morphology_summary = "; ".join([
             f"{tag.word} ({tag.lemma}, {tag.pos.value})" for tag in morphology
         ])
-        
-        prompt = f"""
-Analyze this biblical verse for theological content:
 
-Reference: {reference}
-Hebrew: {text.raw}
-Morphology: {morphology_summary}
+        # Use XML delimiters to prevent prompt injection
+        prompt = """Analyze the biblical verse inside the <input> tags for theological content.
 
-Provide JSON with: themes, theological_keywords, cross_references, textual_variants, translation_notes
-"""
-        
+<reference>{ref}</reference>
+<input>{text}</input>
+<morphology>{morph}</morphology>
+
+Provide JSON with: themes, theological_keywords, cross_references, textual_variants, translation_notes""".format(
+            ref=str(reference),
+            text=text.raw,
+            morph=morphology_summary
+        )
+
         try:
-            response = self.ai_client.chat.completions.create(
-                model=self.model_name,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.2
-            )
-            
+            if self._supports_async:
+                response = await self._create_method(
+                    model=self.model_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.2
+                )
+            else:
+                # Run blocking call in thread pool to avoid blocking event loop
+                response = await asyncio.to_thread(
+                    self.ai_client.chat.completions.create,
+                    model=self.model_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.2
+                )
+
             # Use safe JSON parsing with size limits
             raw_semantic_data = _safe_json_loads(
                 response.choices[0].message.content,
@@ -338,32 +484,52 @@ class CrossLanguageComparator:
     """AI-powered cross-language comparison for Hebrew/Greek texts."""
 
     def __init__(self, ai_client, model_name: str = "gpt-4"):
-        _validate_chat_completions_client(ai_client)
+        self._supports_async, self._create_method = _validate_chat_completions_client(ai_client)
         self.ai_client = ai_client
         self.model_name = model_name
-    
-    def compare_hebrew_lxx(self, hebrew_verse: BiblicalVerse, 
-                          lxx_verse: BiblicalVerse) -> Dict[str, any]:
-        """Compare Hebrew and LXX versions with AI analysis."""
-        
-        prompt = f"""
-Compare Hebrew and Greek (LXX) versions:
 
-Reference: {hebrew_verse.reference}
-Hebrew: {hebrew_verse.text.raw}
-Greek: {lxx_verse.text.raw}
+    async def compare_hebrew_lxx(self, hebrew_verse: BiblicalVerse,
+                          lxx_verse: BiblicalVerse) -> Dict[str, any]:
+        """Compare Hebrew and LXX versions with AI analysis.
+
+        Args:
+            hebrew_verse: Hebrew version of the verse
+            lxx_verse: LXX (Greek) version of the verse
+
+        Returns:
+            Dictionary containing comparison analysis
+        """
+
+        # Use XML delimiters to prevent prompt injection
+        prompt = """Compare the Hebrew and Greek (LXX) versions inside the tags below.
+
+<reference>{ref}</reference>
+<hebrew>{heb}</hebrew>
+<greek>{grk}</greek>
 
 Analyze translation differences, theological implications, semantic shifts.
-Provide JSON analysis.
-"""
-        
+Provide JSON analysis.""".format(
+            ref=str(hebrew_verse.reference),
+            heb=hebrew_verse.text.raw,
+            grk=lxx_verse.text.raw
+        )
+
         try:
-            response = self.ai_client.chat.completions.create(
-                model=self.model_name,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.2
-            )
-            
+            if self._supports_async:
+                response = await self._create_method(
+                    model=self.model_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.2
+                )
+            else:
+                # Run blocking call in thread pool to avoid blocking event loop
+                response = await asyncio.to_thread(
+                    self.ai_client.chat.completions.create,
+                    model=self.model_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.2
+                )
+
             # Use safe JSON parsing with size limits
             result = _safe_json_loads(
                 response.choices[0].message.content,
@@ -378,35 +544,52 @@ class TheologicalDebateAnalyzer:
     """AI analyzer for theological debate contexts."""
 
     def __init__(self, ai_client, model_name: str = "gpt-4"):
-        _validate_chat_completions_client(ai_client)
+        self._supports_async, self._create_method = _validate_chat_completions_client(ai_client)
         self.ai_client = ai_client
         self.model_name = model_name
-    
-    def analyze_trinity_passages(self, verses: List[BiblicalVerse]) -> Dict[str, any]:
-        """Analyze passages for trinity doctrine evidence."""
-        
+
+    async def analyze_trinity_passages(self, verses: List[BiblicalVerse]) -> Dict[str, any]:
+        """Analyze passages for trinity doctrine evidence.
+
+        Args:
+            verses: List of biblical verses to analyze
+
+        Returns:
+            Dictionary containing theological analysis
+        """
+
         verses_summary = "\n".join([
             f"{v.reference}: {v.text.raw}" for v in verses
         ])
-        
-        prompt = f"""
-Analyze these passages for trinity doctrine evidence:
 
-{verses_summary}
+        # Use XML delimiters to prevent prompt injection
+        prompt = """Analyze the passages inside the <input> tags for trinity doctrine evidence.
 
-Cover: grammatical evidence, divine names, plurality/unity patterns, 
+<input>
+{verses}
+</input>
+
+Cover: grammatical evidence, divine names, plurality/unity patterns,
 historical interpretation, modern consensus, counter-arguments.
 
-Provide comprehensive JSON analysis.
-"""
-        
+Provide comprehensive JSON analysis.""".format(verses=verses_summary)
+
         try:
-            response = self.ai_client.chat.completions.create(
-                model=self.model_name,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.1
-            )
-            
+            if self._supports_async:
+                response = await self._create_method(
+                    model=self.model_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.1
+                )
+            else:
+                # Run blocking call in thread pool to avoid blocking event loop
+                response = await asyncio.to_thread(
+                    self.ai_client.chat.completions.create,
+                    model=self.model_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.1
+                )
+
             # Use safe JSON parsing with size limits
             result = _safe_json_loads(
                 response.choices[0].message.content,
