@@ -67,7 +67,7 @@ class EvidenceDossier(Base):
         _JSONB, nullable=False, default=list
     )
 
-    metadata: Mapped[dict[str, object] | None] = mapped_column(
+    meta: Mapped[dict[str, object] | None] = mapped_column(
         _JSONB, nullable=True
     )
 
