@@ -14,6 +14,7 @@ This document tracks the corrections and enhancements made to the Feature Roadma
 **After:** `exegesis/services/web/app/components/`
 
 **Files Updated:**
+
 - `docs/FEATURE_ROADMAP.md`
 - `docs/features/FEATURE_1_3_CORE_RESEARCH.md`
 - `docs/features/FEATURE_4_5_AI_COLLAB.md`
@@ -33,19 +34,23 @@ This document tracks the corrections and enhancements made to the Feature Roadma
 Documented freely available biblical language resources suitable for personal/hobby use:
 
 ### Biblical Language Resources
+
 - **OSHB (Open Scriptures Hebrew Bible)** - Public domain Hebrew text with morphology
 - **SBLGNT (SBL Greek NT)** - Free Greek text with morphological tags
 - **Berean Interlinear** - Public domain interlinear data
 
 ### Lexicons
+
 - **Strong's Concordance** - Public domain (1890)
 - **Abbott-Smith Greek Lexicon** - Public domain
 - **BDB Hebrew Lexicon** - Public domain
 
 ### Cross-References
+
 - **OpenBible.info** - 63,000+ cross-references (CC BY license)
 
 ### Translations
+
 - KJV, ASV, WEB, YLT - All public domain
 
 **Impact:** Feature 2 (Original Language Toolkit) is now feasible without commercial licensing.
@@ -59,6 +64,7 @@ Documented freely available biblical language resources suitable for personal/ho
 ### Phase 0 Tasks
 
 #### 0.1 Canon Service Layer (7 days)
+
 - Build foundational verse repository infrastructure
 - Create `exegesis/application/canon/` service structure
 - Implement OSIS verse lookup
@@ -67,6 +73,7 @@ Documented freely available biblical language resources suitable for personal/ho
 **Blocks:** Feature 1
 
 #### 0.2 Multi-User Authentication (10 days)
+
 - User registration and login
 - JWT token management
 - User table and migrations
@@ -75,6 +82,7 @@ Documented freely available biblical language resources suitable for personal/ho
 **Blocks:** Features 5, 8
 
 #### 0.3 Biblical Language Data Ingestion (14 days)
+
 - Download and parse OSHB/SBLGNT data
 - Ingest Strong's lexicon
 - Load OpenBible cross-references
@@ -84,6 +92,7 @@ Documented freely available biblical language resources suitable for personal/ho
 **Blocks:** Features 2, 3
 
 #### 0.4 Database Schema Audit (5 days)
+
 - Document existing schema
 - Plan migration strategy
 - Ensure backward compatibility
@@ -98,6 +107,7 @@ Documented freely available biblical language resources suitable for personal/ho
 **With Phase 0:** ~165 days (8 months total)
 
 ### Specific Changes
+
 - Feature 2 (Original Language Toolkit): 15 → 18 days (+3 days for data ingestion complexity)
 
 ---
@@ -105,12 +115,14 @@ Documented freely available biblical language resources suitable for personal/ho
 ## 5. Updated Dependencies
 
 **Before:**
+
 - Feature 1: "Canon service, verse repository"
 - Feature 2: "Hebrew WLC data, lexicon data"
 - Feature 5: "User auth, WebSocket"
 - Feature 8: "User auth"
 
 **After:**
+
 - Feature 1: "Canon service, verse repository (Phase 0)"
 - Feature 2: "OSHB/SBLGNT data (free), lexicon ingestion"
 - Feature 5: "User auth system (Phase 0), WebSocket"
@@ -128,7 +140,8 @@ Documented freely available biblical language resources suitable for personal/ho
 
 ## What Was NOT Changed
 
-### Preserved as-is:
+### Preserved as-is
+
 - ✅ API endpoint specifications
 - ✅ Database schema designs
 - ✅ Service layer architecture
@@ -136,7 +149,8 @@ Documented freely available biblical language resources suitable for personal/ho
 - ✅ Feature priorities and scoping
 - ✅ Technical implementation details in feature specs
 
-### Intentionally Deferred:
+### Intentionally Deferred
+
 - Algorithm optimizations (e.g., word alignment in Feature 1)
 - Specific technology choices (D3.js vs alternatives)
 - WebSocket vs polling decisions (Feature 5)
@@ -149,16 +163,19 @@ Documented freely available biblical language resources suitable for personal/ho
 ## Recommendations for Next Steps
 
 ### Immediate (This Week)
+
 1. Review updated roadmap for approval
 2. Audit existing database schema (Phase 0.4)
 3. Verify current authentication infrastructure
 
 ### Short-Term (Weeks 1-2)
+
 1. Begin Phase 0.1: Canon Service Layer
 2. Download sample OSHB/SBLGNT datasets
 3. Create initial data ingestion script prototype
 
 ### Medium-Term (Month 1)
+
 1. Complete Phase 0 prerequisites
 2. Test data ingestion pipeline
 3. Validate authentication system readiness
@@ -167,12 +184,14 @@ Documented freely available biblical language resources suitable for personal/ho
 
 ## Risk Adjustments
 
-### Risks Mitigated:
+### Risks Mitigated
+
 - ✅ Data licensing concerns resolved (all sources are free/open)
 - ✅ Frontend architecture mismatch corrected
 - ✅ Missing infrastructure now identified and planned
 
-### Remaining Risks:
+### Remaining Risks
+
 - ⚠️ Data ingestion complexity may exceed 14-day estimate
 - ⚠️ Multi-user auth may require more than 10 days if complex RBAC needed
 - ⚠️ Integration with existing authentication may have hidden complexity
@@ -196,6 +215,7 @@ Documented freely available biblical language resources suitable for personal/ho
 ## Validation
 
 ### Path Corrections Verified
+
 ```bash
 $ grep -c "exegesis/services/web/app" docs/features/*.md
 FEATURE_1_3_CORE_RESEARCH.md:3
@@ -205,7 +225,9 @@ FEATURE_8_10_ENGAGEMENT_UX.md:3
 ```
 
 ### Data Sources Verified
+
 All listed resources confirmed to be:
+
 - Freely available for download
 - Suitable for personal/hobby use
 - No commercial licensing required

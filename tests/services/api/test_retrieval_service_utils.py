@@ -17,8 +17,8 @@ from exegesis.infrastructure.api.app.infra.retrieval_service import (
 @pytest.mark.parametrize(
     "reference, expected",
     [
-        ("models:/theo/reranker@Production/some/path", "Production"),
-        ("models:/theo/reranker/Production", "Production"),
+        ("models:/exegesis/reranker@Production/some/path", "Production"),
+        ("models:/exegesis/reranker/Production", "Production"),
         ("runs:/1234abcd/artifacts/model.joblib", "model.joblib"),
         ("/models/reranker.bin", "reranker.bin"),
         (None, None),
@@ -34,14 +34,14 @@ def test_format_reranker_header_handles_various_inputs(
 
 def test_iter_reranker_references_prioritises_registry_then_files() -> None:
     settings = Settings()
-    settings.reranker_model_registry_uri = "models:/theo/reranker@Production"
+    settings.reranker_model_registry_uri = "models:/exegesis/reranker@Production"
     settings.reranker_model_path = "/path/to/model.bin"
     settings.reranker_model_sha256 = "abc123"
 
     references = _iter_reranker_references(settings)
 
     assert references == [
-        ("models:/theo/reranker@Production", None),
+        ("models:/exegesis/reranker@Production", None),
         ("/path/to/model.bin", "abc123"),
     ]
 

@@ -9,6 +9,7 @@ This document provides complete context for AI agents to continue development of
 **Exegesis AI** is an evidence-first theological research platform combining RAG (Retrieval-Augmented Generation), auto-discovery, and agent-based reasoning to help users explore biblical texts and theological documents.
 
 **Tech Stack:**
+
 - Frontend: Next.js 14 (App Router), React, TypeScript
 - Backend: FastAPI, Python 3.12
 - Database: PostgreSQL + pgvector
@@ -20,6 +21,7 @@ This document provides complete context for AI agents to continue development of
 ## Architecture Patterns
 
 ### Hexagonal Architecture
+
 The codebase follows hexagonal (ports & adapters) architecture:
 
 ```
@@ -37,6 +39,7 @@ theo/
 ```
 
 **Key Principles:**
+
 - Domain layer has no external dependencies
 - Application layer orchestrates domain logic
 - Adapters handle external systems
@@ -60,24 +63,24 @@ class XyzDiscovery:
 
 class XyzDiscoveryEngine:
     """Engine for detecting XYZ patterns."""
-    
+
     def __init__(self, *, param1: type = default):
         """Initialize with configuration."""
         self.param1 = param1
-    
+
     def detect(self, documents: Sequence[DocumentEmbedding]) -> list[XyzDiscovery]:
         """Detect patterns and return discoveries."""
         # 1. Validate input
         if len(documents) < min_required:
             return []
-        
+
         # 2. Run detection algorithm
         results = self._run_detection(documents)
-        
+
         # 3. Filter and rank
         filtered = [r for r in results if r.confidence >= threshold]
         filtered.sort(key=lambda x: x.confidence, reverse=True)
-        
+
         # 4. Return top N
         return filtered[:max_results]
 ```
@@ -89,12 +92,12 @@ class XyzDiscoveryEngine:
 
 def refresh_user_discoveries(self, user_id: str) -> list[Discovery]:
     documents = self._load_document_embeddings(user_id)
-    
+
     # Run all engines
     pattern_discoveries = self.pattern_engine.detect(documents)
     contradiction_discoveries = self.contradiction_engine.detect(documents)
     xyz_discoveries = self.xyz_engine.detect(documents)  # Add new engine
-    
+
     # Delete old discoveries
     self.session.execute(
         delete(Discovery).where(
@@ -106,14 +109,14 @@ def refresh_user_discoveries(self, user_id: str) -> list[Discovery]:
             ])
         )
     )
-    
+
     # Persist all discoveries
     all_discoveries = (
-        pattern_discoveries + 
-        contradiction_discoveries + 
+        pattern_discoveries +
+        contradiction_discoveries +
         xyz_discoveries  # Add new discoveries
     )
-    
+
     for discovery in all_discoveries:
         record = Discovery(
             user_id=user_id,
@@ -127,7 +130,7 @@ def refresh_user_discoveries(self, user_id: str) -> list[Discovery]:
             created_at=datetime.now(UTC),
         )
         self.session.add(record)
-    
+
     self.session.commit()
     return all_discoveries
 ```
@@ -139,6 +142,7 @@ def refresh_user_discoveries(self, user_id: str) -> list[Discovery]:
 ### Python
 
 **Type Hints:**
+
 ```python
 # Always use type hints
 def function(param: str, optional: int | None = None) -> list[str]:
@@ -149,6 +153,7 @@ from __future__ import annotations
 ```
 
 **Imports:**
+
 ```python
 # Standard library
 from __future__ import annotations
@@ -166,24 +171,26 @@ from ..models import Discovery
 ```
 
 **Docstrings:**
+
 ```python
 def function(param: str) -> int:
     """Short description.
-    
+
     Longer description if needed.
-    
+
     Args:
         param: Description of parameter
-        
+
     Returns:
         Description of return value
-        
+
     Raises:
         ValueError: When something goes wrong
     """
 ```
 
 **Error Handling:**
+
 ```python
 # Specific exceptions
 try:
@@ -196,6 +203,7 @@ except SpecificError as exc:
 ### TypeScript/React
 
 **Component Structure:**
+
 ```tsx
 // Use CSS modules
 import styles from './Component.module.css';
@@ -207,7 +215,7 @@ interface ComponentProps {
 
 export function Component({ required, optional = 0 }: ComponentProps) {
   const [state, setState] = useState<string>('');
-  
+
   return (
     <div className={styles.container}>
       {/* Content */}
@@ -217,6 +225,7 @@ export function Component({ required, optional = 0 }: ComponentProps) {
 ```
 
 **API Calls:**
+
 ```tsx
 // Use fetch with proper error handling
 async function fetchData() {
@@ -226,11 +235,11 @@ async function fetchData() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Failed to fetch:', error);
@@ -275,7 +284,7 @@ def test_detect_with_valid_input(sample_documents):
     """Test detection with valid documents."""
     engine = XyzDiscoveryEngine()
     discoveries = engine.detect(sample_documents)
-    
+
     assert len(discoveries) > 0
     assert discoveries[0].confidence >= 0.0
     assert discoveries[0].confidence <= 1.0
@@ -284,7 +293,7 @@ def test_detect_with_insufficient_documents():
     """Test detection fails gracefully with too few documents."""
     engine = XyzDiscoveryEngine()
     discoveries = engine.detect([])
-    
+
     assert discoveries == []
 
 @pytest.mark.slow
@@ -303,16 +312,16 @@ def test_discovery_refresh_end_to_end(session, user_id):
     """Test full discovery refresh flow."""
     # 1. Setup: Create test documents
     documents = create_test_documents(session, user_id)
-    
+
     # 2. Execute: Refresh discoveries
     discovery_repo = SQLAlchemyDiscoveryRepository(session)
     document_repo = SQLAlchemyDocumentRepository(session)
     service = DiscoveryService(discovery_repo, document_repo)
     discoveries = service.refresh_user_discoveries(user_id)
-    
+
     # 3. Assert: Verify results
     assert len(discoveries) > 0
-    
+
     # 4. Verify database state
     db_discoveries = session.query(Discovery).filter_by(user_id=user_id).all()
     assert len(db_discoveries) == len(discoveries)
@@ -333,7 +342,7 @@ from .base import Base
 
 class Discovery(Base):
     __tablename__ = "discoveries"
-    
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String, nullable=False, index=True)
     discovery_type = Column(String, nullable=False, index=True)
@@ -395,10 +404,10 @@ def list_xyz(
 ) -> list[XyzResponse]:
     """List XYZ resources."""
     user_id = principal["subject"]
-    
+
     # Query database
     results = query_xyz(session, user_id, filter_param)
-    
+
     # Convert to response models
     return [XyzResponse.model_validate(r) for r in results]
 
@@ -410,10 +419,10 @@ def create_xyz(
 ) -> XyzResponse:
     """Create new XYZ resource."""
     user_id = principal["subject"]
-    
+
     # Validate and create
     xyz = create_xyz_resource(session, user_id, request)
-    
+
     return XyzResponse.model_validate(xyz)
 ```
 
@@ -434,7 +443,7 @@ class XyzResponse(BaseModel):
     id: int
     name: str
     created_at: str
-    
+
     model_config = {"from_attributes": True}  # Enable ORM mode
 ```
 
@@ -447,11 +456,12 @@ class XyzResponse(BaseModel):
 **Problem:** Loading large ML models on every request
 
 **Solution:** Lazy loading with caching
+
 ```python
 class Engine:
     def __init__(self):
         self._model = None
-    
+
     def _load_model(self):
         if self._model is None:
             self._model = load_expensive_model()
@@ -462,6 +472,7 @@ class Engine:
 **Problem:** Loading all embeddings into memory
 
 **Solution:** Batch processing and streaming
+
 ```python
 def process_documents(documents):
     batch_size = 100
@@ -475,6 +486,7 @@ def process_documents(documents):
 **Problem:** Not closing sessions properly
 
 **Solution:** Use context managers
+
 ```python
 with get_session() as session:
     # Work with session
@@ -486,6 +498,7 @@ with get_session() as session:
 **Problem:** Prop drilling and scattered state
 
 **Solution:** Use React Context or state management library
+
 ```tsx
 // Create context
 const DiscoveryContext = createContext<DiscoveryContextType | null>(null);
@@ -511,11 +524,13 @@ function Component() {
 ## Development Workflow
 
 ### 1. Create Feature Branch
+
 ```bash
 git checkout -b feature/gap-analysis
 ```
 
 ### 2. Implement Feature
+
 - Write tests first (TDD)
 - Implement domain logic
 - Integrate into service layer
@@ -524,6 +539,7 @@ git checkout -b feature/gap-analysis
 - Write documentation
 
 ### 3. Run Tests
+
 ```bash
 # Unit tests
 pytest tests/domain/discoveries/test_gap_engine.py -v
@@ -539,17 +555,20 @@ pytest tests/ --cov=theo --cov-report=html
 ```
 
 ### 4. Type Checking
+
 ```bash
 mypy theo/
 ```
 
 ### 5. Linting
+
 ```bash
 ruff check theo/
 ruff format theo/
 ```
 
 ### 6. Manual Testing
+
 ```bash
 # Start services
 .\start-Exegesis AI.ps1
@@ -562,6 +581,7 @@ curl http://localhost:8000/api/discoveries
 ```
 
 ### 7. Documentation
+
 - Update relevant .md files
 - Add docstrings to new functions
 - Update HANDOFF documents if needed
@@ -614,18 +634,21 @@ npm run dev
 ## Debugging Tips
 
 ### 1. Enable Debug Logging
+
 ```python
 import logging
 logging.basicConfig(level=logging.DEBUG)
 ```
 
 ### 2. Use IPython for Interactive Debugging
+
 ```python
 # Add breakpoint
 import IPython; IPython.embed()
 ```
 
 ### 3. Check Database State
+
 ```bash
 # Connect to database
 psql $DATABASE_URL
@@ -635,12 +658,14 @@ SELECT id, discovery_type, title, confidence FROM discoveries WHERE user_id = 't
 ```
 
 ### 4. Inspect API Requests
+
 ```bash
 # Use httpie for better formatting
 http GET localhost:8000/api/discoveries Authorization:"Bearer $TOKEN"
 ```
 
 ### 5. Frontend Debugging
+
 ```tsx
 // Use React DevTools
 console.log('State:', state);
@@ -654,6 +679,7 @@ console.log('State:', state);
 ## Key Dependencies
 
 ### Python
+
 - `fastapi` - Web framework
 - `sqlalchemy` - ORM
 - `pydantic` - Data validation
@@ -664,6 +690,7 @@ console.log('State:', state);
 - `apscheduler` - Task scheduling
 
 ### TypeScript/React
+
 - `next` - React framework
 - `react` - UI library
 - `typescript` - Type safety
@@ -674,6 +701,7 @@ console.log('State:', state);
 ## Resources
 
 ### Documentation
+
 - `docs/INDEX.md` - Master documentation index
 - `docs/AGENT_AND_PROMPTING_GUIDE.md` - Agent architecture
 - `docs/DISCOVERY_FEATURE.md` - Discovery system spec
@@ -681,17 +709,19 @@ console.log('State:', state);
 - `HANDOFF_SESSION_2025_10_15.md` - Latest session summary
 
 ### Code Examples
+
 - `theo/domain/discoveries/engine.py` - Pattern detection (reference)
 - `theo/domain/discoveries/contradiction_engine.py` - Contradiction detection (reference)
 - `theo/infrastructure/api/app/discoveries/service.py` - Service integration (reference)
 
 ### External Resources
-- FastAPI docs: https://fastapi.tiangolo.com
-- SQLAlchemy docs: https://docs.sqlalchemy.org
-- HuggingFace docs: https://huggingface.co/docs
-- Next.js docs: https://nextjs.org/docs
+
+- FastAPI docs: <https://fastapi.tiangolo.com>
+- SQLAlchemy docs: <https://docs.sqlalchemy.org>
+- HuggingFace docs: <https://huggingface.co/docs>
+- Next.js docs: <https://nextjs.org/docs>
 
 ---
 
-**Last Updated:** 2025-01-15  
+**Last Updated:** 2025-01-15
 **For Questions:** See documentation in `docs/` directory

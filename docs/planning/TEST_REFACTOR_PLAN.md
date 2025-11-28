@@ -225,6 +225,34 @@ _SUITE_CONFIG = {
 2. Fix underlying issues or delete tests
 3. Remove marker from `pyproject.toml`
 
+### Suite/marker to refactor map (target state)
+
+- **integration (db/schema)** – DB-backed tests in `tests/api`, `tests/ingest`, and parts of `tests/workers` that rely on real migrations.
+  - **Primary fixtures:** `integration_engine`, `integration_session`, `db_transaction` → converge on `sqlite_template` / `shared_engine` / `db_session` in PR 2.1.
+  - **PRs:** 2.1 (database fixtures), 2.2 (clients), 3.1 (marker aliases/flag wiring).
+- **pgvector** – Heavy Postgres+pgvector tests (retrieval, ingestion, embeddings) using the Testcontainer.
+  - **Primary fixtures:** `pgvector_db`, `pgvector_engine`, `integration_session`.
+  - **PRs:** 2.1 (shared DB fixtures), 3.1 (implies `integration`), 4.1 (directory cleanup if any pgvector-only dirs are empty).
+- **slow** – Long-running tests (LLM calls, full RAG/e2e scenarios).
+  - **Primary areas:** `tests/api/test_ai_router.py`, `tests/api/test_rag_guardrails.py`, `tests/api/test_ai_watchlists.py`.
+  - **PRs:** 5.1/5.2 (large-file splits), 3.1 (marker description only).
+- **celery** – Worker/Celery tests that require the Celery stub and worker fixtures.
+  - **Primary fixtures:** `_configure_celery_for_tests`, `worker_engine`, `worker_stubs`.
+  - **PRs:** 1.1 (Celery stub extraction), 4.1 (remove unused worker dirs if any), 3.1 (fold into `integration` by default).
+- **e2e** – End-to-end API tests.
+  - **Primary areas:** `tests/api/e2e/`, Playwright suites under `services/web/tests/e2e/` (not refactored here, but coordinated).
+  - **PRs:** 5.1/5.2 (if e2e tests live in large API files), 4.2 (directory audit).
+- **perf / performance** – Performance-focused suites.
+  - **PRs:** 3.1 (marker consolidation to `perf`), documentation updates in `docs/testing/pytest_performance.md`.
+- **gpu** – GPU-required tests.
+  - **PRs:** 3.1 (no structural change; ensure clearly documented as opt-in only).
+- **contract** – API schema/contract tests in `tests/contracts/`.
+  - **PRs:** 4.2 (keep directory but ensure discoverability), potential follow-up in a separate API contract plan.
+- **redteam** – OWASP/LLM security and adversarial tests.
+  - **PRs:** 3.1 (marker description only), future hardening work tracked in red-team specific docs.
+- **flaky** – Tests explicitly marked as unstable.
+  - **PRs:** 3.2 (remove marker after fixing or deleting tests).
+
 ### Phase 4: Directory Cleanup (Week 2)
 
 #### PR 4.1: Remove Empty Directories
@@ -271,6 +299,43 @@ tests/api/ingest/
 ├── test_ingestion_common.py   # Shared validation tests
 └── conftest.py                # Ingestion-specific fixtures
 ```
+
+---
+
+## How to Run Each Slice (using markers & paths)
+
+These commands describe how developers should run the major slices **after** the refactor, using the consolidated markers:
+
+- **Fast unit & API tests (default local run)**
+  - Scope: everything that does **not** require Postgres/pgvector, Celery, or long-running ML.
+  - Command:
+    - `pytest tests -m "not integration and not pgvector and not slow and not redteam"`
+- **DB-backed integration tests (SQLite/Postgres)**
+  - Scope: tests that hit the real schema via `db_session` / `integration_session`.
+  - Commands:
+    - `pytest tests -m integration`
+    - Optionally `pytest tests/api tests/ingest -m integration` for API + ingest only.
+- **Postgres+pgvector tests**
+  - Scope: retrieval/ingest tests that spin up the pgvector Testcontainer.
+  - Command:
+    - `pytest tests -m pgvector`
+- **Worker/Celery tests**
+  - Scope: ingestion workers and background tasks using the Celery stub.
+  - Command:
+    - `pytest tests/workers -m integration`
+- **End-to-end API tests**
+  - Scope: high-level API flows that simulate full user journeys.
+  - Command:
+    - `pytest tests/api -m e2e`
+- **Performance and GPU tests**
+  - Scope: heavy perf and GPU-only suites, run on demand or in nightly CI.
+  - Commands:
+    - `pytest tests -m perf`
+    - `pytest tests -m gpu`
+- **Red-team / security regression suite**
+  - Scope: adversarial/OWASP-style tests.
+  - Command:
+    - `pytest tests -m redteam`
 
 ---
 

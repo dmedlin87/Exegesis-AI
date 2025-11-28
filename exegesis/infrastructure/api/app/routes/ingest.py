@@ -160,7 +160,7 @@ def _safe_cleanup_temp_directory(tmp_dir: Path) -> None:
                     file_path.unlink(missing_ok=True)
                 except OSError:
                     pass  # Best effort file cleanup
-        
+
         # Try simple directory removal first
         tmp_dir.rmdir()
     except OSError:
@@ -257,7 +257,7 @@ async def ingest_file(
 ) -> DocumentIngestResponse:
     """Accept a file upload and synchronously process it into passages."""
 
-    tmp_dir = Path(tempfile.mkdtemp(prefix="theo-ingest-"))
+    tmp_dir = Path(tempfile.mkdtemp(prefix="exegesis-ingest-"))
     tmp_path = _unique_safe_path(tmp_dir, file.filename, "upload.bin")
     settings = get_settings()
 
@@ -496,7 +496,7 @@ async def ingest_audio(
         enriched_frontmatter.setdefault("source_type", source_type)
 
         # Create temp file
-        tmp_dir = Path(tempfile.mkdtemp(prefix="theo-ingest-"))
+        tmp_dir = Path(tempfile.mkdtemp(prefix="exegesis-ingest-"))
         tmp_path = _unique_safe_path(tmp_dir, audio.filename, "audio.bin")
         settings = get_settings()
         limit = getattr(settings, "ingest_upload_max_bytes", None)

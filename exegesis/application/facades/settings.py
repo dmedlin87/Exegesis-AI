@@ -1,4 +1,4 @@
-"""Application configuration for the Theo Engine API."""
+"""Application configuration for the Exegesis AI API."""
 from __future__ import annotations
 
 import base64

@@ -28,6 +28,15 @@ This document distills the essential architecture, conventions, and active surfa
 3. **Observe type standards** in both Python (`mypy.ini`, `typing-standards.md`) and TypeScript (`theo/services/web` uses strict TypeScript and CSS modules).
 4. **Document changes** by updating [`CHANGELOG.md`](CHANGELOG.md) and the archive directories when you complete a handoff or retire docs.
 
+## Test Suite & Fixtures Overview
+
+- **Markers & suites** – Pytest markers such as `integration`, `slow`, `pgvector`, `schema`, `no_auth_override`, `reset_state`, and `redteam` are declared under `[tool.pytest.ini_options]` in `pyproject.toml` and wired through `_SUITE_CONFIG` in `tests/conftest.py`.
+- **Global test hooks** – `tests/conftest.py` registers plugins (e.g. `pytest-timeout`, `pytest-randomly`, `celery.contrib.pytest`), auto-adds suite fixtures during collection, installs a deterministic embedding stub, and exposes `reset_global_state` to clear engines, settings caches, and telemetry between tests.
+- **API tests** – `tests/api/conftest.py` provides `api_test_client`, which uses a per-test SQLite copy of a migrated template database and overrides `get_session`. Authentication is bypassed by default; apply `@pytest.mark.no_auth_override` to exercise real auth flows.
+- **Postgres/pgvector integration tests** – `tests/fixtures/pgvector.py` and `tests/conftest.py::pgvector_db` provision a Postgres+pgvector Testcontainer, prepare a template schema, and clone databases for `integration_session` with nested transactions and savepoint-based rollback.
+- **Worker & ingestion tests** – `tests/workers/conftest.py` configures Celery for eager, in-process execution and stubs ingestion/search/citation dependencies; `tests/ingest/conftest.py` clones pgvector databases for pipeline tests and provides `pipeline_session_factory` with transaction rollback, plus performance stubs for `pythonbible`.
+- **Domain & application tests** – `tests/factories/application.py::isolated_application_container` and `tests/conftest.py::application_container` yield fresh `ApplicationContainer` instances with overridable factories; `tests/fixtures/research.py` supplies in-memory SQLite sessions and persisted `ResearchNote` fixtures for domain-level tests.
+
 ## Current Priorities
 
 - **Stabilize contradiction seed migrations, harden ingest error handling, and repair router inflight deduplication.** The concrete tasks and references are tracked in [`docs/planning/SIMPLIFICATION_PLAN.md`](docs/planning/SIMPLIFICATION_PLAN.md).

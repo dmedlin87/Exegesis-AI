@@ -343,7 +343,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     set_application_resolver(lambda: dependency_container)
     set_llm_registry_saver(save_llm_registry)
 
-    app = FastAPI(title="Theo Engine API", version="0.2.0", lifespan=lifespan)
+    app = FastAPI(title="Exegesis AI API", version="0.2.0", lifespan=lifespan)
 
     app.state.telemetry_provider = telemetry_provider
 
