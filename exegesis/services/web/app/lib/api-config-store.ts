@@ -11,6 +11,10 @@ let cachedCredentials: ApiCredentials | null = null;
 let cachedCryptoKey: CryptoKey | null = null;
 let cachedCryptoPassphrase: string | null = null;
 
+type WindowWithExegesisPassphrase = Window & {
+  EXEGESIS_API_ENCRYPTION_PASSPHRASE?: string;
+};
+
 type RuntimeCryptoContext = {
   crypto: Crypto;
   passphrase: string;
@@ -21,7 +25,7 @@ function getRuntimeCrypto(): RuntimeCryptoContext | null {
     return null;
   }
 
-  const runtimePassphrase = (window as any)?.EXEGESIS_API_ENCRYPTION_PASSPHRASE;
+  const runtimePassphrase = (window as WindowWithExegesisPassphrase).EXEGESIS_API_ENCRYPTION_PASSPHRASE;
   if (
     typeof runtimePassphrase !== "string" ||
     runtimePassphrase.length < MIN_PASSPHRASE_LENGTH

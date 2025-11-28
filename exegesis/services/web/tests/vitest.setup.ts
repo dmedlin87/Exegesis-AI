@@ -18,7 +18,10 @@ class MockResizeObserver {
   disconnect(): void {}
 }
 
+type GlobalWithMockResizeObserver = typeof globalThis & {
+  ResizeObserver?: typeof MockResizeObserver;
+};
+
 if (!globalThis.ResizeObserver) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (globalThis as any).ResizeObserver = MockResizeObserver;
+  (globalThis as GlobalWithMockResizeObserver).ResizeObserver = MockResizeObserver;
 }

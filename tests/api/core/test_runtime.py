@@ -1,11 +1,9 @@
 """Tests for the application runtime facade."""
 from __future__ import annotations
 
-import importlib
-
 import pytest
 
-from exegesis.application.facades import runtime as facades_runtime
+from tests.api.core import reload_facade
 
 
 def test_allow_insecure_startup_requires_non_production_env(
@@ -13,7 +11,7 @@ def test_allow_insecure_startup_requires_non_production_env(
 ) -> None:
     """The runtime facade should restrict insecure startup to dev environments."""
 
-    module = importlib.reload(facades_runtime)
+    module = reload_facade("exegesis.application.facades.runtime")
     module.allow_insecure_startup.cache_clear()
 
     # Clear all env vars that _resolve_environment checks (in priority order)

@@ -131,13 +131,13 @@ export function useSessionRestoration(
           ? error.message
           : "Failed to restore session";
 
-        console.warn("Session restoration failed:", error);
+        console.error("Session restoration failed:", error);
         dispatch({ type: "RESTORATION_ERROR", error: errorMessage });
 
         // Attempt retry with exponential backoff
         if (canRetry && restorationAttempts < RETRY_DELAYS.length) {
           const delay = RETRY_DELAYS[restorationAttempts];
-          console.log(`Retrying session restoration in ${delay}ms (attempt ${restorationAttempts + 1})`);
+          console.error(`Retrying session restoration in ${delay}ms (attempt ${restorationAttempts + 1})`);
 
           retryTimeoutRef.current = setTimeout(() => {
             if (!cancelled) {

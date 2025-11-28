@@ -4,6 +4,8 @@
       "Bash(pytest:*)",
       "Bash(python -m pytest:*)",
       "Bash(python:*)"
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)"
     ],
     "deny": [],
     "ask": []

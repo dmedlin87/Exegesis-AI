@@ -300,24 +300,43 @@ class LLMRouterService:
                         workflow=workflow,
                     )
                 else:
-                    stale_status = inflight.status
-                    owns_inflight = False
-                    wait_observed_updated_at = inflight.updated_at
-                    _record_router_ledger_event(
-                        "stale_row_detected",
-                        cache_key=cache_key,
-                        status=inflight.status,
-                        model=model.name,
-                        workflow=workflow,
-                    )
+                    inflight_updated_at = inflight.updated_at
+                    if request_started_at >= inflight_updated_at:
+                        stale_status = inflight.status
+                        owns_inflight = False
+                        wait_observed_updated_at = inflight_updated_at
+                        _record_router_ledger_event(
+                            "stale_row_detected",
+                            cache_key=cache_key,
+                            status=inflight.status,
+                            model=model.name,
+                            workflow=workflow,
+                        )
+                    else:
+                        cache_status = "wait"
+                        owns_inflight = False
+                        wait_observed_updated_at = inflight_updated_at
+                        _record_router_ledger_event(
+                            "dedup_waiting",
+                            cache_key=cache_key,
+                            status="wait",
+                            model=model.name,
+                            workflow=workflow,
+                        )
 
             if not owns_inflight and stale_status is None:
                 # Re-read after releasing the transaction to catch owners that
                 # finished between the initial check and now.
                 refreshed = self._ledger._read_inflight(cache_key)
                 if refreshed is not None and refreshed.status != "waiting":
-                    stale_status = refreshed.status
-                    wait_observed_updated_at = refreshed.updated_at
+                    # Only treat as stale if the row was last updated before this
+                    # request started.  An error status with a recent updated_at
+                    # indicates the current owner encountered a transient failure
+                    # and may still recover; followers should wait rather than
+                    # immediately retrying.
+                    if request_started_at >= refreshed.updated_at:
+                        stale_status = refreshed.status
+                        wait_observed_updated_at = refreshed.updated_at
 
             if stale_status is not None:
                 with self._ledger.transaction() as txn:

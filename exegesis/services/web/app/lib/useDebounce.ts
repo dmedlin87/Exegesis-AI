@@ -97,7 +97,7 @@ export function useDebouncedCallback<T extends (...args: Parameters<T>) => void>
  * @example
  * const handleScroll = useThrottledCallback(
  *   () => {
- *     console.log('Scroll position:', window.scrollY);
+ *     reportScrollPosition(window.scrollY);
  *   },
  *   100
  * );

@@ -71,6 +71,19 @@ _SessionLocal: sessionmaker[Session] | None = None
 _engine_url_override: str | None = None
 _LOGGER = logging.getLogger(__name__)
 
+def _refresh_session_factory() -> None:
+    """Ensure the session factory tracks the current engine binding."""
+
+    global _SessionLocal
+    if _SessionLocal is None:
+        return
+
+    current_bind = _SessionLocal.kw.get("bind")
+    if _engine is not None and current_bind is not _engine:
+        kwargs = dict(_SessionLocal.kw)
+        kwargs["bind"] = _engine
+        _SessionLocal = sessionmaker(**kwargs)  # type: ignore[assignment]
+
 
 def _is_sqlite_closed_database_error(exc: ProgrammingError) -> bool:
     """Return ``True`` if the error indicates SQLite was already closed."""
@@ -220,6 +233,8 @@ def get_session() -> Generator[Session, None, None]:
     global _SessionLocal
     if _SessionLocal is None:
         configure_engine(get_settings().database_url)
+    else:
+        _refresh_session_factory()
     assert _SessionLocal is not None  # for type checkers
     session: Session = _SessionLocal()
     try:

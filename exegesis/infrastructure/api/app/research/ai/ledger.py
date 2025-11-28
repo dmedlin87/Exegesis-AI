@@ -451,11 +451,30 @@ class SharedLedger:
     # Initialization helpers
     # ------------------------------------------------------------------
     def _connect(self) -> sqlite3.Connection:
-        connection = sqlite3.connect(
-            self._path,
-            timeout=30.0,
-            check_same_thread=False,
-        )
+        try:
+            connection = sqlite3.connect(
+                self._path,
+                timeout=30.0,
+                check_same_thread=False,
+            )
+        except sqlite3.OperationalError as exc:
+            # Recreate the target directory and retry when SQLite cannot
+            # materialise the database file (e.g., temp directories pruned
+            # between test invocations).
+            message = str(exc).lower()
+            if "unable to open database file" not in message:
+                raise
+            if self._path.parent and not self._path.parent.exists():
+                self._path.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                connection = sqlite3.connect(
+                    self._path,
+                    timeout=30.0,
+                    check_same_thread=False,
+                )
+            except sqlite3.OperationalError:
+                # Bubble the original exception to preserve context
+                raise exc
         connection.row_factory = sqlite3.Row
         return connection
 

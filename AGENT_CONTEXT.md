@@ -1,3 +1,6 @@
+> **DOCUMENTATION PROTOCOL**
+> Before creating ANY text file, you MUST read `docs/00_DOCUMENTATION_STRATEGY.md` to determine the correct subdirectory. Usage of the root `docs/` folder for new files is strictly PROHIBITED.
+
 # Agent Context & Current Architecture
 
 [⬅️ Back to the README](README.md)

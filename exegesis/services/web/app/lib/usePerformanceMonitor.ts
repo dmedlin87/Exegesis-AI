@@ -65,18 +65,9 @@ export function usePerformanceMonitor(
   useEffect(() => {
     mountTime.current = performance.now();
     renderStartRef.current = performance.now();
-    
-    if (process.env.NODE_ENV === "development") {
-      console.log(`[Performance] ${componentName} mounted`);
-    }
 
     return () => {
-      if (process.env.NODE_ENV === "development" && mountTime.current) {
-        const lifetimeMs = performance.now() - mountTime.current;
-        console.log(
-          `[Performance] ${componentName} unmounted after ${(lifetimeMs / 1000).toFixed(2)}s (${renderCount.current} renders)`
-        );
-      }
+      mountTime.current = null;
     };
   }, [componentName]);
 }
@@ -97,18 +88,8 @@ export function useOperationTracker(): (
   operationName: string,
   operation: () => void
 ) => void {
-  return (operationName: string, operation: () => void) => {
-    const start = performance.now();
-    
-    try {
-      operation();
-    } finally {
-      const duration = performance.now() - start;
-      
-      if (process.env.NODE_ENV === "development") {
-        console.log(`[Operation] ${operationName} took ${duration.toFixed(2)}ms`);
-      }
-    }
+  return (_operationName: string, operation: () => void) => {
+    operation();
   };
 }
 

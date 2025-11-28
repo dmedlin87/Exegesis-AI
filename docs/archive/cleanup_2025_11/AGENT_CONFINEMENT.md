@@ -4,6 +4,8 @@
 
 The Agent Confinement Framework ensures that AI agents accessing Exegesis AI through the MCP (Model Context Protocol) server operate within strict security boundaries. This framework enforces authentication, input validation, rate limiting, and content filtering to prevent abuse while enabling safe theological research capabilities.
 
+> **Documentation hygiene:** Store behavior guidance in the approved `docs/` subdirectories described in `docs/00_DOCUMENTATION_STRATEGY.md`; nothing else belongs in the `docs/` root beyond that strategy file and `README.md`.
+
 ## Architecture
 
 ### Security Layers
