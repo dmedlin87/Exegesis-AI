@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass
 from typing import Sequence
 
+from exegesis.application.facades.settings import TheologicalLens
 from exegesis.infrastructure.api.app.models.search import (
     HybridSearchFilters,
     HybridSearchResult,
@@ -65,6 +66,26 @@ _MOJIBAKE_SEQUENCE_REPLACEMENTS: tuple[tuple[str, str], ...] = (
     ("Ã¶", "ö"),
     ("Ã¼", "ü"),
 )
+
+_THEOLOGICAL_LENS_INSTRUCTIONS: dict[TheologicalLens, str] = {
+    TheologicalLens.GENERAL: "",
+    TheologicalLens.HISTORICAL_CRITICAL: (
+        "Prioritize historical context, textual criticism, and the original author's intent. "
+        "Consider the social, political, and cultural setting of the biblical text."
+    ),
+    TheologicalLens.PATRISTIC: (
+        "Prioritize commentary from early church fathers and patristic tradition. "
+        "Focus on allegorical and typological interpretations prevalent in the first centuries of Christianity."
+    ),
+    TheologicalLens.REFORMATIONAL: (
+        "Prioritize Reformation-era perspectives and commentary. "
+        "Emphasize sola scriptura, justification by faith, and the priesthood of all believers."
+    ),
+    TheologicalLens.MODERN: (
+        "Prioritize contemporary theological scholarship and modern interpretative methods. "
+        "Consider liberation theology, feminist theology, and postmodern hermeneutics where relevant."
+    ),
+}
 
 
 def _normalise_mojibake(text: str) -> str:
@@ -129,6 +150,7 @@ class PromptContext:
     citations: Sequence[RAGCitation]
     filters: HybridSearchFilters | None = None
     memory_context: Sequence[str] | None = None
+    theological_lens: TheologicalLens = TheologicalLens.GENERAL
 
     def _normalise_part(self, value: str) -> str:
         """Normalise prompt segments to smooth out legacy encoding artefacts."""
@@ -152,6 +174,11 @@ class PromptContext:
             "Cite evidence using the bracketed indices and retain OSIS + anchor in a Sources line.",
             "If the passages do not answer the question, state that explicitly.",
         ]
+
+        # Inject theological lens instruction if available
+        lens_instruction = _THEOLOGICAL_LENS_INSTRUCTIONS.get(self.theological_lens, "")
+        if lens_instruction:
+            parts.append(lens_instruction)
         if self.memory_context:
             parts.append("Prior conversation highlights:")
             for idx, snippet in enumerate(self.memory_context, start=1):

@@ -11,6 +11,8 @@ from types import ModuleType
 from typing import TYPE_CHECKING, Any, Sequence
 from sqlalchemy.orm import Session
 
+from exegesis.application.facades.settings import TheologicalLens
+from exegesis.application.facades.settings_store import load_setting
 from exegesis.application.ports.ai_registry import GenerationError
 from exegesis.infrastructure.api.app.models.search import HybridSearchFilters, HybridSearchResult
 from exegesis.application.facades.telemetry import instrument_workflow, set_span_attribute
@@ -218,10 +220,22 @@ class GuardedAnswerPipeline:
                 },
             )
 
+        # Load theological lens from user settings
+        lens_value = load_setting(
+            self.session, "theological_lens", default=TheologicalLens.GENERAL.value
+        )
+        theological_lens = TheologicalLens.GENERAL
+        if isinstance(lens_value, str):
+            try:
+                theological_lens = TheologicalLens(lens_value)
+            except ValueError:
+                theological_lens = TheologicalLens.GENERAL
+
         prompt_context = PromptContext(
             citations=citations,
             filters=filters,
             memory_context=memory_context,
+            theological_lens=theological_lens,
         )
         summary_text, summary_lines = prompt_context.build_summary(ordered_results)
 

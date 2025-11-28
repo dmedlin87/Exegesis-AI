@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Literal, Sequence, TypeAlias
 
 from pydantic import BaseModel as _PydanticBaseModel, Field, model_validator
 
+from exegesis.application.facades.settings import TheologicalLens
 from ..models.export import ExportManifest
 from ..models.research_plan import ResearchPlan
 from ..models.search import HybridSearchFilters
@@ -257,6 +258,18 @@ class ProviderSettingsResponse(APIModel):
     has_api_key: bool = False
 
 
+class TheologicalLensRequest(APIModel):
+    """Request model for updating theological lens setting."""
+
+    theological_lens: TheologicalLens
+
+
+class TheologicalLensResponse(APIModel):
+    """Response model for theological lens setting."""
+
+    theological_lens: TheologicalLens
+
+
 class VerseCopilotRequest(ModeAliasMixin, APIModel):
     osis: str | None = None
     passage: str | None = Field(None, max_length=200)
@@ -473,6 +486,8 @@ __all__ = [
     "LoopControlAction",
     "ResearchLoopStatus",
     "ResearchLoopState",
+    "TheologicalLensRequest",
+    "TheologicalLensResponse",
 ]
 
 try:  # pragma: no cover - ensure forward references resolve in lightweight builds

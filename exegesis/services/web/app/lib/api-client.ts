@@ -32,6 +32,16 @@ type ExportDeliverableResponse = components["schemas"]["ExportDeliverableRespons
 export type ProviderSettingsRequest = components["schemas"]["ProviderSettingsRequest"];
 export type ProviderSettingsResponse = components["schemas"]["ProviderSettingsResponse"];
 
+export type TheologicalLens = "General" | "Historical-Critical" | "Patristic" | "Reformational" | "Modern";
+
+export type TheologicalLensRequest = {
+  theological_lens: TheologicalLens;
+};
+
+export type TheologicalLensResponse = {
+  theological_lens: TheologicalLens;
+};
+
 export type PerspectiveCitation = {
   document_id?: string | null;
   document_title?: string | null;
@@ -186,6 +196,9 @@ type ExegesisApiClientShape = {
     payload: ProviderSettingsRequest,
   ): Promise<ProviderSettingsResponse>;
   deleteProviderSettings(provider: string): Promise<void>;
+  // Theological Lens API
+  getTheologicalLens(): Promise<TheologicalLensResponse>;
+  updateTheologicalLens(payload: TheologicalLensRequest): Promise<TheologicalLensResponse>;
   // Collections API
   listCollections(options?: { includePublic?: boolean; limit?: number; offset?: number }): Promise<CollectionListResponse>;
   getCollection(collectionId: string): Promise<CollectionDetail>;
@@ -439,6 +452,17 @@ export function createExegesisApiClient(baseUrl?: string): ExegesisApiClientShap
       return request(`/settings/ai/providers/${provider}`, {
         method: "DELETE",
         parseJson: false,
+      });
+    },
+    // Theological Lens API methods
+    getTheologicalLens() {
+      return request<TheologicalLensResponse>("/settings/theological-lens");
+    },
+    updateTheologicalLens(payload) {
+      return request<TheologicalLensResponse>("/settings/theological-lens", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
     },
     // Collections API methods

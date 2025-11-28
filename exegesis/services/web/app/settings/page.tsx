@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import ApiAccessForm from "./components/ApiAccessForm";
 import ProviderRegistrationForm from "./components/ProviderRegistrationForm";
 import ProviderSettingsCard from "./components/ProviderSettingsCard";
+import TheologicalLensCard from "./components/TheologicalLensCard";
 import {
   type ProviderSettingsResponse,
   createTheoApiClient,
@@ -79,6 +80,21 @@ export default function SettingsPage(): JSX.Element {
         </p>
         <div className={styles.sectionBody}>
           <ApiAccessForm />
+        </div>
+      </section>
+
+      <section className={styles.section} aria-labelledby="theological-lens-title">
+        <div className={styles.sectionHeader}>
+          <h2 id="theological-lens-title" className={styles.sectionTitle}>
+            Theological lens
+          </h2>
+        </div>
+        <p className={styles.sectionDescription}>
+          Choose a theological perspective to guide how the RAG pipeline interprets and
+          contextualizes biblical passages and commentary.
+        </p>
+        <div className={styles.sectionBody}>
+          <TheologicalLensCard client={client} />
         </div>
       </section>
 

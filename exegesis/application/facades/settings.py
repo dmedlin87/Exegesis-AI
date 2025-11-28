@@ -7,6 +7,7 @@ import logging
 import os
 import re
 from collections.abc import Callable
+from enum import Enum
 from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Any, Literal
@@ -72,6 +73,16 @@ from ..ports.secrets import SecretRequest, SecretRetrievalError, build_secrets_a
 from .runtime import allow_insecure_startup
 
 LOGGER = logging.getLogger(__name__)
+
+
+class TheologicalLens(str, Enum):
+    """Theological interpretation lens for RAG contextualization."""
+
+    GENERAL = "General"
+    HISTORICAL_CRITICAL = "Historical-Critical"
+    PATRISTIC = "Patristic"
+    REFORMATIONAL = "Reformational"
+    MODERN = "Modern"
 
 
 class _BaseEventSink(BaseModel):
@@ -674,6 +685,10 @@ class Settings(BaseSettings):
         description=(
             "Block URLs that resolve to private, loopback, or link-local addresses."
         ),
+    )
+    theological_lens: TheologicalLens = Field(
+        default=TheologicalLens.GENERAL,
+        description="Theological interpretation lens for RAG contextualization",
     )
 
 

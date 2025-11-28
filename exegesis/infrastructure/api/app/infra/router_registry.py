@@ -28,6 +28,7 @@ from ..routes import (
     realtime,
     research,
     search,
+    settings,
     trails,
     transcripts,
     verses,
@@ -77,6 +78,11 @@ _DEFAULT_REGISTRATIONS.extend(
             router=features.router,
             prefix="/features",
             tags=("features",),
+        ),
+        RouterRegistration(
+            router=settings.router,
+            prefix=None,
+            tags=("settings",),
         ),
         RouterRegistration(
             router=research.router,
