@@ -20,7 +20,7 @@ function classNames(
   return classes.filter(Boolean).join(" ");
 }
 
-import CommandPalette from "./CommandPalette";
+import CommandPalette, { COMMAND_PALETTE_TOGGLE_EVENT } from "./CommandPalette";
 import ConnectionStatusIndicator from "./ConnectionStatusIndicator";
 import { ThemeToggle } from "./ThemeToggle";
 import OfflineIndicator from "./OfflineIndicator";
@@ -289,12 +289,7 @@ export function AppShell({
             type="button"
             className={styles.commandTrigger}
             onClick={() => {
-              window.dispatchEvent(new KeyboardEvent('keydown', {
-                key: 'k',
-                metaKey: true,
-                ctrlKey: true,
-                bubbles: true
-              }));
+              window.dispatchEvent(new Event(COMMAND_PALETTE_TOGGLE_EVENT));
             }}
             aria-label="Open command palette"
             title="Open command palette (⌘K or Ctrl+K)"
