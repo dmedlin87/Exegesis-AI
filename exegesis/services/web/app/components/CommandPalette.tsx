@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import "./CommandPalette.css";
 
-import { openKeyboardShortcutsDialog } from "./help/KeyboardShortcutsDialog";
-import { HELP_RESOURCES, KEYBOARD_SHORTCUTS_RESOURCE } from "./help/resources";
+import { TOGGLE_THEME_EVENT } from "./ThemeToggle";
 
 interface CommandEntry {
   label: string;
@@ -19,40 +18,24 @@ interface CommandEntry {
 }
 
 const NAVIGATION_COMMANDS: CommandEntry[] = [
-  { label: "Home", href: "/", keywords: "dashboard root" },
-  { label: "Discoveries", href: "/discoveries", keywords: "insights patterns auto-find explore" },
-  { label: "Open chat", href: "/chat", keywords: "conversation" },
-  { label: "Copilot workspace", href: "/copilot", keywords: "assist" },
-  { label: "Search workspace", href: "/search", keywords: "find query" },
-  { label: "Upload sources", href: "/upload", keywords: "ingest import" },
-  { label: "Export center", href: "/export", keywords: "deliverable" },
-  { label: "Settings", href: "/settings", keywords: "config preferences api key configuration" },
+  { label: "Dashboard", href: "/dashboard", keywords: "home overview" },
+  { label: "Search", href: "/search", keywords: "find query" },
+  { label: "Upload", href: "/upload", keywords: "ingest import" },
+  { label: "Settings", href: "/settings", keywords: "config preferences" },
 ];
 
-const HELP_COMMANDS: CommandEntry[] = [
-  ...HELP_RESOURCES.map((resource) => ({
-    label: resource.label,
-    description: resource.description,
-    href: resource.href,
-    external: resource.external,
-    keywords: resource.keywords,
-    action: resource.href
-      ? () => {
-          if (resource.external) {
-            window.open(resource.href!, "_blank", "noopener,noreferrer");
-          } else {
-            window.location.assign(resource.href!);
-          }
-        }
-      : undefined,
-  })),
+const ACTION_COMMANDS: CommandEntry[] = [
   {
-    label: KEYBOARD_SHORTCUTS_RESOURCE.label,
-    description: KEYBOARD_SHORTCUTS_RESOURCE.description,
-    keywords: KEYBOARD_SHORTCUTS_RESOURCE.keywords,
-    action: openKeyboardShortcutsDialog,
+    label: "Toggle theme",
+    description: "Switch between light and dark modes",
+    keywords: "appearance color dark light",
+    action: () => {
+      window.dispatchEvent(new Event(TOGGLE_THEME_EVENT));
+    },
   },
 ];
+
+export const COMMAND_PALETTE_TOGGLE_EVENT = "exegesis:command-palette-toggle";
 
 export default function CommandPalette(): JSX.Element {
   const router = useRouter();
@@ -64,7 +47,10 @@ export default function CommandPalette(): JSX.Element {
 
   useEffect(() => {
     const toggle = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      const target = event.target as HTMLElement | null;
+      const isTypingContext = target?.closest("input, textarea, [contenteditable=true]");
+
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k" && !isTypingContext) {
         event.preventDefault();
         setOpen((previous) => !previous);
       }
@@ -75,6 +61,13 @@ export default function CommandPalette(): JSX.Element {
 
     window.addEventListener("keydown", toggle);
     return () => window.removeEventListener("keydown", toggle);
+  }, []);
+
+  useEffect(() => {
+    const handleToggleEvent = () => setOpen((previous) => !previous);
+
+    window.addEventListener(COMMAND_PALETTE_TOGGLE_EVENT, handleToggleEvent);
+    return () => window.removeEventListener(COMMAND_PALETTE_TOGGLE_EVENT, handleToggleEvent);
   }, []);
 
   useEffect(() => {
@@ -168,13 +161,12 @@ export default function CommandPalette(): JSX.Element {
             </Command.Item>
           ))}
         </Command.Group>
-        <Command.Group heading="Help">
-          {HELP_COMMANDS.map((command) => (
+        <Command.Group heading="Quick actions">
+          {ACTION_COMMANDS.map((command) => (
             <Command.Item
               key={command.label}
               value={`${command.label.toLowerCase()} ${command.keywords ?? ""}`.trim()}
               onSelect={() => handleSelect(command)}
-              disabled={isPending && Boolean(command.href) && !command.external}
             >
               <span className="cmdk-item__label">
                 <span>{command.label}</span>

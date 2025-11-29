@@ -5,6 +5,8 @@ import styles from "./ThemeToggle.module.css";
 
 type Theme = "light" | "dark" | "auto";
 
+export const TOGGLE_THEME_EVENT = "exegesis:toggle-theme";
+
 const STORAGE_KEY = "theo-theme-preference";
 
 function getSystemTheme(): "light" | "dark" {
@@ -45,6 +47,20 @@ export function ThemeToggle() {
 
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    const handleToggleTheme = () => {
+      setTheme((previous) => {
+        const nextTheme = previous === "dark" ? "light" : "dark";
+        localStorage.setItem(STORAGE_KEY, nextTheme);
+        applyTheme(nextTheme);
+        return nextTheme;
+      });
+    };
+
+    window.addEventListener(TOGGLE_THEME_EVENT, handleToggleTheme);
+    return () => window.removeEventListener(TOGGLE_THEME_EVENT, handleToggleTheme);
   }, []);
 
   const handleThemeChange = (newTheme: Theme) => {
